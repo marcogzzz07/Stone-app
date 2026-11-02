@@ -8,7 +8,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-screen w-full">
       <aside className="hidden lg:flex w-60 shrink-0 flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
         <Link href="/dashboard" className="flex items-center gap-3 px-5 h-16">
-          <Image src="/brand/stone-mark.svg" alt="" width={30} height={30} priority />
+          <Image src="/brand/stone-mark.png" alt="" width={28} height={32} priority />
           <div className="leading-none">
             <div className="font-condensed text-[17px] font-bold uppercase tracking-[0.28em] text-white">
               Stone

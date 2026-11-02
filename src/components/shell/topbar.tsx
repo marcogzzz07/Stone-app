@@ -23,7 +23,7 @@ export function Topbar() {
         </SheetTrigger>
         <SheetContent side="left" className="w-64 bg-sidebar p-0 text-sidebar-foreground">
           <SheetTitle className="flex items-center gap-3 px-5 pt-5">
-            <Image src="/brand/stone-mark.svg" alt="" width={26} height={26} />
+            <Image src="/brand/stone-mark.png" alt="" width={24} height={28} />
             <span className="leading-none">
               <span className="font-condensed block text-[15px] font-bold uppercase tracking-[0.28em] text-white">Stone</span>
               <span className="mt-1 block text-[10px] lowercase tracking-[0.22em] text-sidebar-foreground/70">inmuebles</span>
@@ -32,7 +32,7 @@ export function Topbar() {
           <SidebarNav onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
-      <Image src="/brand/stone-mark.svg" alt="Stone Inmuebles" width={24} height={24} className="lg:hidden" />
+      <Image src="/brand/stone-mark.png" alt="Stone Inmuebles" width={22} height={26} className="lg:hidden" />
       <label className="relative flex-1 max-w-xl">
         <span className="sr-only">Buscar</span>
         <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />

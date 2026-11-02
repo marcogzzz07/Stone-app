@@ -42,9 +42,9 @@ Un **atlas patrimonial privado**, no un ERP contable ni un reporte de Excel. Con
 Confirmados por el usuario el 1 de noviembre de 2026 a partir del informe mensual:
 
 - **Nombre:** Stone Inmuebles. Wordmark "STONE" en mayúsculas espaciadas + "inmuebles" en minúsculas.
-- **Logo:** cubo isométrico en cian/azul con interior azul marino. Único archivo disponible: `public/brand/stone-logo.png` (507×226 px, extraído del PPTX; apto para prototipo, no para producción). Falta versión vectorial.
+- **Logo:** cubo isométrico en cian/azul con interior azul marino y wordmark "STONE inmuebles" en marino. Archivo oficial entregado por el usuario el 2 de noviembre de 2026: `public/brand/stone-logo.png` (2000×730); isotipo recortado en `public/brand/stone-mark.png`. Falta versión vectorial.
 - **Paleta oficial:** azul marino `#101752` / `#111644` / `#1C2233`; cian `#1593C6`; azul medio `#0F6F9B`; naranja de acento `#D47A1F` / `#A85B10`; grises fríos `#F5F6F8` / `#F0F2F6` / `#E3E8F0` / `#D8DDE6` / `#C9C9CA`; texto secundario `#4A5266`.
-- **Tipografía:** Barlow y Barlow Semi Condensed (usadas en el informe).
+- **Tipografía:** Albert Sans (elegida por el usuario el 2 de noviembre de 2026 para la app; el informe usaba Barlow, descartada).
 - **Tono pedido:** misma identidad que el informe, más refinada: sobria, ejecutiva, cartográfica. No ERP genérico.
 
 ## Evidence on Hand

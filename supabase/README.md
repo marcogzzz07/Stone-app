@@ -31,11 +31,22 @@ archivos de `migrations/` son la copia versionada, en el mismo orden.
 
 `tests/rls_negative.sql` crea usuarios y datos `[DEMO]` dentro de una transacción que se revierte y verifica 36 casos (invariantes, cada rol, sin membresía, anon). Última corrida: 36/36 el 2 de noviembre de 2026.
 
-## Pendiente de configurar en el dashboard (no se hace por SQL)
+## Configurar en el dashboard de Supabase (no se hace por SQL)
 
-- Auth → desactivar "Enable sign ups" para que el ingreso sea solo por invitación (`inviteUserByEmail` desde el servidor).
-- Auth → URL del sitio y redirects cuando exista el despliegue en Vercel.
-- `SUPABASE_SERVICE_ROLE_KEY` solo en variables de entorno del servidor; nunca en el repo ni en el navegador.
+1. **Authentication → Sign In / Providers → Email:** desactivar "Allow new users to sign up". El ingreso es solo por invitación.
+2. **Authentication → URL Configuration:** Site URL `http://localhost:3000` mientras no haya despliegue; agregar `http://localhost:3000/auth/callback` (y después la URL de Vercel) en Redirect URLs.
+3. **Authentication → Emails → Invite user:** cambiar el enlace del template a
+   `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite`
+   (y en *Magic Link* a `...&type=magiclink`). Sin esto, el enlace llega con el token en el fragmento de la URL y el servidor no puede abrir la sesión.
+4. **Authentication → Users → Invite user:** invitar a `ma.gonzalez@gs.com.mx` y `p.cabada@gs.com.mx`. Sus invitaciones ya existen en `public.invitations` (admin y operator); al crearse el usuario, el trigger les da la membresía.
+5. Opcional: copiar la **service-role key** a `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` (nunca al repo). Con ella, las invitaciones se envían desde Configuración en la plataforma; sin ella, se registran ahí y el correo se manda desde el dashboard.
+
+## Flujo de acceso en la app
+
+- `src/proxy.ts` refresca la sesión y manda a `/login` a quien no la tenga.
+- `(app)/layout.tsx` exige membresía activa (`requireMember`); sin ella, `/sin-acceso`.
+- `/auth/callback` recibe los enlaces de correo (invitación, enlace mágico) y, tras una invitación, pide definir contraseña en `/cuenta/contrasena`.
+- `/configuracion` (solo admin): miembros con cambio de rol, invitaciones pendientes con revocación y formulario de invitación.
 
 ## Tipos
 

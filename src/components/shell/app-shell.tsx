@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { SidebarFooter, SidebarHeader, SidebarNav } from "./sidebar-nav";
+import { SidebarFooter, SidebarHeader, SidebarNav, type ShellUser } from "./sidebar-nav";
 import { Topbar } from "./topbar";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,7 @@ function subscribe(cb: () => void) {
   };
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({ user, children }: { user: ShellUser; children: React.ReactNode }) {
   const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => false);
   const toggle = () => writeCollapsed(!collapsed);
 
@@ -47,10 +47,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="min-h-0 flex-1 overflow-y-auto">
           <SidebarNav collapsed={collapsed} />
         </div>
-        <SidebarFooter collapsed={collapsed} />
+        <SidebarFooter collapsed={collapsed} user={user} />
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar />
+        <Topbar user={user} />
         <main className="flex-1 px-6 py-6 lg:px-8">{children}</main>
       </div>
     </div>

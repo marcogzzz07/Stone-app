@@ -2,6 +2,15 @@ import { Check, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
+import { Button } from "@/components/ui/button";
+import { Notice } from "@/components/forms/notice";
+import { requireRole, ROLE_LABEL, type AppRole } from "@/lib/auth/session";
+import { createClient } from "@/lib/supabase/server";
+import { fmtDate } from "@/lib/format";
+import { InviteForm } from "./invite-form";
+import { revokeInvitation, setMemberRole } from "./actions";
+
+export const instant = false;
 
 const ROLES = [
   { cap: "Ver dashboard, mapa, inventario, fichas", admin: true, op: true, viewer: true },
@@ -26,7 +35,24 @@ function Mark({ v }: { v: boolean | string }) {
   return <span className="text-xs text-warning dark:text-warn">{v}</span>;
 }
 
-export default function ConfiguracionPage() {
+export default async function ConfiguracionPage() {
+  const me = await requireRole("admin");
+  const supabase = await createClient();
+  const [{ data: members }, { data: invitations }] = await Promise.all([
+    supabase
+      .from("memberships")
+      .select("id, role, status, profile_id, created_at, profiles(full_name, email)")
+      .eq("org_id", me.membership.orgId)
+      .order("created_at"),
+    supabase
+      .from("invitations")
+      .select("id, email, role, status, expires_at, created_at")
+      .eq("org_id", me.membership.orgId)
+      .eq("status", "pending")
+      .order("created_at"),
+  ]);
+  const serviceKeyMissing = !process.env.SUPABASE_SERVICE_ROLE_KEY;
+
   return (
     <>
       <PageHeader
@@ -84,14 +110,74 @@ export default function ConfiguracionPage() {
             <p className="px-4 pb-4 text-[11px] text-muted-foreground">Regla: no pueden existir dos flujos generando cargos para el mismo contrato/período/concepto.</p>
           </Card>
 
-          <Card className="gap-2 p-4">
-            <SectionTitle>Usuarios (demo)</SectionTitle>
-            <ul className="divide-y text-sm">
-              <li className="flex justify-between py-2"><span>Administrador familiar (demo)</span><span className="text-xs text-muted-foreground">admin</span></li>
-              <li className="flex justify-between py-2"><span>Administración inmobiliaria (demo)</span><span className="text-xs text-muted-foreground">operator</span></li>
-              <li className="flex justify-between py-2"><span>Consulta familiar (demo)</span><span className="text-xs text-muted-foreground">viewer</span></li>
-            </ul>
-            <p className="text-[11px] text-muted-foreground">Acceso solo por invitación (Supabase Auth, Iteración 1). Sin registro público.</p>
+          <Card className="gap-3 p-4">
+            <SectionTitle hint="Acceso solo por invitación">Usuarios</SectionTitle>
+            {serviceKeyMissing && (
+              <Notice tone="info" title="Los correos de invitación se envían desde el dashboard de Supabase">
+                Aquí se registra el acceso y el rol; el correo lo manda Supabase (Authentication → Users → Invite user) hasta que se configure la clave de servidor.
+              </Notice>
+            )}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Usuario</TableHead>
+                  <TableHead>Rol</TableHead>
+                  <TableHead className="text-right">Desde</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(members ?? []).map((m) => (
+                  <TableRow key={m.id}>
+                    <TableCell>
+                      <div className="font-medium">{m.profiles?.full_name || m.profiles?.email}</div>
+                      {m.profiles?.full_name && <div className="text-xs text-ink-3">{m.profiles.email}</div>}
+                    </TableCell>
+                    <TableCell>
+                      {m.profile_id === me.id ? (
+                        <span className="text-sm">{ROLE_LABEL[m.role]} <span className="text-xs text-ink-3">(tú)</span></span>
+                      ) : (
+                        <form action={setMemberRole} className="flex items-center gap-2">
+                          <input type="hidden" name="id" value={m.id} />
+                          <select
+                            name="role"
+                            defaultValue={m.role}
+                            className="h-7 rounded-md border border-input bg-transparent px-2 text-sm"
+                          >
+                            {(["admin", "operator", "viewer"] as AppRole[]).map((r) => (
+                              <option key={r} value={r}>{ROLE_LABEL[r]}</option>
+                            ))}
+                          </select>
+                          <Button type="submit" variant="ghost" size="sm">Guardar</Button>
+                        </form>
+                      )}
+                    </TableCell>
+                    <TableCell className="tnum text-right text-xs text-ink-3">{fmtDate(m.created_at)}</TableCell>
+                  </TableRow>
+                ))}
+                {(invitations ?? []).map((i) => (
+                  <TableRow key={i.id} className="text-ink-2">
+                    <TableCell>
+                      <div>{i.email}</div>
+                      <div className="text-xs text-warning">Invitación pendiente · vence {fmtDate(i.expires_at)}</div>
+                    </TableCell>
+                    <TableCell className="text-sm">{ROLE_LABEL[i.role]}</TableCell>
+                    <TableCell className="text-right">
+                      <form action={revokeInvitation}>
+                        <input type="hidden" name="id" value={i.id} />
+                        <Button type="submit" variant="ghost" size="sm">Revocar</Button>
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {!members?.length && !invitations?.length && (
+                  <TableRow><TableCell colSpan={3} className="text-center text-sm text-ink-3">Sin usuarios todavía.</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+            <div className="border-t pt-4">
+              <div className="mb-3 text-sm font-semibold text-ink-2">Invitar a alguien</div>
+              <InviteForm />
+            </div>
           </Card>
 
           <Card className="gap-2 p-4">

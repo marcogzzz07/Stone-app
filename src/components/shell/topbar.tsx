@@ -6,12 +6,12 @@ import { usePathname } from "next/navigation";
 import { ChevronRight, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { NAV, SidebarFooter, SidebarHeader, SidebarNav } from "./sidebar-nav";
+import { NAV, SidebarFooter, SidebarHeader, SidebarNav, type ShellUser } from "./sidebar-nav";
 import { useState } from "react";
 
 // Barra superior: menú móvil, ruta y (en móvil) el isotipo. Notificaciones
 // y cuenta viven en el menú lateral.
-export function Topbar() {
+export function Topbar({ user }: { user: ShellUser }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const current =
@@ -32,7 +32,7 @@ export function Topbar() {
           <div className="min-h-0 flex-1 overflow-y-auto">
             <SidebarNav onNavigate={() => setOpen(false)} />
           </div>
-          <SidebarFooter onNavigate={() => setOpen(false)} />
+          <SidebarFooter onNavigate={() => setOpen(false)} user={user} />
         </SheetContent>
       </Sheet>
       <Image src="/brand/stone-mark.png" alt="Stone Inmuebles" width={22} height={25} className="lg:hidden" />

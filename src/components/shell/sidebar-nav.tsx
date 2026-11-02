@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Bell,
+  LogOut,
   Building2,
   CalendarDays,
   CircleHelp,
@@ -21,6 +22,24 @@ import {
 } from "lucide-react";
 import { importDiscrepancies } from "@/lib/mock/data";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/app/(auth)/login/actions";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+/** Usuario autenticado tal como lo muestra el shell. */
+export interface ShellUser {
+  name: string;
+  email: string;
+  initials: string;
+  role: "admin" | "operator" | "viewer";
+  roleLabel: string;
+}
 
 interface NavItem {
   href: string;
@@ -168,9 +187,11 @@ export function SidebarNav({
 export function SidebarFooter({
   collapsed = false,
   onNavigate,
+  user,
 }: {
   collapsed?: boolean;
   onNavigate?: () => void;
+  user: ShellUser;
 }) {
   const isActive = useActive();
   const pending = importDiscrepancies.length;
@@ -213,23 +234,43 @@ export function SidebarFooter({
         )}
       >
         <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-cyan text-xs font-semibold text-brand-navy">
-          MA
+          {user.initials}
         </span>
         {!collapsed && (
-          <>
-            <span className="min-w-0 flex-1 leading-tight">
-              <span className="block truncate text-sm font-semibold text-sidebar-ink-active">Marco González</span>
-              <span className="block truncate text-xs text-sidebar-foreground">marco@stone.demo</span>
-            </span>
+          <span className="min-w-0 flex-1 leading-tight">
+            <span className="block truncate text-sm font-semibold text-sidebar-ink-active">{user.name}</span>
+            <span className="block truncate text-xs text-sidebar-foreground">{user.roleLabel}</span>
+          </span>
+        )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <button
               type="button"
               aria-label="Opciones de cuenta"
-              className="grid size-7 shrink-0 place-items-center rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              className={cn(
+                "grid size-7 shrink-0 place-items-center rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                collapsed && "hidden",
+              )}
             >
               <MoreVertical className="size-4" strokeWidth={1.5} />
             </button>
-          </>
-        )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="end" className="w-56">
+            <DropdownMenuLabel className="font-normal">
+              <span className="block truncate text-sm font-semibold">{user.name}</span>
+              <span className="block truncate text-xs text-ink-3">{user.email}</span>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/configuracion" onClick={onNavigate}>
+                <Settings className="size-4" strokeWidth={1.5} /> Configuración
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => void signOut()}>
+              <LogOut className="size-4" strokeWidth={1.5} /> Cerrar sesión
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

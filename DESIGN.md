@@ -1,3 +1,5 @@
+> **Fuente de verdad desde el 2 de noviembre de 2026:** `stone-design-system/` (README, tokens.json, components/). Este documento describe la implementación previa y se conserva como historial; donde difiera, manda el design system (IBM Plex Sans + Source Sans 3, tokens `brand-navy`, `brand-cyan`, `warning`=pendiente, `danger`=vencido).
+
 ---
 name: Stone Inmuebles
 description: Atlas patrimonial privado · marino como estructura, cian como señal de lo que Stone administra, naranja solo para dinero en alerta.

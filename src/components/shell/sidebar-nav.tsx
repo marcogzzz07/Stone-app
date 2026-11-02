@@ -61,7 +61,7 @@ export function SidebarNav({
         <div key={group.title}>
           <div
             className={cn(
-              "mb-1 px-3 text-[11px] font-medium text-sidebar-foreground/50 transition-opacity",
+              "mb-1.5 px-3 text-xs font-semibold tracking-[0.06em] uppercase text-sidebar-foreground/60 transition-opacity",
               collapsed && "h-0 overflow-hidden opacity-0",
             )}
           >
@@ -81,14 +81,14 @@ export function SidebarNav({
                     title={collapsed ? label : undefined}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex h-9 items-center gap-3 rounded-md px-3 text-sm transition-colors",
+                      "relative flex h-9 items-center gap-3 rounded-md px-3 text-[15px] transition-colors",
                       collapsed && "justify-center px-0",
                       active
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-full before:bg-brand-cyan"
+                        : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                     )}
                   >
-                    <Icon className={cn("size-4 shrink-0", active && "text-sidebar-primary")} />
+                    <Icon className="size-4 shrink-0" strokeWidth={1.5} />
                     <span className={cn("truncate", collapsed && "sr-only")}>{label}</span>
                   </Link>
                 </li>

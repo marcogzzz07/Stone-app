@@ -9,7 +9,7 @@ import { daysUntil, fmtDate, fmtMXN } from "@/lib/format";
 
 const STATUS: Record<string, { label: string; cls: string }> = {
   draft: { label: "Borrador", cls: "bg-muted" },
-  active: { label: "Activo", cls: "bg-ok/15 text-ok" },
+  active: { label: "Activo", cls: "bg-success-soft text-ok" },
   expired: { label: "Vencido", cls: "bg-muted text-muted-foreground" },
   terminated: { label: "Terminado", cls: "bg-muted text-muted-foreground" },
 };
@@ -49,12 +49,12 @@ export default function ContratosPage() {
                   <TableCell className="font-medium">{getTenant(l.tenantId)?.name.replace("[DEMO] ", "")}</TableCell>
                   <TableCell className="space-x-1">
                     {l.unitIds.map((id) => (
-                      <Link key={id} href={`/unidades/${id}`} className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs hover:bg-accent">{getUnit(id)?.code}</Link>
+                      <Link key={id} href={`/unidades/${id}`} className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs hover:bg-info-soft/70">{getUnit(id)?.code}</Link>
                     ))}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{getEntity(l.lessorEntityId)?.name.replace("[DEMO] ", "")}</TableCell>
                   <TableCell className="text-xs">{fmtDate(l.startDate)}</TableCell>
-                  <TableCell className={`text-xs ${soon ? "font-medium text-warn-foreground dark:text-warn" : ""}`}>{fmtDate(l.endDate)}{soon && <div className="text-[11px]">por vencer · {days} d</div>}</TableCell>
+                  <TableCell className={`text-xs ${soon ? "font-medium text-warning dark:text-warn" : ""}`}>{fmtDate(l.endDate)}{soon && <div className="text-[11px]">por vencer · {days} d</div>}</TableCell>
                   <TableCell className="tnum text-right">{fmtMXN(t.baseRent)} <span className="text-xs text-muted-foreground">+ IVA</span></TableCell>
                   <TableCell className="tnum text-right">{fmtMXN(t.deposit)}</TableCell>
                   <TableCell className="max-w-[180px] truncate text-xs text-muted-foreground">{t.increaseRule ?? "Sin regla documentada"}</TableCell>

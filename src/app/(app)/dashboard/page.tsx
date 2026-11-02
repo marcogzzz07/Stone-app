@@ -37,7 +37,7 @@ export default function DashboardPage() {
     value: chargesOfPeriod(CURRENT_PERIOD)
       .filter((c) => units.find((u) => u.id === c.unitId)?.developmentId === d.id)
       .reduce((s, c) => s + c.total, 0),
-    color: ["var(--navy)", "var(--stone-accent)", "var(--chart-3)"][i] ?? "var(--chart-5)",
+    color: ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)", "var(--chart-6)", "var(--chart-7)"][i] ?? "var(--chart-3)",
   }));
   const byDevTotal = byDev.reduce((s, d) => s + d.value, 0) || 1;
   const nextDate = upcomingDates(TODAY, 1)[0];
@@ -47,7 +47,7 @@ export default function DashboardPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-condensed text-3xl font-semibold tracking-tight text-navy dark:text-foreground">
+          <h1 className="font-display text-[30px] leading-9 font-semibold text-ink">
             Buenas noches, Marco
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">Así va el patrimonio de Stone en {period.toLowerCase()}.</p>
@@ -58,7 +58,7 @@ export default function DashboardPage() {
               <button
                 key={o}
                 type="button"
-                className={`rounded-[5px] px-3 py-1 ${i === 0 ? "bg-navy text-white" : "text-muted-foreground hover:bg-muted"}`}
+                className={`rounded-[5px] px-3 py-1 ${i === 0 ? "bg-primary text-on-primary" : "text-muted-foreground hover:bg-muted"}`}
                 aria-pressed={i === 0}
               >
                 {o}
@@ -92,7 +92,7 @@ export default function DashboardPage() {
           value={fmtMXN(totalOutstanding())}
           info="Exigible − aplicaciones − ajustes, todos los períodos."
           visual={<MiniBars values={agingBuckets(TODAY).map((b) => b.amount)} />}
-          delta={<span className="num rounded-md bg-warn/15 px-1.5 py-0.5 text-[11px] font-semibold text-warn-foreground">{fmtMXN(overdueTotal(TODAY))} vencido</span>}
+          delta={<span className="num rounded-md bg-danger-soft px-1.5 py-0.5 text-[11px] font-semibold text-danger">{fmtMXN(overdueTotal(TODAY))} vencido</span>}
           foot={`${fmtMXN(unapplied)} sin aplicar`}
         />
         <KpiVisual
@@ -119,8 +119,8 @@ export default function DashboardPage() {
               </div>
             </div>
             <div className="flex items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-navy" /> Cargos</span>
-              <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-stone-accent" /> Cobrado</span>
+              <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-chart-1" /> Cargos</span>
+              <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-chart-2" /> Cobrado</span>
             </div>
           </div>
           <div className="px-2 pt-2">
@@ -154,14 +154,14 @@ export default function DashboardPage() {
                 </li>
               ))}
             </ul>
-            <Link href="/rentas" className="flex items-center gap-3 rounded-lg border bg-warn/10 px-3 py-2.5 text-sm hover:bg-warn/15">
-              <AlertTriangle className="size-4 shrink-0 text-warn-foreground" />
+            <Link href="/rentas" className="flex items-center gap-3 rounded-lg border bg-warning-soft px-3 py-2.5 text-sm hover:bg-warning-soft/70">
+              <AlertTriangle className="size-4 shrink-0 text-warning" />
               <span className="flex-1 leading-snug">{topIssue.title}: {fmtMXN(topIssue.amount ?? 0)} por conciliar</span>
               <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
             </Link>
             {nextDate && (
-              <Link href="/calendario" className="flex items-center gap-3 rounded-lg border bg-accent px-3 py-2.5 text-sm hover:bg-accent/70">
-                <Sparkles className="size-4 shrink-0 text-accent-foreground" />
+              <Link href="/calendario" className="flex items-center gap-3 rounded-lg border bg-info-soft px-3 py-2.5 text-sm hover:bg-info-soft/70">
+                <Sparkles className="size-4 shrink-0 text-info" />
                 <span className="flex-1 leading-snug">{nextDate.title.replace("[DEMO] ", "")} · en {daysUntil(nextDate.date)} días</span>
                 <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
               </Link>

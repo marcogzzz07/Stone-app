@@ -72,14 +72,14 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
         type: "fill",
         source: "patrimonio",
         filter: ["==", ["get", "scope"], "desarrollo"],
-        paint: { "fill-color": "#101752", "fill-opacity": 0.05 },
+        paint: { "fill-color": "#000649", "fill-opacity": 0.05 },
       });
       map.addLayer({
         id: "dev-line",
         type: "line",
         source: "patrimonio",
         filter: ["==", ["get", "scope"], "desarrollo"],
-        paint: { "line-color": "#101752", "line-width": 1.5, "line-dasharray": [3, 2] },
+        paint: { "line-color": "#000649", "line-width": 1.5, "line-dasharray": [3, 2] },
       });
       map.addLayer({
         id: "unit-fill",
@@ -87,7 +87,7 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
         source: "patrimonio",
         filter: ["!=", ["get", "scope"], "desarrollo"],
         paint: {
-          "fill-color": ["case", ["==", ["get", "scope"], "stone"], "#1593c6", "#7d8794"],
+          "fill-color": ["case", ["==", ["get", "scope"], "stone"], "#00BBF4", "#6F7894"],
           "fill-opacity": [
             "case",
             ["boolean", ["feature-state", "selected"], false],
@@ -104,7 +104,7 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
         source: "patrimonio",
         filter: ["!=", ["get", "scope"], "desarrollo"],
         paint: {
-          "line-color": ["case", ["==", ["get", "scope"], "stone"], "#101752", "#7d8794"],
+          "line-color": ["case", ["==", ["get", "scope"], "stone"], "#000649", "#6F7894"],
           "line-width": 2,
           "line-dasharray": ["case", ["==", ["get", "scope"], "stone"], ["literal", [1, 0]], ["literal", [2, 2]]],
         },
@@ -119,7 +119,7 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
           "text-size": 11,
           "text-font": ["Open Sans Regular", "Noto Sans Regular"],
         },
-        paint: { "text-color": "#101752", "text-halo-color": "#fff", "text-halo-width": 1 },
+        paint: { "text-color": "#000649", "text-halo-color": "#fff", "text-halo-width": 1 },
         minzoom: 16,
       });
 

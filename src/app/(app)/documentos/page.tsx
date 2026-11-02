@@ -24,7 +24,7 @@ export default function DocumentosPage() {
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {(["interno", "restringido", "sensible"] as const).map((s) => (
           <Card key={s} className="flex-row items-center gap-3 p-4">
-            {s === "sensible" ? <ShieldAlert className="size-5 text-destructive" /> : s === "restringido" ? <Lock className="size-5 text-warn" /> : <FileText className="size-5 text-muted-foreground" />}
+            {s === "sensible" ? <ShieldAlert className="size-5 text-destructive" /> : s === "restringido" ? <Lock className="size-5 text-warning" /> : <FileText className="size-5 text-muted-foreground" />}
             <div>
               <div className="text-xs capitalize text-muted-foreground">{s}</div>
               <div className="tnum text-xl font-semibold">{docs.filter((d) => d.sensitivity === s).length}</div>
@@ -54,7 +54,7 @@ export default function DocumentosPage() {
                 <TableCell className="font-medium">{d.name}</TableCell>
                 <TableCell className="text-muted-foreground">{targetLabel(d)}</TableCell>
                 <TableCell className="capitalize">{d.kind}</TableCell>
-                <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${d.sensitivity === "sensible" ? "bg-destructive/10 text-destructive" : d.sensitivity === "restringido" ? "bg-warn/20" : "bg-muted"}`}>{d.sensitivity}</span></TableCell>
+                <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${d.sensitivity === "sensible" ? "bg-destructive/10 text-destructive" : d.sensitivity === "restringido" ? "bg-warning-soft" : "bg-muted"}`}>{d.sensitivity}</span></TableCell>
                 <TableCell className="tnum">v{d.version}</TableCell>
                 <TableCell>{fmtDate(d.updatedAt)}</TableCell>
                 <TableCell className="text-right"><Button variant="ghost" size="sm" disabled>Abrir</Button></TableCell>

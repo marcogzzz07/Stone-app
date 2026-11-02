@@ -4,10 +4,10 @@ import { TODAY, criticalDates } from "@/lib/mock/data";
 import { daysUntil, fmtDate } from "@/lib/format";
 
 const KIND: Record<string, string> = {
-  contrato: "bg-stone-accent",
-  predial: "bg-chart-2",
-  seguro: "bg-reference",
-  incremento: "bg-chart-3",
+  contrato: "bg-chart-2",
+  predial: "bg-chart-1",
+  seguro: "bg-chart-3",
+  incremento: "bg-chart-4",
   otro: "bg-muted-foreground",
 };
 
@@ -43,7 +43,7 @@ export default function CalendarioPage() {
                       <div>{d.title}</div>
                       <div className="text-xs text-muted-foreground">{fmtDate(d.date)}</div>
                     </div>
-                    <span className={`tnum shrink-0 text-xs ${days < 0 ? "text-muted-foreground" : days <= 30 ? "font-medium text-warn-foreground dark:text-warn" : "text-muted-foreground"}`}>
+                    <span className={`tnum shrink-0 text-xs ${days < 0 ? "text-muted-foreground" : days <= 30 ? "font-medium text-warning" : "text-muted-foreground"}`}>
                       {days < 0 ? "pasado" : `${days} d`}
                     </span>
                   </li>

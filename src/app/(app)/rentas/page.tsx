@@ -62,7 +62,7 @@ export default function RentasPage() {
           value={fmtMXN(totalOutstanding())}
           info={`Todos los períodos · exigible − aplicaciones − ajustes · al ${fmtDate(TODAY)}`}
           visual={<MiniBars values={agingBuckets(TODAY).map((b) => b.amount)} />}
-          delta={<span className="num rounded-md bg-warn/15 px-1.5 py-0.5 text-[11px] text-warn-foreground">{fmtMXN(overdueTotal(TODAY))} vencido</span>}
+          delta={<span className="num rounded-md bg-danger-soft px-1.5 py-0.5 text-[11px] font-semibold text-danger">{fmtMXN(overdueTotal(TODAY))} vencido</span>}
         />
         <KpiVisual
           label="Pagos sin aplicar"
@@ -114,8 +114,8 @@ export default function RentasPage() {
                       <TableCell className="tnum text-right text-muted-foreground">{fmtMXN(c.tax)}</TableCell>
                       <TableCell className="tnum text-right font-medium">{fmtMXN(c.total)}</TableCell>
                       <TableCell className="tnum text-right">{fmtMXN(c.total - bal)}</TableCell>
-                      <TableCell className={`tnum text-right ${od ? "font-semibold text-warn-foreground" : ""}`}>{fmtMXN(bal)}</TableCell>
-                      <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${od ? "bg-warn/15 text-warn-foreground" : "bg-muted"}`}>{STATUS[c.status]}{od && " · vencido"}</span></TableCell>
+                      <TableCell className={`tnum text-right ${od ? "font-semibold text-danger" : ""}`}>{fmtMXN(bal)}</TableCell>
+                      <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${od ? "bg-danger-soft text-danger" : "bg-muted"}`}>{STATUS[c.status]}{od && " · vencido"}</span></TableCell>
                       <TableCell className="text-xs text-muted-foreground">{c.source}</TableCell>
                     </TableRow>
                   );
@@ -155,7 +155,7 @@ export default function RentasPage() {
                       <TableCell className="font-mono text-xs text-muted-foreground">{p.bankRef ?? "—"}</TableCell>
                       <TableCell className="tnum text-right font-medium">{fmtMXN(p.amount)}</TableCell>
                       <TableCell className="tnum text-right">{fmtMXN(ap)}</TableCell>
-                      <TableCell className={`tnum text-right ${un > 0 ? "font-medium text-accent-foreground" : "text-muted-foreground"}`}>{fmtMXN(un)}</TableCell>
+                      <TableCell className={`tnum text-right ${un > 0 ? "font-medium text-info" : "text-muted-foreground"}`}>{fmtMXN(un)}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{p.source}</TableCell>
                     </TableRow>
                   );

@@ -12,8 +12,8 @@ export function Sparkline({ values, className }: { values: number[]; className?:
   const d = pts.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ");
   return (
     <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} className={className} aria-hidden>
-      <path d={d} fill="none" stroke="var(--stone-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="2.5" fill="var(--stone-accent)" />
+      <path d={d} fill="none" stroke="var(--brand-cyan)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r="2.5" fill="var(--brand-cyan)" />
     </svg>
   );
 }
@@ -28,7 +28,7 @@ export function MiniBars({ values, highlightLast = true }: { values: number[]; h
           className="w-2 rounded-sm"
           style={{
             height: `${Math.max(12, (v / max) * 100)}%`,
-            background: highlightLast && i === values.length - 1 ? "var(--stone-accent)" : "var(--chart-5)",
+            background: highlightLast && i === values.length - 1 ? "var(--brand-cyan)" : "var(--chart-3)",
           }}
         />
       ))}
@@ -44,7 +44,7 @@ export function Ring({ ratio, label }: { ratio: number; label?: string }) {
       <svg viewBox="0 0 36 36" width={36} height={36}>
         <circle cx="18" cy="18" r={r} fill="none" stroke="var(--border)" strokeWidth="4" />
         <circle
-          cx="18" cy="18" r={r} fill="none" stroke="var(--stone-accent)" strokeWidth="4"
+          cx="18" cy="18" r={r} fill="none" stroke="var(--brand-cyan)" strokeWidth="4"
           strokeDasharray={`${c * Math.min(1, ratio)} ${c}`} strokeLinecap="round" transform="rotate(-90 18 18)"
         />
       </svg>
@@ -54,9 +54,9 @@ export function Ring({ ratio, label }: { ratio: number; label?: string }) {
 
 export function UnitDots({ states }: { states: ("ocupada" | "disponible" | "desconocida" | "no_disponible")[] }) {
   const color: Record<string, string> = {
-    ocupada: "var(--ok)",
-    disponible: "var(--stone-accent)",
-    desconocida: "var(--chart-5)",
+    ocupada: "var(--success)",
+    disponible: "var(--brand-cyan)",
+    desconocida: "var(--chart-3)",
     no_disponible: "var(--border)",
   };
   return (
@@ -85,7 +85,7 @@ export function DeltaChip({ value, invert = false }: { value: number; invert?: b
   return (
     <span
       className={`num inline-flex items-center whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-semibold ${
-        good ? "bg-ok/12 text-ok" : "bg-warn/15 text-warn-foreground"
+        good ? "bg-success-soft text-ok" : "bg-warning-soft text-warning"
       }`}
     >
       {value >= 0 ? "↗" : "↘"} {sign}

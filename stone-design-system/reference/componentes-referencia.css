@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap");
+
+/* Stone Inmuebles - estilos de referencia de los componentes.
+   Todo valor sale de tokens.css (variables --<token>). Prefijo st-. */
+
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 15px; line-height: 22px; -webkit-font-smoothing: antialiased; }
+.st-pad { padding: 16px; }
+.st-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.st-stack { display: flex; flex-direction: column; gap: 12px; }
+.st-num { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Botón */
+.st-btn { font: inherit; font-size: 15px; font-weight: 600; line-height: 20px; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: var(--radius-md); border: 1px solid transparent; cursor: pointer; text-decoration: none; white-space: nowrap; }
+.st-btn svg { width: 16px; height: 16px; }
+.st-btn--primary { background: var(--primary); color: var(--on-primary); }
+.st-btn--primary:hover { background: var(--primary-hover); }
+.st-btn--secondary { background: var(--surface); color: var(--ink); border-color: var(--border-control); }
+.st-btn--secondary:hover { background: var(--surface-2); }
+.st-btn--ghost { background: transparent; color: var(--brand-cyan-ink); }
+.st-btn--ghost:hover { background: var(--info-soft); }
+.st-btn--danger { background: var(--danger); color: var(--on-danger); }
+.st-btn--sm { font-size: 13px; padding: 6px 12px; }
+.st-btn--lg { font-size: 16px; padding: 12px 20px; }
+.st-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Etiqueta de estado */
+.st-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; line-height: 18px; padding: 2px 10px; border-radius: var(--radius-full); white-space: nowrap; }
+.st-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.st-badge--success { background: var(--success-soft); color: var(--success); }
+.st-badge--warning { background: var(--warning-soft); color: var(--warning); }
+.st-badge--danger { background: var(--danger-soft); color: var(--danger); }
+.st-badge--info { background: var(--info-soft); color: var(--info); }
+.st-badge--neutral { background: var(--surface-2); color: var(--ink-2); }
+
+/* Tarjeta KPI */
+.st-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.st-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.st-kpi__label { font-size: 14px; color: var(--ink-2); font-weight: 500; }
+.st-kpi__value { font-size: 28px; line-height: 32px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.st-kpi__value--warning { color: var(--warning); }
+.st-kpi__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-3); }
+
+/* Tabla */
+.st-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+.st-table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 20px; }
+.st-table th { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); text-align: left; padding: 10px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.st-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.st-table .r { text-align: right; font-variant-numeric: tabular-nums; }
+.st-table tbody tr:hover td { background: var(--surface-2); }
+.st-table tfoot td { font-weight: 700; background: var(--surface-2); border-bottom: 0; }
+.st-table .is-warning { color: var(--warning); font-weight: 600; }
+
+/* Panel de gráfica */
+.st-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.st-panel__head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.st-panel__title { font-family: var(--font-display); font-size: 17px; line-height: 24px; font-weight: 600; margin: 0; }
+.st-panel__unit { font-size: 13px; color: var(--ink-3); }
+.st-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--ink-2); }
+.st-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.st-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.st-legend i.st-line { width: 16px; height: 0; border-top: 2px dashed var(--chart-reference); border-radius: 0; }
+.st-chart text { font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
+
+/* Formulario */
+.st-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.st-field label { font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.st-input { font: inherit; font-size: 15px; color: var(--ink); background: var(--surface); border: 1px solid var(--border-control); border-radius: var(--radius-md); padding: 8px 12px; width: 100%; box-sizing: border-box; }
+.st-input::placeholder { color: var(--ink-3); }
+.st-input:focus { outline: 2px solid var(--focus-ring); outline-offset: 0; border-color: transparent; }
+.st-input[aria-invalid="true"] { border-color: var(--danger); }
+.st-hint { font-size: 13px; color: var(--ink-3); }
+.st-hint--error { color: var(--danger); }
+
+/* Pestañas */
+.st-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); }
+.st-tab { font: inherit; font-size: 15px; font-weight: 600; padding: 10px 12px; border: 0; background: none; color: var(--ink-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.st-tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--brand-cyan); }
+
+/* Aviso */
+.st-alert { display: flex; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md); font-size: 15px; color: var(--ink); }
+.st-alert svg { width: 18px; height: 18px; flex: none; margin-top: 2px; }
+.st-alert b { display: block; font-weight: 600; }
+.st-alert--warning { background: var(--warning-soft); } .st-alert--warning svg { color: var(--warning); }
+.st-alert--info { background: var(--info-soft); } .st-alert--info svg { color: var(--info); }
+.st-alert--danger { background: var(--danger-soft); } .st-alert--danger svg { color: var(--danger); }
+.st-alert--success { background: var(--success-soft); } .st-alert--success svg { color: var(--success); }
+
+/* Barra de progreso */
+.st-progress { height: 8px; border-radius: var(--radius-full); background: var(--surface-2); overflow: hidden; }
+.st-progress > div { height: 100%; background: var(--brand-cyan); }
+
+/* Menú lateral */
+.st-sidebar { background: var(--sidebar); color: var(--sidebar-ink); padding: 20px 14px; display: flex; flex-direction: column; gap: 20px; width: 232px; box-sizing: border-box; }
+.st-sidebar img { width: 150px; height: auto; }
+.st-nav { display: flex; flex-direction: column; gap: 2px; }
+.st-nav__label { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; opacity: .7; padding: 8px 10px 6px; font-weight: 600; }
+.st-nav a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-md); color: inherit; text-decoration: none; font-size: 15px; font-weight: 500; }
+.st-nav a svg { width: 16px; height: 16px; flex: none; }
+.st-nav a:hover { background: rgba(255,255,255,.06); }
+.st-nav a[aria-current="page"] { color: var(--sidebar-ink-active); background: rgba(255,255,255,.08); box-shadow: inset 3px 0 0 var(--brand-cyan); }
+
+/* Encabezado de página */
+.st-pagehead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.st-crumb { font-size: 14px; color: var(--ink-3); margin: 0 0 4px; }
+.st-pagehead h1 { font-family: var(--font-display); font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+.st-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; padding: 6px 10px; border-radius: var(--radius-md); background: var(--surface-2); color: var(--ink); border: 1px solid var(--border); }

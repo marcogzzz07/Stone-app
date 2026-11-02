@@ -29,7 +29,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
     <>
       <FacetCover tone={d.coverTone} className="-mx-6 -mt-6 mb-6 h-56 lg:-mx-8">
         <div className="absolute bottom-5 left-6 text-white lg:left-8">
-          <h1 className="font-condensed text-4xl font-semibold tracking-tight">{d.name}</h1>
+          <h1 className="font-display text-[30px] leading-9 font-semibold">{d.name}</h1>
           <div className="mt-1 flex items-center gap-1.5 text-sm opacity-90">
             <MapPin className="size-3.5" /> {d.address}, {d.city}
           </div>
@@ -139,7 +139,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
               ))}
               {docs.length === 0 && <li className="text-muted-foreground">Sin documentos cargados.</li>}
             </ul>
-            <Link href="/documentos" className="inline-flex items-center gap-1 text-xs text-accent-foreground hover:underline">
+            <Link href="/documentos" className="inline-flex items-center gap-1 text-xs text-info hover:underline">
               Ir a documentos <ArrowUpRight className="size-3" />
             </Link>
           </Card>

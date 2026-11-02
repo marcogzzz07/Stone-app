@@ -1,46 +1,201 @@
+/* Stone Inmuebles - globals.css (Next.js + Tailwind v4 + shadcn/ui)
+   Generado desde stone-design-system/tokens.json. Si cambias un color, cambia
+   tokens.json y regenera. Al final hay un bloque de alias de compatibilidad
+   para nombres que la app usaba antes del design system. */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --brand-navy: #000649;
+  --brand-navy-2: #141E6E;
+  --brand-cyan: #00BBF4;
+  --brand-cyan-ink: #0074A3;
+  --bg: #F5F6F9;
+  --surface: #FDFDFE;
+  --surface-2: #EDF0F5;
+  --border: #DBE0E9;
+  --border-control: #7F88A2;
+  --ink: #0A0F33;
+  --ink-2: #465073;
+  --ink-3: #5F6884;
+  --primary: #000649;
+  --primary-hover: #141E6E;
+  --on-primary: #F5F7FC;
+  --focus-ring: #00A3D9;
+  --sidebar: #000649;
+  --sidebar-ink: #C9D0EA;
+  --sidebar-ink-active: #FFFFFF;
+  --success: #17744A;
+  --success-soft: #E3F3EA;
+  --warning: #955600;
+  --warning-soft: #FBEFD9;
+  --danger: #B8322A;
+  --danger-soft: #FBE5E3;
+  --on-danger: #FFFFFF;
+  --info: #0074A3;
+  --info-soft: #E0F3FB;
+  --chart-1: #12207F;
+  --chart-2: #00A3D9;
+  --chart-3: #6F7894;
+  --chart-4: #23998A;
+  --chart-5: #7E5BC2;
+  --chart-6: #5577E0;
+  --chart-7: #0F5C6E;
+  --chart-grid: #E3E7EE;
+  --chart-reference: #5F6884;
+  --shadow-sm: 0 1px 2px rgba(10, 15, 51, 0.06);
+  --shadow-md: 0 1px 2px rgba(10, 15, 51, 0.06), 0 4px 14px rgba(10, 15, 51, 0.06);
+
+  /* shadcn/ui → tokens Stone */
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary-foreground: var(--on-primary);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-2);
+  --muted-foreground: var(--ink-3);
+  --accent: var(--surface-2);
+  --accent-foreground: var(--ink);
+  --destructive: var(--danger);
+  --destructive-foreground: var(--on-danger);
+  --input: var(--border-control);
+  --ring: var(--focus-ring);
+  --sidebar-background: var(--sidebar);
+  --sidebar-foreground: var(--sidebar-ink);
+  --sidebar-primary: var(--brand-cyan);
+  --sidebar-primary-foreground: var(--brand-navy);
+  --sidebar-accent: rgba(255, 255, 255, 0.08);
+  --sidebar-accent-foreground: var(--sidebar-ink-active);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: var(--focus-ring);
+  --radius: 10px;
+
+  /* Alias de compatibilidad (nombres previos de la app) */
+  --navy: var(--brand-navy);
+  --navy-deep: var(--brand-navy-2);
+  --stone-accent: var(--brand-cyan);
+  --stone-accent-foreground: var(--brand-navy);
+  --reference: var(--chart-3);
+  --reference-foreground: #ffffff;
+  --ok: var(--success);
+  --warn: var(--warning);
+  --warn-foreground: var(--warning);
+}
+
+.dark {
+  --brand-navy: #000649;
+  --brand-navy-2: #1B2580;
+  --brand-cyan: #00BBF4;
+  --brand-cyan-ink: #4FCFF8;
+  --bg: #060A22;
+  --surface: #0D1331;
+  --surface-2: #141B40;
+  --border: #232C55;
+  --border-control: #5A6595;
+  --ink: #E9EDF8;
+  --ink-2: #AAB2D0;
+  --ink-3: #848DAE;
+  --primary: #00BBF4;
+  --primary-hover: #4FCFF8;
+  --on-primary: #000649;
+  --focus-ring: #4FCFF8;
+  --sidebar: #03071A;
+  --sidebar-ink: #9AA3C6;
+  --sidebar-ink-active: #FFFFFF;
+  --success: #43C68C;
+  --success-soft: #10301F;
+  --warning: #F2A93B;
+  --warning-soft: #352610;
+  --danger: #F27A6F;
+  --danger-soft: #3A1A1A;
+  --on-danger: #1A0705;
+  --info: #4FCFF8;
+  --info-soft: #0E2A3D;
+  --chart-1: #8FA2FF;
+  --chart-2: #22C3F7;
+  --chart-3: #9AA3BD;
+  --chart-4: #3FC1AE;
+  --chart-5: #B58BE0;
+  --chart-6: #5C7BEA;
+  --chart-7: #2E8FA6;
+  --chart-grid: #1C2450;
+  --chart-reference: #848DAE;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 18px rgba(0, 0, 0, 0.28);
+  --reference-foreground: #060A22;
+}
 
 @theme inline {
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-navy-2: var(--brand-navy-2);
+  --color-brand-cyan: var(--brand-cyan);
+  --color-brand-cyan-ink: var(--brand-cyan-ink);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-control: var(--border-control);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-focus-ring: var(--focus-ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-ink: var(--sidebar-ink);
+  --color-sidebar-ink-active: var(--sidebar-ink-active);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-on-danger: var(--on-danger);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-reference: var(--chart-reference);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-figtree);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-figtree);
-  --font-condensed: var(--font-figtree);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  /* Identidad Stone (ver PRODUCT.md · Brand Commitments) */
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  /* Alias de compatibilidad */
   --color-navy: var(--navy);
   --color-navy-deep: var(--navy-deep);
   --color-stone-accent: var(--stone-accent);
@@ -50,103 +205,19 @@
   --color-ok: var(--ok);
   --color-warn: var(--warn);
   --color-warn-foreground: var(--warn-foreground);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
 
-/* Paleta oficial de Stone Inmuebles tomada del informe mensual:
-   marino #101752 / #111644 / #1C2233 · cian #1593C6 · azul medio #0F6F9B
-   naranja #D47A1F / #A85B10 · grises fríos #F5F6F8 #F0F2F6 #E3E8F0 #D8DDE6 */
-:root {
-  --navy: #101752;
-  --navy-deep: #111644;
-  --background: #f5f6f8;
-  --foreground: #1c2233;
-  --card: #ffffff;
-  --card-foreground: #1c2233;
-  --popover: #ffffff;
-  --popover-foreground: #1c2233;
-  --primary: #101752;
-  --primary-foreground: #ffffff;
-  --secondary: #f0f2f6;
-  --secondary-foreground: #1c2233;
-  --muted: #f0f2f6;
-  --muted-foreground: #4a5266;
-  --accent: #e9f4fa;
-  --accent-foreground: #0f6f9b;
-  --destructive: #b3261e;
-  --border: #e3e8f0;
-  --input: #d8dde6;
-  --ring: #1593c6;
-  --stone-accent: #1593c6;
-  --stone-accent-foreground: #ffffff;
-  --reference: #7d8794;
-  --reference-foreground: #ffffff;
-  --ok: #23714a;
-  --warn: #d47a1f;
-  --warn-foreground: #a85b10;
-  --chart-1: #1593c6;
-  --chart-2: #101752;
-  --chart-3: #7fc6e6;
-  --chart-4: #d47a1f;
-  --chart-5: #c0c1c4;
-  --radius: 0.5rem;
-  --sidebar: #101752;
-  --sidebar-foreground: #dee0e7;
-  --sidebar-primary: #1593c6;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1b2466;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #262e6e;
-  --sidebar-ring: #1593c6;
-}
-
-.dark {
-  --navy: #101752;
-  --navy-deep: #0b0f33;
-  --background: #0e1226;
-  --foreground: #e8eaf1;
-  --card: #141a36;
-  --card-foreground: #e8eaf1;
-  --popover: #141a36;
-  --popover-foreground: #e8eaf1;
-  --primary: #e8eaf1;
-  --primary-foreground: #101752;
-  --secondary: #1b2247;
-  --secondary-foreground: #e8eaf1;
-  --muted: #1b2247;
-  --muted-foreground: #a3abc2;
-  --accent: #152e4a;
-  --accent-foreground: #7fc6e6;
-  --destructive: #f28b82;
-  --border: #ffffff1a;
-  --input: #ffffff24;
-  --ring: #1593c6;
-  --stone-accent: #3fb0e0;
-  --stone-accent-foreground: #0b0f33;
-  --reference: #8b94a3;
-  --reference-foreground: #0b0f33;
-  --ok: #5cc48a;
-  --warn: #f0a04b;
-  --warn-foreground: #ffd9b0;
-  --chart-1: #3fb0e0;
-  --chart-2: #8f98d9;
-  --chart-3: #7fc6e6;
-  --chart-4: #f0a04b;
-  --chart-5: #4a5266;
-  --sidebar: #0b0f33;
-  --sidebar-foreground: #dee0e7;
-  --sidebar-primary: #3fb0e0;
-  --sidebar-primary-foreground: #0b0f33;
-  --sidebar-accent: #161c48;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #ffffff14;
-  --sidebar-ring: #1593c6;
+  --font-display: var(--font-plex), "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-source), "Source Sans 3", "Helvetica Neue", Arial, sans-serif;
+  --font-heading: var(--font-display);
+  --font-condensed: var(--font-display);
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
 }
 
 @layer base {
@@ -154,42 +225,43 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
+    @apply bg-bg text-ink font-sans antialiased;
+    font-size: 15px;
+    line-height: 22px;
   }
   h1,
   h2,
-  h3 {
+  h3,
+  h4 {
+    @apply font-display font-semibold;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
-  ::selection {
-    background: color-mix(in oklab, var(--stone-accent) 28%, transparent);
-    color: var(--foreground);
+  .tabular,
+  .tnum,
+  td,
+  .kpi {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Estilo `kpi` del design system: cifra principal en Source Sans 600 tabular. */
+  .num {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
   :focus-visible {
-    outline: 2px solid var(--ring);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--brand-cyan) 28%, transparent);
+    color: var(--ink);
   }
   a {
     text-underline-offset: 3px;
   }
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--input) transparent;
-  }
-  .tnum {
-    font-variant-numeric: tabular-nums;
-  }
-  .num {
-    font-family: var(--font-figtree);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.02em;
-  }
-  .font-condensed {
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    scrollbar-color: var(--border-control) transparent;
   }
 }

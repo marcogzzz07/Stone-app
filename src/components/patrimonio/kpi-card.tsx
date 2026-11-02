@@ -41,7 +41,7 @@ export function PageHeader({
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="font-condensed text-3xl font-semibold tracking-tight text-navy lg:text-[34px] dark:text-foreground">
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-navy lg:text-[34px] dark:text-foreground">
           {title}
         </h1>
         {description && (

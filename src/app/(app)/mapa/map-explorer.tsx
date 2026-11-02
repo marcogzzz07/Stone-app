@@ -91,7 +91,7 @@ export function MapExplorer() {
               </div>
             </dl>
             {sel.referenceOnly && (
-              <p className="mt-3 rounded-md bg-reference/10 p-2 text-xs text-muted-foreground">
+              <p className="mt-3 rounded-md bg-surface-2 p-2 text-xs text-muted-foreground">
                 Unidad de terceros: solo contexto del desarrollo. Sin contratos, movimientos ni documentos.
               </p>
             )}
@@ -151,8 +151,8 @@ function UnitRow({ u, selected, onSelect }: { u: (typeof units)[number]; selecte
       <button
         onClick={onSelect}
         className={cn(
-          "flex w-full items-center gap-3 bg-card px-3 py-2 text-left text-sm hover:bg-accent",
-          selected && "bg-accent",
+          "flex w-full items-center gap-3 bg-card px-3 py-2 text-left text-sm hover:bg-info-soft/70",
+          selected && "bg-info-soft",
         )}
       >
         <span
@@ -161,8 +161,8 @@ function UnitRow({ u, selected, onSelect }: { u: (typeof units)[number]; selecte
             u.geometry.type === "pending"
               ? "border-2 border-dashed border-muted-foreground bg-muted"
               : u.referenceOnly
-                ? "border border-dashed border-reference bg-reference/20"
-                : "bg-stone-accent/60 border border-stone-accent",
+                ? "border border-dashed border-chart-3 bg-chart-3/20"
+                : "bg-brand-cyan/60 border border-brand-cyan",
           )}
         />
         <span className="font-mono text-xs text-muted-foreground">{u.code}</span>

@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronsUpDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { SidebarNav } from "./sidebar-nav";
 import { Topbar } from "./topbar";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside
         className={cn(
           "hidden lg:flex shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200",
-          collapsed ? "w-16" : "w-60",
+          collapsed ? "w-16" : "w-[232px]",
         )}
       >
         <OrgSwitcher collapsed={collapsed} />
@@ -71,29 +71,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Logo arriba del menú (stone-design-system/components/Sidebar.md): versión
+// para fondo oscuro a 150px; colapsado, solo el isotipo.
 function OrgSwitcher({ collapsed }: { collapsed: boolean }) {
   return (
-    <div className="p-3">
-      <Link
-        href="/dashboard"
-        className={cn(
-          "flex items-center gap-3 rounded-lg border border-sidebar-border bg-sidebar-accent/40 p-2 transition-colors hover:bg-sidebar-accent",
-          collapsed && "justify-center p-1.5",
-        )}
-      >
-        <span className="grid size-9 shrink-0 place-items-center rounded-md bg-white">
-          <Image src="/brand/stone-mark.png" alt="Stone Inmuebles" width={24} height={27} priority />
-        </span>
-        {!collapsed && (
-          <>
-            <span className="min-w-0 flex-1 leading-tight">
-              <span className="block text-[11px] text-sidebar-foreground/60">Organización</span>
-              <span className="font-condensed block truncate text-[13px] font-semibold uppercase tracking-[0.12em] text-white">
-                Stone Inmuebles
-              </span>
-            </span>
-            <ChevronsUpDown className="size-4 shrink-0 text-sidebar-foreground/50" />
-          </>
+    <div className={cn("flex h-16 items-center border-b border-sidebar-border px-4", collapsed && "justify-center px-0")}>
+      <Link href="/dashboard" className="flex items-center" aria-label="Stone Inmuebles · Dashboard">
+        {collapsed ? (
+          <Image src="/brand/stone-mark.png" alt="Stone Inmuebles" width={26} height={30} priority />
+        ) : (
+          <Image src="/brand/stone-logo-dark.png" alt="Stone Inmuebles" width={150} height={67} priority />
         )}
       </Link>
     </div>

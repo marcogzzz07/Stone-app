@@ -23,7 +23,7 @@ const SOT = [
 function Mark({ v }: { v: boolean | string }) {
   if (v === true) return <Check className="mx-auto size-4 text-ok" aria-label="Sí" />;
   if (v === false) return <X className="mx-auto size-4 text-muted-foreground/60" aria-label="No" />;
-  return <span className="text-xs text-warn-foreground dark:text-warn">{v}</span>;
+  return <span className="text-xs text-warning dark:text-warn">{v}</span>;
 }
 
 export default function ConfiguracionPage() {
@@ -75,7 +75,7 @@ export default function ConfiguracionPage() {
                   <TableRow key={s.scope}>
                     <TableCell>{s.scope}</TableCell>
                     <TableCell className="tnum">{s.from}</TableCell>
-                    <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${s.source.startsWith("stone") ? "bg-stone-accent/12 text-accent-foreground" : "bg-muted"}`}>{s.source}</span></TableCell>
+                    <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${s.source.startsWith("stone") ? "bg-info-soft text-info" : "bg-muted"}`}>{s.source}</span></TableCell>
                     <TableCell className="text-xs text-muted-foreground">{s.by}</TableCell>
                   </TableRow>
                 ))}

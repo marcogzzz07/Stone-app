@@ -59,10 +59,10 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
   const ds = docsOf("unit", u.id);
   const legal = u.surfaces.find((s) => s.kind === "legal");
   const alerts = [
-    u.geometry.type === "pending" && { text: "Geometría pendiente de trazo: sin límites en mapa.", cls: "bg-accent text-accent-foreground" },
-    u.legal.state !== "confirmado" && { text: "Datos legales por verificar.", cls: "bg-accent text-accent-foreground" },
-    cs.some((c) => isOverdue(c, TODAY)) && { text: "Cargos vencidos con saldo.", cls: "bg-warn/15 text-warn-foreground" },
-    ls.some((l) => l.status === "active" && l.endDate <= "2026-12-31") && { text: "Contrato por vencer en ≤ 60 días.", cls: "bg-warn/15 text-warn-foreground" },
+    u.geometry.type === "pending" && { text: "Geometría pendiente de trazo: sin límites en mapa.", cls: "bg-info-soft text-info" },
+    u.legal.state !== "confirmado" && { text: "Datos legales por verificar.", cls: "bg-info-soft text-info" },
+    cs.some((c) => isOverdue(c, TODAY)) && { text: "Cargos vencidos con saldo.", cls: "bg-danger-soft text-danger" },
+    ls.some((l) => l.status === "active" && l.endDate <= "2026-12-31") && { text: "Contrato por vencer en ≤ 60 días.", cls: "bg-warning-soft text-warning" },
     u.occupancy === "desconocida" && { text: "Sin contrato vigente registrado; no se asume disponible hasta validar.", cls: "bg-muted" },
   ].filter((a): a is { text: string; cls: string } => Boolean(a));
 
@@ -79,7 +79,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
               <ScopeBadge referenceOnly={false} />
               <OccupancyDot occupancy={u.occupancy} />
             </div>
-            <h1 className="font-condensed mt-1 text-3xl font-semibold tracking-tight text-navy dark:text-foreground">{u.name}</h1>
+            <h1 className="font-display mt-1 text-[30px] leading-9 font-semibold text-ink">{u.name}</h1>
             <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
               <span className="flex items-center gap-1"><MapPin className="size-3.5" />{dev ? <Link href={`/propiedades/${dev.id}`} className="hover:underline">{dev.name}</Link> : "Propiedad independiente"}</span>
               <span className="capitalize">{u.kind}</span>
@@ -244,7 +244,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
               <ol className="relative ml-2 border-l pl-4 text-sm">
                 {l.terms.map((t) => (
                   <li key={t.effectiveFrom} className="mb-3">
-                    <span className="absolute -left-[5px] mt-1.5 size-2 rounded-full bg-stone-accent" />
+                    <span className="absolute -left-[5px] mt-1.5 size-2 rounded-full bg-brand-cyan" />
                     <div className="text-xs text-muted-foreground">Desde {fmtDate(t.effectiveFrom)}</div>
                     <div className="tnum">{fmtMXN(t.baseRent)} {t.currency} / {t.periodicity} · vence día {t.dueDay}</div>
                     {t.increaseRule && <div className="text-xs text-muted-foreground">Incremento: {t.increaseRule}</div>}
@@ -279,7 +279,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
                     <TableCell className="tnum text-right">{fmtMXN(c.subtotal)}</TableCell>
                     <TableCell className="tnum text-right text-muted-foreground">{fmtMXN(c.tax)}</TableCell>
                     <TableCell className="tnum text-right font-medium">{fmtMXN(c.total)}</TableCell>
-                    <TableCell className={`tnum text-right ${isOverdue(c, TODAY) ? "font-medium text-warn-foreground" : ""}`}>{fmtMXN(chargeBalance(c))}</TableCell>
+                    <TableCell className={`tnum text-right ${isOverdue(c, TODAY) ? "font-semibold text-danger" : ""}`}>{fmtMXN(chargeBalance(c))}</TableCell>
                     <TableCell><span className="rounded bg-muted px-1.5 py-0.5 text-xs">{CHARGE_STATUS[c.status]}{isOverdue(c, TODAY) && " · vencido"}</span></TableCell>
                     <TableCell className="text-xs text-muted-foreground">{c.source}</TableCell>
                   </TableRow>
@@ -339,7 +339,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
                   <TableRow key={d.id}>
                     <TableCell className="font-medium"><FileText className="mr-1.5 inline size-4 text-muted-foreground" />{d.name}</TableCell>
                     <TableCell className="capitalize">{d.kind}</TableCell>
-                    <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${d.sensitivity === "sensible" ? "bg-destructive/10 text-destructive" : d.sensitivity === "restringido" ? "bg-warn/20" : "bg-muted"}`}>{d.sensitivity}</span></TableCell>
+                    <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${d.sensitivity === "sensible" ? "bg-destructive/10 text-destructive" : d.sensitivity === "restringido" ? "bg-warning-soft" : "bg-muted"}`}>{d.sensitivity}</span></TableCell>
                     <TableCell className="tnum">v{d.version}</TableCell>
                     <TableCell>{fmtDate(d.updatedAt)}</TableCell>
                     <TableCell className="text-right"><Button variant="ghost" size="sm" disabled>Abrir (enlace temporal)</Button></TableCell>

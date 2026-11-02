@@ -60,3 +60,13 @@ Detalle con cifras en `docs/privado/hallazgos-excel-2026-09.md`. Resumen de tipo
 - Estado nuevo de unidad: `prospecto` (lotes por comprar).
 - Importador: lee `Facturacion` (hechos) y `Ubicacion de rentas` (contratos); recalcula todo lo derivado y compara contra `Resumen` del mismo archivo para reportar diferencias como discrepancias.
 - KPIs del dashboard que se alinean con `Resumen`: renta pactada, pagado del mes, pendiente del mes, pendiente del año, cumplimiento proyección/real, y lo mismo para mantenimiento.
+
+## 6. Estado (2 nov 2026)
+
+Modelo aplicado en Supabase como migraciones `supabase/migrations/0001`–`0007`
+(ver `supabase/README.md`). Diferencias respecto a §5: `lease_rent_history` se
+llama `lease_terms` (condiciones versionadas, sin traslapes); el prorrateo de
+servicios vive en `expense_shares` con `share_pct` y `factor` explícitos; las
+dos definiciones de pendiente salen de `charge_balances` (facturado − pagado) y
+de `lease_terms` × meses (pactado − pagado), que calcula la app. La base sigue
+sin datos: solo existe la organización `stone`.

@@ -150,8 +150,8 @@ Se aplica en tres capas: UI (ocultar), Server Actions (verificar), **RLS (hacer 
 
 | Etapa | Entregable | Criterio de salida |
 |---|---|---|
-| **0 (ahora)** | Este plan, sistema de diseño, prototipo navegable con `[DEMO]` | Revisión visual del usuario; ajustes de UX |
-| 1 | Proyecto Supabase, migraciones §3.1–3.2, Auth por invitación, RLS + pruebas negativas, fichas conectadas, Storage privado, mapa con geometrías importadas | Criterios de aceptación 1–6 |
+| 0 | Este plan, sistema de diseño, prototipo navegable con `[DEMO]` | Hecho (2 nov 2026) |
+| **1 (ahora)** | Proyecto Supabase, migraciones §3.1–3.7 **(aplicadas 2 nov 2026, ver `supabase/README.md`)**, Auth por invitación **(trigger listo; falta desactivar sign-ups y lista de usuarios)**, RLS + pruebas negativas **(36/36)**, Storage privado **(buckets listos)**, fichas conectadas, mapa con geometrías importadas | Criterios de aceptación 1–6 |
 | 2 | §3.3–3.7: contratos versionados, cargos/pagos/aplicaciones, gastos, wizard de importación, dashboards desde datos operativos | Criterios 7–12; **sin datos reales** hasta cumplir §15 de la spec |
 | 3 | Casos límite, inmueble piloto, fuente de verdad por alcance, cierre mensual | Criterios 13–14 |
 

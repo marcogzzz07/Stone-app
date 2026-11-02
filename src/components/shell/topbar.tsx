@@ -26,7 +26,7 @@ export function Topbar() {
             <Menu className="size-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="flex w-[232px] flex-col bg-sidebar p-0 text-sidebar-foreground [&>button]:text-sidebar-foreground">
+        <SheetContent side="left" className="flex w-[248px] flex-col bg-sidebar p-0 text-sidebar-foreground [&>button]:text-sidebar-foreground">
           <SheetTitle className="sr-only">Navegación</SheetTitle>
           <SidebarHeader />
           <div className="min-h-0 flex-1 overflow-y-auto">

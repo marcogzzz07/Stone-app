@@ -84,7 +84,7 @@ export function SidebarHeader({
 }) {
   return (
     <div className={cn("flex flex-col gap-2 px-3 pb-3 pt-4", collapsed && "items-center")}>
-      <div className={cn("flex h-10 items-center gap-3", collapsed && "justify-center")}>
+      <div className={cn("flex h-10 items-center gap-2.5", collapsed && "justify-center")}>
         <Link
           href="/dashboard"
           aria-label="Stone Inmuebles · Dashboard"
@@ -94,7 +94,7 @@ export function SidebarHeader({
         </Link>
         {!collapsed && (
           <>
-            <span className="font-display flex-1 truncate text-[15px] font-semibold text-sidebar-ink-active">
+            <span className="font-display flex-1 whitespace-nowrap text-sm font-semibold text-sidebar-ink-active">
               Stone Inmuebles
             </span>
             {onToggle && <ToggleButton collapsed={collapsed} onToggle={onToggle} />}

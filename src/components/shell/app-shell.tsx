@@ -40,7 +40,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside
         className={cn(
           "hidden lg:flex sticky top-0 h-screen shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200",
-          collapsed ? "w-16" : "w-[232px]",
+          collapsed ? "w-16" : "w-[248px]",
         )}
       >
         <SidebarHeader collapsed={collapsed} onToggle={toggle} />

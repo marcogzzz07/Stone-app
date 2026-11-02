@@ -42,3 +42,6 @@ next-env.d.ts
 !.env.example
 .impeccable/review/
 .impeccable/mocks/
+
+# Análisis con datos reales de Stone: nunca al repo
+docs/privado/

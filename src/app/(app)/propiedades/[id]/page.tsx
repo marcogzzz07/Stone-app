@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, FileText, MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
+import { FacetCover } from "@/components/patrimonio/facet-cover";
+import { SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
 import { developments } from "@/lib/mock/data";
 import { docsOf, getDevelopment, surface, unitsOfDevelopment } from "@/lib/mock/queries";
@@ -26,11 +27,9 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
 
   return (
     <>
-      <div className={`relative -mx-6 -mt-6 mb-6 h-56 bg-gradient-to-br lg:-mx-8 ${d.coverTone}`}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(255,255,255,0.2),transparent_55%)]" />
+      <FacetCover tone={d.coverTone} className="-mx-6 -mt-6 mb-6 h-56 lg:-mx-8">
         <div className="absolute bottom-5 left-6 text-white lg:left-8">
-          <div className="mb-1 text-xs uppercase tracking-wider opacity-80">Ficha del desarrollo</div>
-          <h1 className="text-3xl font-semibold tracking-tight">{d.name}</h1>
+          <h1 className="font-condensed text-4xl font-semibold tracking-tight">{d.name}</h1>
           <div className="mt-1 flex items-center gap-1.5 text-sm opacity-90">
             <MapPin className="size-3.5" /> {d.address}, {d.city}
           </div>
@@ -38,14 +37,14 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
         <div className="absolute bottom-5 right-6 grid grid-cols-2 gap-3 text-white lg:right-8">
           <div className="rounded-md bg-black/25 px-3 py-2 backdrop-blur">
             <div className="text-[11px] opacity-80">Unidades totales</div>
-            <div className="tnum text-xl font-semibold">{us.length}</div>
+            <div className="num text-2xl font-semibold">{us.length}</div>
           </div>
           <div className="rounded-md bg-black/25 px-3 py-2 backdrop-blur">
             <div className="text-[11px] opacity-80">Unidades Stone</div>
-            <div className="tnum text-xl font-semibold">{stone.length}</div>
+            <div className="num text-2xl font-semibold">{stone.length}</div>
           </div>
         </div>
-      </div>
+      </FacetCover>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
@@ -140,7 +139,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
               ))}
               {docs.length === 0 && <li className="text-muted-foreground">Sin documentos cargados.</li>}
             </ul>
-            <Link href="/documentos" className="inline-flex items-center gap-1 text-xs text-stone-accent hover:underline">
+            <Link href="/documentos" className="inline-flex items-center gap-1 text-xs text-accent-foreground hover:underline">
               Ir a documentos <ArrowUpRight className="size-3" />
             </Link>
           </Card>
@@ -156,7 +155,7 @@ function Row({ k, v, hint }: { k: string; v: string; hint?: string }) {
       <dt className="text-muted-foreground">{k}</dt>
       <dd className="tnum text-right font-medium">
         {v}
-        {hint && <div className="text-[10px] font-normal text-muted-foreground">{hint}</div>}
+        {hint && <div className="text-[11px] font-normal text-muted-foreground">{hint}</div>}
       </dd>
     </div>
   );

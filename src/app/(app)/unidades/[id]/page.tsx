@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
+import { FacetCover } from "@/components/patrimonio/facet-cover";
 import { TODAY, units } from "@/lib/mock/data";
 import {
   chargeBalance,
@@ -57,21 +58,28 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
   const es = expensesOfUnit(u.id);
   const ds = docsOf("unit", u.id);
   const legal = u.surfaces.find((s) => s.kind === "legal");
+  const alerts = [
+    u.geometry.type === "pending" && { text: "Geometría pendiente de trazo: sin límites en mapa.", cls: "bg-accent text-accent-foreground" },
+    u.legal.state !== "confirmado" && { text: "Datos legales por verificar.", cls: "bg-accent text-accent-foreground" },
+    cs.some((c) => isOverdue(c, TODAY)) && { text: "Cargos vencidos con saldo.", cls: "bg-warn/15 text-warn-foreground" },
+    ls.some((l) => l.status === "active" && l.endDate <= "2026-12-31") && { text: "Contrato por vencer en ≤ 60 días.", cls: "bg-warn/15 text-warn-foreground" },
+    u.occupancy === "desconocida" && { text: "Sin contrato vigente registrado; no se asume disponible hasta validar.", cls: "bg-muted" },
+  ].filter((a): a is { text: string; cls: string } => Boolean(a));
 
   return (
     <>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="flex gap-4">
-          <div className="hidden size-24 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-stone-300 to-stone-500 text-xs text-white/80 sm:grid">
-            Sin foto
-          </div>
+          <FacetCover tone="navy" className="hidden size-24 shrink-0 rounded-lg sm:block">
+            <span className="absolute inset-0 grid place-items-center text-xs text-white/85">Sin foto</span>
+          </FacetCover>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs text-muted-foreground">{u.code}</span>
               <ScopeBadge referenceOnly={false} />
               <OccupancyDot occupancy={u.occupancy} />
             </div>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight">{u.name}</h1>
+            <h1 className="font-condensed mt-1 text-3xl font-semibold tracking-tight text-navy dark:text-foreground">{u.name}</h1>
             <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
               <span className="flex items-center gap-1"><MapPin className="size-3.5" />{dev ? <Link href={`/propiedades/${dev.id}`} className="hover:underline">{dev.name}</Link> : "Propiedad independiente"}</span>
               <span className="capitalize">{u.kind}</span>
@@ -106,7 +114,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
               Unidad sintética para validar la experiencia de la ficha. Tipo <span className="capitalize text-foreground">{u.kind}</span>
               {dev && <> dentro de <span className="text-foreground">{dev.name}</span></>}. {u.photosNote}.
             </p>
-            <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-4 text-sm xl:grid-cols-4">
               <Field k="Propietario legal" v={owner?.name ?? "—"} state={owner ? "confirmado" : "no_disponible"} />
               <Field k="Administrador" v="Stone Inmuebles (demo)" state="confirmado" />
               <Field k="Disponibilidad" v={u.occupancy === "ocupada" ? "Ocupada" : u.occupancy === "disponible" ? "Disponible" : u.occupancy === "desconocida" ? "Sin validar" : "No aplica"} state={u.occupancy === "desconocida" ? "por_verificar" : "confirmado"} />
@@ -116,11 +124,12 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
           <Card className="gap-3 p-4">
             <SectionTitle>Alertas</SectionTitle>
             <ul className="space-y-2 text-sm">
-              {u.geometry.type === "pending" && <li className="rounded-md bg-warn/15 p-2">Geometría pendiente de trazo: sin límites en mapa.</li>}
-              {u.legal.state !== "confirmado" && <li className="rounded-md bg-warn/15 p-2">Datos legales por verificar.</li>}
-              {cs.some((c) => isOverdue(c, TODAY)) && <li className="rounded-md bg-destructive/10 p-2">Cargos vencidos con saldo.</li>}
-              {ls.some((l) => l.status === "active" && l.endDate <= "2026-12-31") && <li className="rounded-md bg-warn/15 p-2">Contrato por vencer en ≤ 60 días.</li>}
-              {u.occupancy === "desconocida" && <li className="rounded-md bg-muted p-2">Sin contrato vigente registrado; no se asume disponible hasta validar.</li>}
+              {alerts.length === 0 && (
+                <li className="rounded-md border border-dashed p-3 text-center text-muted-foreground">Sin alertas activas para esta unidad.</li>
+              )}
+              {alerts.map((a) => (
+                <li key={a.text} className={`rounded-md p-2 ${a.cls}`}>{a.text}</li>
+              ))}
             </ul>
           </Card>
         </TabsContent>
@@ -132,7 +141,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
             ) : (
               <div className="grid h-[360px] place-items-center text-center text-sm text-muted-foreground">
                 <div>
-                  <div className="mx-auto mb-2 size-8 rounded-full border-2 border-warn bg-warn/30" />
+                  <div className="mx-auto mb-2 size-8 rounded-full border-2 border-dashed border-muted-foreground bg-muted" />
                   Pendiente de trazo. No se dibujan límites ficticios.
                 </div>
               </div>
@@ -270,7 +279,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
                     <TableCell className="tnum text-right">{fmtMXN(c.subtotal)}</TableCell>
                     <TableCell className="tnum text-right text-muted-foreground">{fmtMXN(c.tax)}</TableCell>
                     <TableCell className="tnum text-right font-medium">{fmtMXN(c.total)}</TableCell>
-                    <TableCell className={`tnum text-right ${isOverdue(c, TODAY) ? "font-medium text-destructive" : ""}`}>{fmtMXN(chargeBalance(c))}</TableCell>
+                    <TableCell className={`tnum text-right ${isOverdue(c, TODAY) ? "font-medium text-warn-foreground" : ""}`}>{fmtMXN(chargeBalance(c))}</TableCell>
                     <TableCell><span className="rounded bg-muted px-1.5 py-0.5 text-xs">{CHARGE_STATUS[c.status]}{isOverdue(c, TODAY) && " · vencido"}</span></TableCell>
                     <TableCell className="text-xs text-muted-foreground">{c.source}</TableCell>
                   </TableRow>
@@ -351,7 +360,7 @@ function Field({ k, v, state, hint }: { k: string; v: string; state: "confirmado
     <div>
       <dt className="text-xs text-muted-foreground">{k}</dt>
       <dd className="font-medium">{v}</dd>
-      <div className="mt-1 flex items-center gap-2"><DataStateBadge state={state} />{hint && <span className="text-[10px] text-muted-foreground">{hint}</span>}</div>
+      <div className="mt-1"><DataStateBadge state={state} />{hint && <div className="mt-1 text-[11px] text-muted-foreground">{hint}</div>}</div>
     </div>
   );
 }

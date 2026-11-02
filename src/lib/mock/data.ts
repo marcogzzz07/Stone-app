@@ -62,7 +62,7 @@ export const developments: Development[] = [
       perimeterMEst: 460,
     },
     ownersNote: "Desarrollo compartido: 5 unidades Stone, 3 de terceros (solo contexto).",
-    coverTone: "from-stone-700 via-stone-600 to-amber-900/70",
+    coverTone: "navy",
   },
   {
     id: "dev-torre",
@@ -81,7 +81,7 @@ export const developments: Development[] = [
       perimeterMEst: 240,
     },
     ownersNote: "Edificio 100 % administrado por Stone en el prototipo.",
-    coverTone: "from-zinc-800 via-stone-700 to-stone-500/70",
+    coverTone: "cyan",
   },
 ];
 

@@ -30,8 +30,7 @@ export function MapExplorer() {
         <Card className="overflow-hidden p-0">
           <div className="flex items-center gap-2 border-b px-3 py-2 text-xs">
             <Layers className="size-4 text-muted-foreground" />
-            <span className="font-medium">Capas:</span>
-            <span>Desarrollos</span>·<span>Unidades Stone</span>·<span>Referencia</span>
+            <span className="font-medium">Capas visibles:</span>            <span>Desarrollos</span>·<span>Unidades Stone</span>·<span>Referencia</span>
             <Button variant="outline" size="sm" className="ml-auto h-7 gap-1 text-xs" disabled>
               <Satellite className="size-3.5" /> Satélite (proveedor por definir)
             </Button>
@@ -160,7 +159,7 @@ function UnitRow({ u, selected, onSelect }: { u: (typeof units)[number]; selecte
           className={cn(
             "size-2.5 shrink-0 rounded-sm",
             u.geometry.type === "pending"
-              ? "border-2 border-warn bg-warn/30"
+              ? "border-2 border-dashed border-muted-foreground bg-muted"
               : u.referenceOnly
                 ? "border border-dashed border-reference bg-reference/20"
                 : "bg-stone-accent/60 border border-stone-accent",

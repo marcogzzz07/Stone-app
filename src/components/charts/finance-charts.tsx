@@ -81,7 +81,7 @@ export function AgingChart({ data }: { data: { label: string; amount: number }[]
         <Tooltip {...tooltipStyle} cursor={{ fill: "var(--accent)" }} />
         <Bar dataKey="amount" name="Saldo" radius={[0, 4, 4, 0]}>
           {data.map((d, i) => (
-            <Cell key={d.label} fill={i === 0 ? "var(--chart-5)" : i < 3 ? "var(--chart-1)" : "var(--destructive)"} />
+            <Cell key={d.label} fill={i === 0 ? "var(--chart-5)" : i < 3 ? "var(--chart-1)" : "var(--warn)"} />
           ))}
         </Bar>
       </BarChart>

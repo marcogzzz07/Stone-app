@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Building2, LandPlot } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { FacetCover } from "@/components/patrimonio/facet-cover";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
@@ -13,7 +14,6 @@ export default function PropiedadesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Inventario"
         title="Propiedades"
         description="Desarrollos, activos y unidades. Titular legal y administrador se muestran por separado."
       />
@@ -26,14 +26,13 @@ export default function PropiedadesPage() {
           return (
             <Link key={d.id} href={`/propiedades/${d.id}`} className="group">
               <Card className="overflow-hidden p-0 transition-shadow group-hover:shadow-md">
-                <div className={`relative h-36 bg-gradient-to-br ${d.coverTone}`}>
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.18),transparent_60%)]" />
+                <FacetCover tone={d.coverTone} className="h-36">
                   <Building2 className="absolute bottom-3 right-3 size-8 text-white/40" />
                   <div className="absolute bottom-3 left-4 text-white">
                     <div className="text-xs opacity-80">{d.city}</div>
                     <div className="text-lg font-semibold tracking-tight">{d.name.replace("[DEMO] ", "")}</div>
                   </div>
-                </div>
+                </FacetCover>
                 <div className="grid grid-cols-3 divide-x p-0 text-sm">
                   <div className="p-3">
                     <div className="text-xs text-muted-foreground">Unidades Stone</div>

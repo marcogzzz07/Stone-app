@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-02T06:07:21Z",
+  "title": "Design System: Stone Inmuebles",
+  "extensions": {
+    "colorMeta": {
+      "navy": {
+        "role": "primary",
+        "displayName": "Marino Stone",
+        "canonical": "oklch(24.5% 0.106 271)",
+        "tonalRamp": [
+          "oklch(15% 0.016 271)",
+          "oklch(25% 0.039 271)",
+          "oklch(35% 0.065 271)",
+          "oklch(47% 0.096 271)",
+          "oklch(59% 0.106 271)",
+          "oklch(71% 0.075 271)",
+          "oklch(83% 0.044 271)",
+          "oklch(95% 0.016 271)"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Tinta Azulada",
+        "canonical": "oklch(25.4% 0.033 269)",
+        "tonalRamp": [
+          "oklch(15% 0.005 269)",
+          "oklch(25% 0.012 269)",
+          "oklch(35% 0.020 269)",
+          "oklch(47% 0.030 269)",
+          "oklch(59% 0.033 269)",
+          "oklch(71% 0.024 269)",
+          "oklch(83% 0.014 269)",
+          "oklch(95% 0.005 269)"
+        ]
+      },
+      "stone-cyan": {
+        "role": "secondary",
+        "displayName": "Cian Stone",
+        "canonical": "oklch(62.5% 0.125 233)",
+        "tonalRamp": [
+          "oklch(15% 0.019 233)",
+          "oklch(25% 0.046 233)",
+          "oklch(35% 0.076 233)",
+          "oklch(47% 0.113 233)",
+          "oklch(59% 0.125 233)",
+          "oklch(71% 0.088 233)",
+          "oklch(83% 0.052 233)",
+          "oklch(95% 0.019 233)"
+        ],
+        "dark": "#3fb0e0"
+      },
+      "cyan-deep": {
+        "role": "secondary",
+        "displayName": "Cian Profundo",
+        "canonical": "oklch(51.3% 0.106 236)",
+        "tonalRamp": [
+          "oklch(15% 0.016 236)",
+          "oklch(25% 0.039 236)",
+          "oklch(35% 0.065 236)",
+          "oklch(47% 0.096 236)",
+          "oklch(59% 0.106 236)",
+          "oklch(71% 0.075 236)",
+          "oklch(83% 0.044 236)",
+          "oklch(95% 0.016 236)"
+        ]
+      },
+      "alert-orange": {
+        "role": "tertiary",
+        "displayName": "Naranja de Alerta",
+        "canonical": "oklch(66.5% 0.147 59)",
+        "tonalRamp": [
+          "oklch(15% 0.022 59)",
+          "oklch(25% 0.054 59)",
+          "oklch(35% 0.090 59)",
+          "oklch(47% 0.133 59)",
+          "oklch(59% 0.147 59)",
+          "oklch(71% 0.104 59)",
+          "oklch(83% 0.061 59)",
+          "oklch(95% 0.022 59)"
+        ],
+        "dark": "#f0a04b"
+      },
+      "reference-gray": {
+        "role": "tertiary",
+        "displayName": "Gris de Referencia",
+        "canonical": "oklch(62.0% 0.023 255)",
+        "tonalRamp": [
+          "oklch(15% 0.003 255)",
+          "oklch(25% 0.008 255)",
+          "oklch(35% 0.014 255)",
+          "oklch(47% 0.021 255)",
+          "oklch(59% 0.023 255)",
+          "oklch(71% 0.016 255)",
+          "oklch(83% 0.010 255)",
+          "oklch(95% 0.003 255)"
+        ],
+        "dark": "#8b94a3"
+      },
+      "ok-green": {
+        "role": "tertiary",
+        "displayName": "Verde Confirmado",
+        "canonical": "oklch(56.7% 0.113 157)",
+        "tonalRamp": [
+          "oklch(15% 0.017 157)",
+          "oklch(25% 0.041 157)",
+          "oklch(35% 0.069 157)",
+          "oklch(47% 0.102 157)",
+          "oklch(59% 0.113 157)",
+          "oklch(71% 0.080 157)",
+          "oklch(83% 0.047 157)",
+          "oklch(95% 0.017 157)"
+        ],
+        "dark": "#5cc48a"
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Lienzo Frío",
+        "canonical": "oklch(97.3% 0.003 265)",
+        "tonalRamp": [
+          "oklch(15% 0.003 265)",
+          "oklch(25% 0.007 265)",
+          "oklch(35% 0.012 265)",
+          "oklch(47% 0.018 265)",
+          "oklch(59% 0.020 265)",
+          "oklch(71% 0.014 265)",
+          "oklch(83% 0.008 265)",
+          "oklch(95% 0.003 265)"
+        ],
+        "dark": "#0e1226"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título de página en PageHeader, color navy; uno por pantalla, sin kicker."
+      },
+      "headline": {
+        "displayName": "Cifra",
+        "purpose": "La cifra de KpiCard: Semi Condensed, numerales tabulares."
+      },
+      "title": {
+        "displayName": "Título de tarjeta",
+        "purpose": "CardTitle en Semi Condensed 500."
+      },
+      "body": {
+        "displayName": "Cuerpo",
+        "purpose": "Texto de interfaz, celdas de tabla, descripciones."
+      },
+      "label": {
+        "displayName": "Etiqueta",
+        "purpose": "Etiquetas de KPI, encabezados de tabla, periodo en topbar."
+      },
+      "footnote": {
+        "displayName": "Pie",
+        "purpose": "Pie de definición de cifras, insignias de estado y alcance, metadatos del rail."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "STONE en el rail, mayúsculas espaciadas."
+      },
+      "mono": {
+        "displayName": "Mono",
+        "purpose": "Códigos, atajo ⌘K y etiqueta [DEMO]."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ring-surface",
+        "value": "0 0 0 1px #e3e8f0",
+        "purpose": "Anillo de 1px que separa tarjetas y KPI del lienzo; sustituye a la sombra en reposo."
+      },
+      {
+        "name": "tab-active",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Única sombra en reposo: pestaña activa sobre lista en surface-muted."
+      },
+      {
+        "name": "focus-ring",
+        "value": "0 0 0 3px color-mix(in oklab, #1593c6 50%, transparent)",
+        "purpose": "Anillo de foco en botones, inputs e insignias; el documento usa outline 2px cian con offset 2px."
+      }
+    ],
+    "motion": [
+      {
+        "name": "duration-state",
+        "value": "150ms",
+        "purpose": "Transiciones de color, fondo, borde y anillo en botones, nav e insignias."
+      },
+      {
+        "name": "press",
+        "value": "translateY(1px)",
+        "purpose": "Desplazamiento en :active de botones; sin escalado."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "768px",
+        "purpose": "Aparece el bloque de periodo en topbar."
+      },
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "Rail fijo de 240px; padding lateral del lienzo a 32px; display a 34px."
+      }
+    ],
+    "darkMode": {
+      "status": "tokens-only",
+      "note": "El bloque .dark de globals.css define lienzo #0e1226, tarjeta #141a36, texto #e8eaf1, cian #3fb0e0, naranja #f0a04b, referencia #8b94a3, rail #0b0f33. No hay conmutador ni soporte en la interfaz todavía."
+    },
+    "mapRules": [
+      {
+        "scope": "stone",
+        "fill": "#1593c6",
+        "fillOpacity": "0.35 (0.70 seleccionado)",
+        "stroke": "#101752",
+        "strokeWidth": 2,
+        "dash": "none",
+        "label": "código en #101752 con halo blanco, desde zoom 16"
+      },
+      {
+        "scope": "referencia",
+        "fill": "#7d8794",
+        "fillOpacity": "0.15",
+        "stroke": "#7d8794",
+        "strokeWidth": 2,
+        "dash": "[2,2]"
+      },
+      {
+        "scope": "desarrollo",
+        "fill": "#101752",
+        "fillOpacity": "0.05",
+        "stroke": "#101752",
+        "strokeWidth": 1.5,
+        "dash": "[3,2]"
+      },
+      {
+        "scope": "pendiente-de-trazo",
+        "fill": "#d47a1f",
+        "fillOpacity": "0.30",
+        "stroke": "#d47a1f",
+        "strokeWidth": 2,
+        "shape": "círculo"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón primario",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "El único botón marino de cada vista: acción principal (crear, guardar, aplicar filtro).",
+      "html": "<button class=\"ds-btn-primary\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>Nueva propiedad</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 10px; background: var(--primary, #101752); color: var(--primary-foreground, #ffffff); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 14px; font-weight: 500; white-space: nowrap; border: 1px solid transparent; border-radius: var(--radius-lg, 8px); cursor: pointer; transition: background-color .15s, color .15s, box-shadow .15s, transform .15s; } .ds-btn-primary svg { flex-shrink: 0; } .ds-btn-primary:hover { background: color-mix(in oklab, var(--primary, #101752) 80%, transparent); } .ds-btn-primary:focus-visible { outline: none; border-color: var(--ring, #1593c6); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring, #1593c6) 50%, transparent); } .ds-btn-primary:active { transform: translateY(1px); } .ds-btn-primary:disabled { opacity: .5; pointer-events: none; }"
+    },
+    {
+      "name": "Botón outline",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Acción secundaria sobre lienzo o tarjeta: exportar, filtrar, abrir expediente.",
+      "html": "<button class=\"ds-btn-outline\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 15V3\"/><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"/><path d=\"m7 10 5 5 5-5\"/></svg>Exportar</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 10px; background: var(--background, #f5f6f8); color: var(--foreground, #1c2233); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 14px; font-weight: 500; white-space: nowrap; border: 1px solid var(--border, #e3e8f0); border-radius: var(--radius-lg, 8px); cursor: pointer; transition: background-color .15s, color .15s, box-shadow .15s, transform .15s; } .ds-btn-outline svg { flex-shrink: 0; } .ds-btn-outline:hover { background: var(--muted, #f0f2f6); color: var(--foreground, #1c2233); } .ds-btn-outline:focus-visible { outline: none; border-color: var(--ring, #1593c6); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring, #1593c6) 50%, transparent); } .ds-btn-outline:active { transform: translateY(1px); } .ds-btn-outline:disabled { opacity: .5; pointer-events: none; }"
+    },
+    {
+      "name": "Tarjeta",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Contenedor base: blanco, anillo de 1px en border #e3e8f0, radio xl, espaciado interno compartido de 16px.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><div class=\"ds-card-title\">Cargos vs cobros</div><div class=\"ds-card-desc\">Octubre 2026 · MXN · con IVA · origen Excel</div></div><div class=\"ds-card-content\">Comparativo mensual de cargos emitidos y cobros registrados para unidades Stone.</div><div class=\"ds-card-footer\">Actualizado hace 2 h</div></div>",
+      "css": ".ds-card { --ds-card-spacing: 16px; display: flex; flex-direction: column; gap: var(--ds-card-spacing); overflow: hidden; width: 320px; max-width: 100%; padding: var(--ds-card-spacing) 0 0; background: var(--card, #ffffff); color: var(--card-foreground, #1c2233); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 14px; line-height: 1.43; border-radius: var(--radius-xl, 11.2px); box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground, #1c2233) 10%, transparent); transition: box-shadow .15s; } .ds-card:hover { box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground, #1c2233) 16%, transparent); } .ds-card:focus-within { box-shadow: 0 0 0 1px var(--ring, #1593c6), 0 0 0 4px color-mix(in oklab, var(--ring, #1593c6) 30%, transparent); } .ds-card-header { display: grid; gap: 4px; padding: 0 var(--ds-card-spacing); } .ds-card-title { font-family: var(--font-barlow-condensed, 'Barlow Semi Condensed', 'Barlow', sans-serif); font-size: 16px; font-weight: 500; line-height: 1.375; } .ds-card-desc { font-size: 14px; color: var(--muted-foreground, #4a5266); } .ds-card-content { padding: 0 var(--ds-card-spacing); } .ds-card-footer { display: flex; align-items: center; padding: var(--ds-card-spacing); font-size: 12px; color: var(--muted-foreground, #4a5266); border-top: 1px solid var(--border, #e3e8f0); background: color-mix(in oklab, var(--muted, #f0f2f6) 50%, transparent); }"
+    },
+    {
+      "name": "KPI Card",
+      "kind": "custom",
+      "refersTo": "kpi-card",
+      "description": "Firma del sistema: etiqueta, cifra en Barlow Semi Condensed tabular y pie de definición obligatorio (periodo · moneda · IVA · origen · conciliación). Tonos accent (cian) y warn (naranja) solo por regla de color.",
+      "html": "<div class=\"ds-kpi-row\"><div class=\"ds-kpi\" tabindex=\"0\"><div class=\"ds-kpi-label\">Renta facturada</div><div class=\"ds-kpi-value\">$1,284,500</div><div class=\"ds-kpi-sub\">38 unidades Stone</div><div class=\"ds-kpi-meta\">Oct 2026 · MXN · con IVA · Excel · conciliado</div></div><div class=\"ds-kpi ds-kpi--accent\" tabindex=\"0\"><div class=\"ds-kpi-label\">Superficie administrada</div><div class=\"ds-kpi-value\">12,640 m²</div><div class=\"ds-kpi-meta\">Oct 2026 · estimada por polígono · GeoJSON demo · por verificar</div></div><div class=\"ds-kpi ds-kpi--warn\" tabindex=\"0\"><div class=\"ds-kpi-label\">Vencido &gt; 30 días</div><div class=\"ds-kpi-value\">$96,200</div><div class=\"ds-kpi-sub\">4 contratos</div><div class=\"ds-kpi-meta\">Oct 2026 · MXN · con IVA · Excel · discrepancia vs informe</div></div></div>",
+      "css": ".ds-kpi-row { display: flex; flex-wrap: wrap; gap: 16px; } .ds-kpi { display: flex; flex-direction: column; gap: 4px; width: 220px; padding: 16px; background: var(--card, #ffffff); color: var(--card-foreground, #1c2233); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); border-radius: var(--radius-xl, 11.2px); box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground, #1c2233) 10%, transparent); transition: box-shadow .15s; } .ds-kpi:hover { box-shadow: 0 0 0 1px color-mix(in oklab, var(--foreground, #1c2233) 16%, transparent); } .ds-kpi:focus-visible { outline: 2px solid var(--ring, #1593c6); outline-offset: 2px; } .ds-kpi-label { font-size: 12px; font-weight: 500; color: var(--muted-foreground, #4a5266); } .ds-kpi-value { font-family: var(--font-barlow-condensed, 'Barlow Semi Condensed', 'Barlow', sans-serif); font-size: 28px; font-weight: 600; line-height: 1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; } .ds-kpi--accent .ds-kpi-value { color: var(--stone-accent, #1593c6); } .ds-kpi--warn .ds-kpi-value { color: var(--warn, #d47a1f); } .ds-kpi-sub { margin-top: 4px; font-size: 12px; color: color-mix(in oklab, var(--foreground, #1c2233) 80%, transparent); } .ds-kpi-meta { margin-top: 4px; font-size: 11px; line-height: 1.375; color: var(--muted-foreground, #4a5266); }"
+    },
+    {
+      "name": "Insignia de estado de dato",
+      "kind": "chip",
+      "refersTo": "badge-state-confirmado",
+      "description": "Tres estados fijos del grado de conciliación: Confirmado (verde), Por verificar (naranja), No disponible (gris). Punto de 6px en currentColor.",
+      "html": "<div class=\"ds-state-row\"><span class=\"ds-state ds-state--ok\" tabindex=\"0\"><i class=\"ds-state-dot\"></i>Confirmado</span><span class=\"ds-state ds-state--warn\" tabindex=\"0\"><i class=\"ds-state-dot\"></i>Por verificar</span><span class=\"ds-state ds-state--na\" tabindex=\"0\"><i class=\"ds-state-dot\"></i>No disponible</span></div>",
+      "css": ".ds-state-row { display: flex; flex-wrap: wrap; gap: 8px; } .ds-state { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 11px; font-weight: 500; line-height: 1.375; border: 1px solid transparent; border-radius: 9999px; white-space: nowrap; transition: background-color .15s, box-shadow .15s; } .ds-state-dot { width: 6px; height: 6px; border-radius: 9999px; background: currentColor; } .ds-state--ok { color: var(--ok, #23714a); background: color-mix(in oklab, var(--ok, #23714a) 15%, transparent); border-color: color-mix(in oklab, var(--ok, #23714a) 30%, transparent); } .ds-state--warn { color: var(--warn-foreground, #a85b10); background: color-mix(in oklab, var(--warn, #d47a1f) 20%, transparent); border-color: color-mix(in oklab, var(--warn, #d47a1f) 40%, transparent); } .ds-state--na { color: var(--muted-foreground, #4a5266); background: var(--muted, #f0f2f6); border-color: var(--border, #e3e8f0); } .ds-state:hover { filter: brightness(.97); } .ds-state:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring, #1593c6) 50%, transparent); }"
+    },
+    {
+      "name": "Insignia de alcance",
+      "kind": "chip",
+      "refersTo": "badge-scope-stone",
+      "description": "Separa lo operable de lo contextual: Stone en cian, Referencia de terceros en gris azulado. Obligatoria donde conviven ambos alcances.",
+      "html": "<div class=\"ds-scope-row\"><span class=\"ds-scope ds-scope--stone\" tabindex=\"0\">Stone</span><span class=\"ds-scope ds-scope--ref\" tabindex=\"0\">Referencia de terceros</span></div>",
+      "css": ".ds-scope-row { display: flex; flex-wrap: wrap; gap: 8px; } .ds-scope { display: inline-flex; align-items: center; padding: 2px 8px; font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); font-size: 11px; font-weight: 500; line-height: 1.375; border: 1px solid transparent; border-radius: 9999px; white-space: nowrap; transition: background-color .15s, box-shadow .15s; } .ds-scope--stone { color: var(--stone-accent, #1593c6); background: color-mix(in oklab, var(--stone-accent, #1593c6) 15%, transparent); border-color: color-mix(in oklab, var(--stone-accent, #1593c6) 40%, transparent); } .ds-scope--ref { color: var(--reference, #7d8794); background: color-mix(in oklab, var(--reference, #7d8794) 15%, transparent); border-color: color-mix(in oklab, var(--reference, #7d8794) 40%, transparent); } .ds-scope:hover { filter: brightness(.97); } .ds-scope:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring, #1593c6) 50%, transparent); }"
+    },
+    {
+      "name": "Ítem del rail",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Navegación del rail marino: texto al 70% en reposo, fondo rail-accent en hover/activo, icono cian solo en el ítem activo.",
+      "html": "<nav class=\"ds-rail\"><a class=\"ds-rail-brand\" href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"30\" height=\"30\" aria-hidden=\"true\"><polygon points=\"50,6 92,30 50,54 8,30\" fill=\"#1593c6\"/><polygon points=\"8,30 50,54 50,98 8,74\" fill=\"#0f6f9b\"/><polygon points=\"92,30 50,54 50,98 92,74\" fill=\"#101752\"/><polygon points=\"50,30 71,42 50,54 29,42\" fill=\"#101752\"/><polygon points=\"29,42 50,54 50,78 29,66\" fill=\"#1593c6\"/><polygon points=\"71,42 50,54 50,78 71,66\" fill=\"#0f6f9b\"/></svg><span><span class=\"ds-rail-word\">Stone</span><span class=\"ds-rail-sub\">inmuebles</span></span></a><a class=\"ds-rail-item ds-rail-item--active\" href=\"#\" aria-current=\"page\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\"/><rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\"/></svg>Dashboard</a><a class=\"ds-rail-item\" href=\"#\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\"/><path d=\"M15 5.764v15\"/><path d=\"M9 3.236v15\"/></svg>Mapa patrimonial</a></nav>",
+      "css": ".ds-rail { display: flex; flex-direction: column; gap: 2px; width: 240px; padding: 0 12px 8px; background: var(--sidebar, #101752); color: var(--sidebar-foreground, #dee0e7); font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); border-right: 1px solid var(--sidebar-border, #262e6e); } .ds-rail-brand { display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 8px; margin-bottom: 8px; color: inherit; text-decoration: none; line-height: 1; } .ds-rail-brand > span { display: flex; flex-direction: column; gap: 4px; } .ds-rail-word { font-family: var(--font-barlow-condensed, 'Barlow Semi Condensed', 'Barlow', sans-serif); font-size: 17px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.28em; color: #ffffff; } .ds-rail-sub { font-size: 11px; text-transform: lowercase; letter-spacing: 0.22em; color: color-mix(in oklab, var(--sidebar-foreground, #dee0e7) 70%, transparent); } .ds-rail-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; font-size: 14px; font-weight: 400; line-height: 1.43; text-decoration: none; color: color-mix(in oklab, var(--sidebar-foreground, #dee0e7) 70%, transparent); border-radius: var(--radius-md, 6.4px); transition: background-color .15s, color .15s; } .ds-rail-item svg { flex-shrink: 0; } .ds-rail-item:hover { background: color-mix(in oklab, var(--sidebar-accent, #1b2466) 60%, transparent); color: var(--sidebar-accent-foreground, #ffffff); } .ds-rail-item:focus-visible { outline: 2px solid var(--sidebar-ring, #1593c6); outline-offset: 2px; } .ds-rail-item--active, .ds-rail-item--active:hover { background: var(--sidebar-accent, #1b2466); color: var(--sidebar-accent-foreground, #ffffff); } .ds-rail-item--active svg { color: var(--sidebar-primary, #1593c6); }"
+    },
+    {
+      "name": "Facet Cover",
+      "kind": "custom",
+      "refersTo": "facet-cover",
+      "description": "Cabecera de desarrollo o propiedad: fondo marino sólido con facetas isométricas marino/cian del cubo de Stone; sustituye a la fotografía.",
+      "html": "<div class=\"ds-facet\" tabindex=\"0\"><svg class=\"ds-facet-art\" viewBox=\"0 0 800 300\" preserveAspectRatio=\"xMidYMid slice\" aria-hidden=\"true\"><g fill=\"none\"><polygon points=\"560,0 800,0 800,140\" fill=\"#1593c6\" opacity=\"0.55\"/><polygon points=\"640,300 800,140 800,300\" fill=\"#0f6f9b\" opacity=\"0.7\"/><polygon points=\"420,300 640,300 560,160\" fill=\"#111644\" opacity=\"0.8\"/><polygon points=\"560,160 640,300 800,140 700,60\" fill=\"#1c2233\" opacity=\"0.5\"/><polygon points=\"0,220 140,300 0,300\" fill=\"#1593c6\" opacity=\"0.25\"/><polygon points=\"0,220 140,300 260,220 120,150\" fill=\"#0f6f9b\" opacity=\"0.35\"/><polyline points=\"0,220 120,150 260,220\" stroke=\"#7fc6e6\" stroke-opacity=\"0.5\" stroke-width=\"1\"/><polyline points=\"560,160 700,60 800,140\" stroke=\"#7fc6e6\" stroke-opacity=\"0.6\" stroke-width=\"1\"/></g></svg><div class=\"ds-facet-body\"><span class=\"ds-facet-scope\">Stone</span><h3 class=\"ds-facet-title\">Desarrollo Lomas Norte</h3><p class=\"ds-facet-meta\">14 unidades Stone · 3 de referencia · trazos demo</p></div></div>",
+      "css": ".ds-facet { position: relative; overflow: hidden; width: 480px; max-width: 100%; aspect-ratio: 8 / 3; background: var(--navy, #101752); color: #ffffff; font-family: var(--font-barlow, 'Barlow', system-ui, sans-serif); border-radius: var(--radius-xl, 11.2px); transition: box-shadow .15s; } .ds-facet:hover .ds-facet-art { transform: scale(1.02); } .ds-facet:focus-visible { outline: 2px solid var(--ring, #1593c6); outline-offset: 2px; } .ds-facet-art { position: absolute; inset: 0; width: 100%; height: 100%; transition: transform .4s ease; } .ds-facet-body { position: absolute; left: 24px; bottom: 20px; right: 24px; display: flex; flex-direction: column; gap: 6px; } .ds-facet-scope { align-self: flex-start; padding: 2px 8px; font-size: 11px; font-weight: 500; border-radius: 9999px; color: #ffffff; background: color-mix(in oklab, var(--stone-accent, #1593c6) 35%, transparent); border: 1px solid color-mix(in oklab, var(--stone-accent, #1593c6) 60%, transparent); } .ds-facet-title { margin: 0; font-family: var(--font-barlow-condensed, 'Barlow Semi Condensed', 'Barlow', sans-serif); font-size: 28px; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; } .ds-facet-meta { margin: 0; font-size: 12px; color: color-mix(in oklab, #ffffff 75%, transparent); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El Atlas Patrimonial",
+    "overview": "Stone Inmuebles convierte el informe mensual de la familia en una herramienta. El sistema visual toma la identidad de ese informe (marino, cian, naranja, Barlow) y la lleva a pantalla con más precisión: el marino `navy` es estructura (rail lateral, títulos, bordes de polígono), el cian `stone-cyan` es señal de lo que Stone administra (unidades propias, selección, acciones), y el naranja `alert-orange` aparece únicamente cuando hay dinero en alerta (vencidos, discrepancias, cifras por verificar). Todo lo que no es de Stone se dibuja en gris azulado punteado: es contexto, nunca se mezcla con lo operable.\n\nEl tono es sobrio, ejecutivo y cartográfico. La densidad es la de un tablero operativo de escritorio: lienzo gris frío, tarjetas blancas con borde fino, tablas financieras legibles con numerales tabulares. No hay degradados decorativos, ni ilustraciones genéricas, ni sombras flotantes; la profundidad se expresa con tono y borde. La firma visual es el cubo isométrico de Stone descompuesto en facetas: polígonos planos marino/cian que sirven tanto de cabecera de desarrollo como de lenguaje para el mapa.\n\nRechazos confirmados: el ERP genérico gris con un solo acento; las tarjetas iguales de icono + título + texto; los kickers o eyebrows sobre los títulos (el componente `PageHeader` acepta la prop por compatibilidad pero no la renderiza, deliberadamente).",
+    "keyCharacteristics": [
+      "Marino `#101752` como estructura; cian `#1593c6` como señal operable; naranja `#d47a1f` solo para dinero en alerta.",
+      "Terceros siempre en gris `#7d8794` y trazo punteado, fuera de cualquier agregado.",
+      "Barlow para interfaz; Barlow Semi Condensed con numerales tabulares para cifras y títulos.",
+      "Superficies planas: tarjetas blancas con anillo de 1px sobre lienzo `#f5f6f8`, sin sombras en reposo.",
+      "Cada cifra lleva pie de definición (periodo · moneda · IVA · origen · conciliación) y los estados de dato son explícitos.",
+      "Facetas isométricas marino/cian como firma, en cabeceras y en el mapa."
+    ],
+    "rules": [
+      {
+        "name": "La Regla del Cian Operable",
+        "body": "El cian `stone-cyan` significa \"esto lo administra Stone\" o \"esto puedes accionar/seleccionar\". Nunca se usa como relleno decorativo, fondo de sección ni color de título. Si un elemento cian no es operable ni es de Stone, está mal.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Naranja Monetario",
+        "body": "El naranja aparece solo sobre dinero en alerta: vencido, discrepancia, por verificar. No marca novedades, promociones ni botones. Un dashboard sin problemas de cobranza no muestra naranja.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Referencia Punteada",
+        "body": "Lo de terceros se dibuja siempre en `reference-gray`, con trazo punteado en el mapa y relleno ≤20%. Nunca entra en una suma, promedio ni gráfica junto a datos Stone.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de la Cifra Condensada",
+        "body": "Toda cantidad de dinero, superficie o conteo que funcione como dato se compone en Barlow Semi Condensed con `font-variant-numeric: tabular-nums`. Barlow regular queda para prosa y etiquetas.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Pie Obligatorio",
+        "body": "Ninguna cifra se muestra sin su pie de definición en Footnote: periodo · moneda · IVA · origen · grado de conciliación. Una cifra sin pie es un error de implementación, no una decisión de diseño.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla Sin Kicker",
+        "body": "No existen eyebrows, kickers ni sobretítulos en mayúsculas sobre un título. La jerarquía se construye con tamaño, peso y el marino del display, no con una etiqueta encima.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Borde Antes que la Sombra",
+        "body": "Una superficie nueva se delimita con un anillo o borde de 1px en `border` o `ink` al 10%. Solo los elementos flotantes temporales (popover, sheet, pestaña activa) pueden proyectar sombra, y siempre la mínima.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do componer toda cifra en Barlow Semi Condensed 600 con numerales tabulares y un pie Footnote con periodo · moneda · IVA · origen · conciliación.",
+      "Do reservar `stone-cyan` para unidades Stone, selección, foco y el icono del ítem activo; que su rareza lo haga legible.",
+      "Do dibujar lo de terceros en `reference-gray` con trazo punteado y relleno ≤20%, y mantenerlo fuera de cualquier agregado.",
+      "Do separar superficies con un anillo de 1px (`ink` al 10% o `border`) sobre el lienzo `canvas`, sin sombra en reposo.",
+      "Do usar `FacetCover` y la geometría de facetas isométricas marino/cian donde falte una imagen real.",
+      "Do mostrar siempre un `DataStateBadge` (Confirmado / Por verificar / No disponible) cuando un dato pueda no estar conciliado.",
+      "Do mantener un solo botón marino por vista; el resto en outline o ghost."
+    ],
+    "donts": [
+      "Don't usar naranja para novedades, botones ni énfasis: solo para dinero vencido, discrepancias o cifras por verificar.",
+      "Don't poner kickers, eyebrows ni sobretítulos en mayúsculas sobre un título de página o tarjeta.",
+      "Don't construir filas de tarjetas iguales de icono + título + texto; la jerarquía la da la cifra, no el icono.",
+      "Don't mezclar cifras Stone y de referencia en una misma suma, promedio o serie de gráfica.",
+      "Don't introducir degradados, sombras flotantes ni ilustraciones genéricas; la profundidad es tono y borde.",
+      "Don't usar grises neutros: todo gris del sistema tiene tinte azul (`canvas`, `surface-muted`, `border`, `reference-gray`).",
+      "Don't mostrar una cifra sin su pie de definición ni inventar un dato ausente: \"No disponible\" es un estado, no un cero."
+    ]
+  }
+}

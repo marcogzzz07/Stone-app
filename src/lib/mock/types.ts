@@ -45,7 +45,7 @@ export interface Development {
   stoneUnits: number;
   geometry: Geometry;
   ownersNote: string;
-  coverTone: string; // clase tailwind para la cabecera
+  coverTone: "navy" | "cyan"; // variante de la cabecera facetada
 }
 
 export interface Unit {

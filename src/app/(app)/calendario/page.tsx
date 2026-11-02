@@ -21,7 +21,6 @@ export default function CalendarioPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Obligaciones"
         title="Calendario"
         description="Vencimientos de contrato, predial, seguros, incrementos y otras fechas críticas. Notificaciones en una fase posterior."
       />
@@ -44,7 +43,7 @@ export default function CalendarioPage() {
                       <div>{d.title}</div>
                       <div className="text-xs text-muted-foreground">{fmtDate(d.date)}</div>
                     </div>
-                    <span className={`tnum shrink-0 text-xs ${days < 0 ? "text-muted-foreground" : days <= 30 ? "font-medium text-amber-700 dark:text-warn" : "text-muted-foreground"}`}>
+                    <span className={`tnum shrink-0 text-xs ${days < 0 ? "text-muted-foreground" : days <= 30 ? "font-medium text-warn-foreground dark:text-warn" : "text-muted-foreground"}`}>
                       {days < 0 ? "pasado" : `${days} d`}
                     </span>
                   </li>

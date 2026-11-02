@@ -33,12 +33,12 @@ const STYLE: maplibregl.StyleSpecification = {
       type: "raster",
       tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
       tileSize: 256,
-      maxzoom: 19,
+      maxzoom: 18,
       attribution: "© OpenStreetMap contributors",
     },
   },
   layers: [
-    { id: "osm", type: "raster", source: "osm", paint: { "raster-saturation": -0.6, "raster-opacity": 0.9 } },
+    { id: "osm", type: "raster", source: "osm", paint: { "raster-saturation": -0.7, "raster-opacity": 0.85 } },
   ],
 };
 
@@ -72,14 +72,14 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
         type: "fill",
         source: "patrimonio",
         filter: ["==", ["get", "scope"], "desarrollo"],
-        paint: { "fill-color": "#9a8f82", "fill-opacity": 0.08 },
+        paint: { "fill-color": "#101752", "fill-opacity": 0.05 },
       });
       map.addLayer({
         id: "dev-line",
         type: "line",
         source: "patrimonio",
         filter: ["==", ["get", "scope"], "desarrollo"],
-        paint: { "line-color": "#6b625a", "line-width": 1.5, "line-dasharray": [3, 2] },
+        paint: { "line-color": "#101752", "line-width": 1.5, "line-dasharray": [3, 2] },
       });
       map.addLayer({
         id: "unit-fill",
@@ -87,11 +87,11 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
         source: "patrimonio",
         filter: ["!=", ["get", "scope"], "desarrollo"],
         paint: {
-          "fill-color": ["case", ["==", ["get", "scope"], "stone"], "#c9803f", "#7d8794"],
+          "fill-color": ["case", ["==", ["get", "scope"], "stone"], "#1593c6", "#7d8794"],
           "fill-opacity": [
             "case",
             ["boolean", ["feature-state", "selected"], false],
-            0.65,
+            0.7,
             ["==", ["get", "scope"], "stone"],
             0.35,
             0.15,
@@ -104,7 +104,7 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
         source: "patrimonio",
         filter: ["!=", ["get", "scope"], "desarrollo"],
         paint: {
-          "line-color": ["case", ["==", ["get", "scope"], "stone"], "#a8622a", "#7d8794"],
+          "line-color": ["case", ["==", ["get", "scope"], "stone"], "#101752", "#7d8794"],
           "line-width": 2,
           "line-dasharray": ["case", ["==", ["get", "scope"], "stone"], ["literal", [1, 0]], ["literal", [2, 2]]],
         },
@@ -119,7 +119,7 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
           "text-size": 11,
           "text-font": ["Open Sans Regular", "Noto Sans Regular"],
         },
-        paint: { "text-color": "#2a2521", "text-halo-color": "#fff", "text-halo-width": 1 },
+        paint: { "text-color": "#101752", "text-halo-color": "#fff", "text-halo-width": 1 },
         minzoom: 16,
       });
 

@@ -17,7 +17,7 @@ export function UnitMap({ unitId }: { unitId: string }) {
   const center = centroid(u.geometry.coordinates as number[][]);
   return (
     <div>
-      <PatrimonyMap features={features} center={center} zoom={18.5} className="h-[360px] w-full" selectedId={u.id} />
+      <PatrimonyMap features={features} center={center} zoom={17.5} className="h-[360px] w-full" selectedId={u.id} />
       <div className="border-t px-3 py-2"><MapLegend /></div>
     </div>
   );

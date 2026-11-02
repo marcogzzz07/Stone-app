@@ -18,7 +18,6 @@ export default function DocumentosPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Expediente"
         title="Documentos"
         description="Archivo privado, versionado y con control de acceso por rol y sensibilidad. Nunca URLs permanentes."
       />

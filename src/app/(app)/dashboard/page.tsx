@@ -36,7 +36,6 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Resumen ejecutivo"
         title="Dashboard"
         description="Patrimonio administrado por Stone y situación financiera del período. Las unidades de terceros se excluyen de toda agregación."
       />
@@ -93,14 +92,14 @@ export default function DashboardPage() {
                     <div className="truncate">{d.title}</div>
                     <div className="text-xs text-muted-foreground">{fmtDate(d.date)} · {d.kind}</div>
                   </div>
-                  <span className={`tnum shrink-0 text-xs ${days <= 30 ? "font-medium text-amber-700 dark:text-warn" : "text-muted-foreground"}`}>
+                  <span className={`tnum shrink-0 text-xs ${days <= 30 ? "font-medium text-warn-foreground dark:text-warn" : "text-muted-foreground"}`}>
                     {days} d
                   </span>
                 </li>
               );
             })}
           </ul>
-          <Link href="/calendario" className="mt-2 inline-flex items-center gap-1 text-xs text-stone-accent hover:underline">
+          <Link href="/calendario" className="mt-2 inline-flex items-center gap-1 text-xs text-accent-foreground hover:underline">
             Ver calendario <ArrowUpRight className="size-3" />
           </Link>
         </Card>
@@ -109,7 +108,7 @@ export default function DashboardPage() {
           <ul className="divide-y">
             {importDiscrepancies.map((d) => (
               <li key={d.id} className="flex items-start gap-3 py-2.5 text-sm">
-                <AlertTriangle className={`mt-0.5 size-4 shrink-0 ${d.severity === "alta" ? "text-destructive" : "text-warn"}`} />
+                <AlertTriangle className={`mt-0.5 size-4 shrink-0 ${d.severity === "alta" ? "text-warn-foreground" : "text-muted-foreground"}`} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <span className="truncate font-medium">{d.title}</span>

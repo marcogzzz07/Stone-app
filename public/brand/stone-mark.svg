@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Stone Inmuebles">
+  <!-- Isotipo vectorial provisional, derivado del cubo del informe; sustituir por el logo oficial en vector. -->
+  <polygon points="50,6 92,30 50,54 8,30" fill="#1593c6"/>
+  <polygon points="8,30 50,54 50,98 8,74" fill="#0f6f9b"/>
+  <polygon points="92,30 50,54 50,98 92,74" fill="#101752"/>
+  <polygon points="50,30 71,42 50,54 29,42" fill="#101752"/>
+  <polygon points="29,42 50,54 50,78 29,66" fill="#1593c6"/>
+  <polygon points="71,42 50,54 50,78 71,66" fill="#0f6f9b"/>
+</svg>

@@ -35,7 +35,6 @@ export default function RentasPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Operación"
         title="Rentas y cobranza"
         description="Cargos, pagos, aplicaciones y saldos. Las vistas por período de cargo y por fecha de cobro se presentan por separado."
       />
@@ -88,8 +87,8 @@ export default function RentasPage() {
                       <TableCell className="tnum text-right text-muted-foreground">{fmtMXN(c.tax)}</TableCell>
                       <TableCell className="tnum text-right font-medium">{fmtMXN(c.total)}</TableCell>
                       <TableCell className="tnum text-right">{fmtMXN(c.total - bal)}</TableCell>
-                      <TableCell className={`tnum text-right ${od ? "font-semibold text-destructive" : ""}`}>{fmtMXN(bal)}</TableCell>
-                      <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${od ? "bg-destructive/10 text-destructive" : "bg-muted"}`}>{STATUS[c.status]}{od && " · vencido"}</span></TableCell>
+                      <TableCell className={`tnum text-right ${od ? "font-semibold text-warn-foreground" : ""}`}>{fmtMXN(bal)}</TableCell>
+                      <TableCell><span className={`rounded px-1.5 py-0.5 text-xs ${od ? "bg-warn/15 text-warn-foreground" : "bg-muted"}`}>{STATUS[c.status]}{od && " · vencido"}</span></TableCell>
                       <TableCell className="text-xs text-muted-foreground">{c.source}</TableCell>
                     </TableRow>
                   );
@@ -132,7 +131,7 @@ export default function RentasPage() {
                       <TableCell className="font-mono text-xs text-muted-foreground">{p.bankRef ?? "—"}</TableCell>
                       <TableCell className="tnum text-right font-medium">{fmtMXN(p.amount)}</TableCell>
                       <TableCell className="tnum text-right">{fmtMXN(ap)}</TableCell>
-                      <TableCell className={`tnum text-right ${un > 0 ? "font-medium text-stone-accent" : "text-muted-foreground"}`}>{fmtMXN(un)}</TableCell>
+                      <TableCell className={`tnum text-right ${un > 0 ? "font-medium text-accent-foreground" : "text-muted-foreground"}`}>{fmtMXN(un)}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{p.source}</TableCell>
                     </TableRow>
                   );

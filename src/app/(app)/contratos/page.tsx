@@ -19,7 +19,6 @@ export default function ContratosPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Operación"
         title="Contratos"
         description="Arrendatarios, condiciones versionadas, vigencias e incrementos. «Por vencer» es una alerta derivada de la fecha, no un estado."
       />
@@ -55,7 +54,7 @@ export default function ContratosPage() {
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">{getEntity(l.lessorEntityId)?.name.replace("[DEMO] ", "")}</TableCell>
                   <TableCell className="text-xs">{fmtDate(l.startDate)}</TableCell>
-                  <TableCell className={`text-xs ${soon ? "font-medium text-amber-700 dark:text-warn" : ""}`}>{fmtDate(l.endDate)}{soon && <div className="text-[10px]">por vencer · {days} d</div>}</TableCell>
+                  <TableCell className={`text-xs ${soon ? "font-medium text-warn-foreground dark:text-warn" : ""}`}>{fmtDate(l.endDate)}{soon && <div className="text-[11px]">por vencer · {days} d</div>}</TableCell>
                   <TableCell className="tnum text-right">{fmtMXN(t.baseRent)} <span className="text-xs text-muted-foreground">+ IVA</span></TableCell>
                   <TableCell className="tnum text-right">{fmtMXN(t.deposit)}</TableCell>
                   <TableCell className="max-w-[180px] truncate text-xs text-muted-foreground">{t.increaseRule ?? "Sin regla documentada"}</TableCell>

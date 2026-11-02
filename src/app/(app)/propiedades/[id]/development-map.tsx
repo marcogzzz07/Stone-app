@@ -19,7 +19,7 @@ export function DevelopmentMap({ devId }: { devId: string }) {
       <PatrimonyMap
         features={features}
         center={center}
-        zoom={17.5}
+        zoom={17}
         className="h-[360px] w-full"
         selectedId={selected}
         onSelect={(p) => {

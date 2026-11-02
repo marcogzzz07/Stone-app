@@ -16,26 +16,24 @@ export function KpiCard({ label, value, sub, meta, tone = "default", className }
       <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div
         className={cn(
-          "tnum text-2xl font-semibold tracking-tight",
+          "num text-[28px] leading-none font-semibold",
           tone === "accent" && "text-stone-accent",
-          tone === "warn" && "text-amber-700 dark:text-warn",
+          tone === "warn" && "text-warn",
         )}
       >
         {value}
       </div>
-      {sub && <div className="text-xs text-foreground/80">{sub}</div>}
+      {sub && <div className="mt-1 text-xs text-foreground/80">{sub}</div>}
       <div className="mt-1 text-[11px] leading-snug text-muted-foreground">{meta}</div>
     </Card>
   );
 }
 
 export function PageHeader({
-  eyebrow,
   title,
   description,
   actions,
 }: {
-  eyebrow?: string;
   title: string;
   description?: string;
   actions?: React.ReactNode;
@@ -43,12 +41,9 @@ export function PageHeader({
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
-        {eyebrow && (
-          <div className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            {eyebrow}
-          </div>
-        )}
-        <h1 className="text-2xl font-semibold tracking-tight lg:text-3xl">{title}</h1>
+        <h1 className="font-condensed text-3xl font-semibold tracking-tight text-navy lg:text-[34px] dark:text-foreground">
+          {title}
+        </h1>
         {description && (
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{description}</p>
         )}

@@ -22,7 +22,7 @@ export default function CalendarioPage() {
     <>
       <PageHeader
         title="Calendario"
-        description="Vencimientos de contrato, predial, seguros, incrementos y otras fechas críticas. Notificaciones en una fase posterior."
+        description="Contratos, predial, seguros e incrementos próximos."
       />
       <div className="mb-4 flex flex-wrap gap-4 text-xs">
         {Object.entries(KIND).map(([k, c]) => (

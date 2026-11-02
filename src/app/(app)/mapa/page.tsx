@@ -6,7 +6,7 @@ export default function MapaPage() {
     <>
       <PageHeader
         title="Mapa patrimonial"
-        description="Desarrollos, propiedades y unidades con geometría verificada. Lo que no tiene trazo validado aparece como pendiente; nunca se inventan polígonos."
+        description="Desarrollos y unidades con geometría verificada."
       />
       <MapExplorer />
     </>

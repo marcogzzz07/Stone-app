@@ -31,7 +31,7 @@ export default function ConfiguracionPage() {
     <>
       <PageHeader
         title="Configuración"
-        description="Usuarios, roles, catálogos, importaciones y fuente de verdad por alcance y período."
+        description="Usuarios, roles, importaciones y fuente de verdad."
       />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="p-0">

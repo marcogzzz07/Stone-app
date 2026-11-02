@@ -84,7 +84,7 @@ export function DeltaChip({ value, invert = false }: { value: number; invert?: b
   const sign = value > 0 ? "+" : "";
   return (
     <span
-      className={`num inline-flex items-center rounded-md px-1.5 py-0.5 text-[11px] font-semibold ${
+      className={`num inline-flex items-center whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-semibold ${
         good ? "bg-ok/12 text-ok" : "bg-warn/15 text-warn-foreground"
       }`}
     >

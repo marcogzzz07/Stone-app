@@ -44,7 +44,7 @@ Confirmados por el usuario el 1 de noviembre de 2026 a partir del informe mensua
 - **Nombre:** Stone Inmuebles. Wordmark "STONE" en mayúsculas espaciadas + "inmuebles" en minúsculas.
 - **Logo:** cubo isométrico en cian/azul con interior azul marino y wordmark "STONE inmuebles" en marino. Archivo oficial entregado por el usuario el 2 de noviembre de 2026: `public/brand/stone-logo.png` (2000×730); isotipo recortado en `public/brand/stone-mark.png`. Falta versión vectorial.
 - **Paleta oficial:** azul marino `#101752` / `#111644` / `#1C2233`; cian `#1593C6`; azul medio `#0F6F9B`; naranja de acento `#D47A1F` / `#A85B10`; grises fríos `#F5F6F8` / `#F0F2F6` / `#E3E8F0` / `#D8DDE6` / `#C9C9CA`; texto secundario `#4A5266`.
-- **Tipografía:** Archivo (elegida por el usuario el 2 de noviembre de 2026): ancho normal en interfaz y condensado (75 %) en títulos y cifras. Sustituye a Barlow (informe) y a Albert Sans (prueba descartada).
+- **Tipografía:** Figtree (elegida por el usuario el 2 de noviembre de 2026 tras probar Barlow, Albert Sans y Archivo). Una sola familia; jerarquía por peso (400/500 texto, 600 títulos, 700 cifras) y tamaño.
 - **Tono pedido:** misma identidad que el informe, más refinada: sobria, ejecutiva, cartográfica. No ERP genérico.
 
 ## Evidence on Hand

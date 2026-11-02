@@ -1,10 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { KpiCard, PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
+import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
+import { KpiVisual } from "@/components/patrimonio/kpi-visual";
+import { MiniBars, Ring } from "@/components/charts/mini";
 import { CURRENT_PERIOD, TODAY, allocations, charges, payments } from "@/lib/mock/data";
 import {
+  agingBuckets,
   allocatedFromPayment,
+  monthlySeries,
   chargeBalance,
   getLease,
   getTenant,
@@ -36,13 +40,36 @@ export default function RentasPage() {
     <>
       <PageHeader
         title="Rentas y cobranza"
-        description="Cargos, pagos, aplicaciones y saldos. Las vistas por período de cargo y por fecha de cobro se presentan por separado."
+        description="Cargos, pagos, aplicaciones y saldos del período."
       />
       <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Exigible del período" value={fmtMXN(pc.exigible)} meta={`${period} · MXN con IVA · ${pc.count} cargos`} />
-        <KpiCard label="Cobranza del período" value={fmtPct(pc.ratio * 100)} sub={`${fmtMXN(pc.applied)} aplicado · ${fmtMXN(pc.pending)} pendiente`} meta="Aplicaciones a cargos del período ÷ exigible" tone="accent" />
-        <KpiCard label="Saldo total por cobrar" value={fmtMXN(totalOutstanding())} sub={`Vencido: ${fmtMXN(overdueTotal(TODAY))}`} meta={`Todos los períodos · al ${fmtDate(TODAY)}`} tone="warn" />
-        <KpiCard label="Pagos sin aplicar" value={fmtMXN(unappliedPayments().reduce((s, p) => s + p.unapplied, 0))} sub={`${unappliedPayments().length} pago(s) · saldo a favor`} meta="Anticipos disponibles hasta su aplicación explícita" />
+        <KpiVisual
+          label="Exigible del período"
+          value={fmtMXN(pc.exigible)}
+          info={`${period} · MXN con IVA · ${pc.count} cargos registrados (excluye propuestas)`}
+          visual={<MiniBars values={monthlySeries().map((s) => s.cargos)} />}
+          foot={`${pc.count} cargos`}
+        />
+        <KpiVisual
+          label="Cobranza del período"
+          value={fmtPct(pc.ratio * 100)}
+          info="Pagos aplicados a cargos del período ÷ exigible del período."
+          visual={<Ring ratio={pc.ratio} />}
+          foot={`${fmtMXN(pc.applied)} aplicado · ${fmtMXN(pc.pending)} pendiente`}
+        />
+        <KpiVisual
+          label="Saldo por cobrar"
+          value={fmtMXN(totalOutstanding())}
+          info={`Todos los períodos · exigible − aplicaciones − ajustes · al ${fmtDate(TODAY)}`}
+          visual={<MiniBars values={agingBuckets(TODAY).map((b) => b.amount)} />}
+          delta={<span className="num rounded-md bg-warn/15 px-1.5 py-0.5 text-[11px] text-warn-foreground">{fmtMXN(overdueTotal(TODAY))} vencido</span>}
+        />
+        <KpiVisual
+          label="Pagos sin aplicar"
+          value={fmtMXN(unappliedPayments().reduce((s, p) => s + p.unapplied, 0))}
+          info="Pagos recibidos aún no asignados a un cargo; saldo a favor del arrendatario."
+          foot={`${unappliedPayments().length} pago(s) · saldo a favor`}
+        />
       </div>
 
       <Tabs defaultValue="periodo">
@@ -96,9 +123,6 @@ export default function RentasPage() {
               </TableBody>
             </Table>
           </Card>
-          <p className="mt-2 text-[11px] text-muted-foreground">
-            «Vencido» es derivado (fecha de vencimiento pasada y saldo &gt; 0), no un estado persistido. Las propuestas (draft) no cuentan como exigibles.
-          </p>
         </TabsContent>
 
         <TabsContent value="cobro" className="mt-4">
@@ -171,9 +195,6 @@ export default function RentasPage() {
               </TableBody>
             </Table>
           </Card>
-          <p className="mt-2 text-[11px] text-muted-foreground">
-            Restricción: Σ aplicaciones ≤ monto del pago y ≤ saldo del cargo. Los ajustes (descuentos, notas, condonaciones) se registran aparte, nunca como pagos.
-          </p>
         </TabsContent>
       </Tabs>
     </>

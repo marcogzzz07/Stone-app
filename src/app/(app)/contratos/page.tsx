@@ -20,7 +20,7 @@ export default function ContratosPage() {
     <>
       <PageHeader
         title="Contratos"
-        description="Arrendatarios, condiciones versionadas, vigencias e incrementos. «Por vencer» es una alerta derivada de la fecha, no un estado."
+        description="Arrendatarios, condiciones vigentes y vencimientos."
       />
       <Card className="p-0">
         <Table>
@@ -67,9 +67,6 @@ export default function ContratosPage() {
           </TableBody>
         </Table>
       </Card>
-      <p className="mt-2 text-[11px] text-muted-foreground">
-        Los depósitos en garantía son pasivo, no renta. Las renovaciones conservan historia como nueva versión o contrato vinculado (por definir).
-      </p>
     </>
   );
 }

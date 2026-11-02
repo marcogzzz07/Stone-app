@@ -15,7 +15,7 @@ export default function PropiedadesPage() {
     <>
       <PageHeader
         title="Propiedades"
-        description="Desarrollos, activos y unidades. Titular legal y administrador se muestran por separado."
+        description="Desarrollos, activos y unidades administradas por Stone."
       />
 
       <SectionTitle>Desarrollos</SectionTitle>

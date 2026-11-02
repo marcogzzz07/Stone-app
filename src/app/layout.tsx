@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-import { Archivo, Geist_Mono } from "next/font/google";
+import { Figtree, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-// Tipografía elegida por el usuario (2 nov 2026): Archivo con eje de anchura.
-// Ancho normal para interfaz; condensado (font-stretch 75 %) en títulos y cifras.
-const archivo = Archivo({
-  variable: "--font-archivo",
+// Tipografía elegida por el usuario (2 nov 2026): Figtree. Geométrica cálida;
+// la jerarquía se construye con peso y tamaño (700 en cifras y títulos).
+const figtree = Figtree({
+  variable: "--font-figtree",
   subsets: ["latin"],
-  axes: ["wdth"],
 });
 
 const geistMono = Geist_Mono({
@@ -27,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="es-MX"
-      className={`${archivo.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${figtree.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

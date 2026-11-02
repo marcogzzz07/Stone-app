@@ -19,7 +19,7 @@ export default function DocumentosPage() {
     <>
       <PageHeader
         title="Documentos"
-        description="Archivo privado, versionado y con control de acceso por rol y sensibilidad. Nunca URLs permanentes."
+        description="Expediente privado, versionado y con acceso por rol."
       />
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {(["interno", "restringido", "sensible"] as const).map((s) => (
@@ -63,9 +63,6 @@ export default function DocumentosPage() {
           </TableBody>
         </Table>
       </Card>
-      <p className="mt-2 text-[11px] text-muted-foreground">
-        En Iteración 1: buckets privados de Supabase Storage (legal, fiscal, técnico, comercial, importaciones), enlaces firmados de corta duración y bitácora de acceso.
-      </p>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, CalendarDays, Download, Info, MoreHorizontal, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowRight, CalendarDays, Download, MoreHorizontal, Sparkles } from "lucide-react";
+import { KpiVisual, StatCell } from "@/components/patrimonio/kpi-visual";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DeltaChip, MiniBars, Ring, Sparkline, StackedBar, UnitDots } from "@/components/charts/mini";
@@ -70,15 +71,15 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi
-          label="Renta contractual"
+        <KpiVisual
+          label="Renta pactada"
           value={fmtMXN(scheduledRent(CURRENT_PERIOD))}
           info="Monto pactado en contratos activos. No es ingreso."
           visual={<Sparkline values={series.map((s) => s.cargos)} />}
           delta={<DeltaChip value={delta(pc.exigible, prev.exigible)} />}
           foot="vs mes anterior"
         />
-        <Kpi
+        <KpiVisual
           label="Cobranza del período"
           value={fmtPct(pc.ratio * 100)}
           info="Pagos aplicados a cargos del período ÷ exigible. MXN con IVA."
@@ -86,7 +87,7 @@ export default function DashboardPage() {
           delta={<DeltaChip value={delta(pc.ratio, prev.ratio)} />}
           foot={`${fmtMXN(pc.applied)} cobrado de ${fmtMXN(pc.exigible)}`}
         />
-        <Kpi
+        <KpiVisual
           label="Saldo por cobrar"
           value={fmtMXN(totalOutstanding())}
           info="Exigible − aplicaciones − ajustes, todos los períodos."
@@ -94,7 +95,7 @@ export default function DashboardPage() {
           delta={<span className="num rounded-md bg-warn/15 px-1.5 py-0.5 text-[11px] font-semibold text-warn-foreground">{fmtMXN(overdueTotal(TODAY))} vencido</span>}
           foot={`${fmtMXN(unapplied)} sin aplicar`}
         />
-        <Kpi
+        <KpiVisual
           label="Ocupación Stone"
           value={fmtPct(occ.ratio * 100)}
           info={`${occ.occupied} ocupadas de ${occ.known} con estado conocido; ${occ.unknown} sin validar.`}
@@ -126,9 +127,9 @@ export default function DashboardPage() {
             <TrendChart data={series} />
           </div>
           <div className="grid grid-cols-3 divide-x border-t text-sm">
-            <Stat label="Pendiente del período" value={fmtMXN(pc.pending)} />
-            <Stat label="Cobros recibidos en el mes" value={fmtMXN(series[series.length - 1].cobrosCaja)} />
-            <Stat label="Gastos del mes" value={fmtMXN(series[series.length - 1].gastos)} />
+            <StatCell label="Pendiente del período" value={fmtMXN(pc.pending)} />
+            <StatCell label="Cobros recibidos en el mes" value={fmtMXN(series[series.length - 1].cobrosCaja)} />
+            <StatCell label="Gastos del mes" value={fmtMXN(series[series.length - 1].gastos)} />
           </div>
         </Card>
 
@@ -176,46 +177,3 @@ export default function DashboardPage() {
   );
 }
 
-function Kpi({
-  label,
-  value,
-  info,
-  visual,
-  delta,
-  foot,
-}: {
-  label: string;
-  value: string;
-  info: string;
-  visual: React.ReactNode;
-  delta?: React.ReactNode;
-  foot?: string;
-}) {
-  return (
-    <Card className="gap-0 p-0">
-      <div className="flex items-start justify-between p-4 pb-3">
-        <div>
-          <div className="flex items-center gap-1.5 text-xs font-medium tracking-wider text-muted-foreground uppercase">
-            {label}
-            <span title={info} className="cursor-help text-muted-foreground/70"><Info className="size-3.5" /></span>
-          </div>
-          <div className="num mt-2 text-[30px] leading-none font-semibold">{value}</div>
-        </div>
-        <div className="mt-1 shrink-0">{visual}</div>
-      </div>
-      <div className="flex items-center gap-2 border-t bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
-        {delta}
-        {foot && <span>{foot}</span>}
-      </div>
-    </Card>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="px-5 py-3">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      <div className="num mt-0.5 text-lg font-semibold">{value}</div>
-    </div>
-  );
-}

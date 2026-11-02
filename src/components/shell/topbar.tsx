@@ -6,11 +6,11 @@ import { usePathname } from "next/navigation";
 import { ChevronRight, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { NAV, SidebarFooter, SidebarHeader, SidebarNav, SidebarSearch } from "./sidebar-nav";
+import { NAV, SidebarFooter, SidebarHeader, SidebarNav } from "./sidebar-nav";
 import { useState } from "react";
 
-// Barra superior: menú móvil, ruta y (en móvil) el isotipo. Búsqueda,
-// notificaciones y cuenta viven en el menú lateral.
+// Barra superior: menú móvil, ruta y (en móvil) el isotipo. Notificaciones
+// y cuenta viven en el menú lateral.
 export function Topbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -29,7 +29,6 @@ export function Topbar() {
         <SheetContent side="left" className="flex w-[232px] flex-col bg-sidebar p-0 text-sidebar-foreground [&>button]:text-sidebar-foreground">
           <SheetTitle className="sr-only">Navegación</SheetTitle>
           <SidebarHeader />
-          <SidebarSearch />
           <div className="min-h-0 flex-1 overflow-y-auto">
             <SidebarNav onNavigate={() => setOpen(false)} />
           </div>

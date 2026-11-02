@@ -16,7 +16,6 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Receipt,
-  Search,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -84,7 +83,7 @@ export function SidebarHeader({
   onToggle?: () => void;
 }) {
   return (
-    <div className={cn("flex flex-col gap-2 px-3 pt-4", collapsed && "items-center")}>
+    <div className={cn("flex flex-col gap-2 px-3 pb-3 pt-4", collapsed && "items-center")}>
       <div className={cn("flex h-10 items-center gap-3", collapsed && "justify-center")}>
         <Link
           href="/dashboard"
@@ -117,37 +116,6 @@ function ToggleButton({ collapsed, onToggle }: { collapsed: boolean; onToggle: (
     >
       {collapsed ? <PanelLeftOpen className="size-4" strokeWidth={1.5} /> : <PanelLeftClose className="size-4" strokeWidth={1.5} />}
     </button>
-  );
-}
-
-/** Búsqueda dentro del menú; colapsado, solo el icono. */
-export function SidebarSearch({ collapsed = false }: { collapsed?: boolean }) {
-  if (collapsed) {
-    return (
-      <div className="flex justify-center px-3 py-3">
-        <button
-          type="button"
-          aria-label="Buscar"
-          className="grid size-10 place-items-center rounded-lg border border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
-        >
-          <Search className="size-4" strokeWidth={1.5} />
-        </button>
-      </div>
-    );
-  }
-  return (
-    <label className="relative mx-3 my-3 block">
-      <span className="sr-only">Buscar</span>
-      <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sidebar-foreground" strokeWidth={1.5} />
-      <input
-        type="search"
-        placeholder="Buscar"
-        className="h-10 w-full rounded-lg border border-sidebar-border bg-sidebar-accent pl-9 pr-10 text-[15px] text-sidebar-ink-active outline-none placeholder:text-sidebar-foreground focus-visible:outline-2 focus-visible:outline-focus-ring"
-      />
-      <kbd className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-sidebar-border px-1.5 py-0.5 font-mono text-[10px] text-sidebar-foreground">
-        ⌘K
-      </kbd>
-    </label>
   );
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { SidebarFooter, SidebarHeader, SidebarNav, SidebarSearch } from "./sidebar-nav";
+import { SidebarFooter, SidebarHeader, SidebarNav } from "./sidebar-nav";
 import { Topbar } from "./topbar";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +44,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         )}
       >
         <SidebarHeader collapsed={collapsed} onToggle={toggle} />
-        <SidebarSearch collapsed={collapsed} />
         <div className="min-h-0 flex-1 overflow-y-auto">
           <SidebarNav collapsed={collapsed} />
         </div>

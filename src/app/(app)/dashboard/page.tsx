@@ -1,17 +1,13 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowUpRight, CalendarClock } from "lucide-react";
+import { AlertTriangle, ArrowRight, CalendarDays, Download, Info, MoreHorizontal, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { KpiCard, PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
-import {
-  AgingChart,
-  ChargesVsCollections,
-  ExpensesByCategory,
-} from "@/components/charts/finance-charts";
-import { CURRENT_PERIOD, TODAY, importDiscrepancies } from "@/lib/mock/data";
+import { DeltaChip, MiniBars, Ring, Sparkline, StackedBar, UnitDots } from "@/components/charts/mini";
+import { TrendChart } from "@/components/charts/trend-chart";
+import { CURRENT_PERIOD, TODAY, developments, importDiscrepancies, units } from "@/lib/mock/data";
 import {
   agingBuckets,
-  expensesByCategory,
-  monthCashReceived,
+  chargesOfPeriod,
   monthlySeries,
   occupancyStats,
   overdueTotal,
@@ -19,112 +15,207 @@ import {
   scheduledRent,
   stoneUnits,
   totalOutstanding,
-  totalSurface,
   unappliedPayments,
   upcomingDates,
 } from "@/lib/mock/queries";
-import { daysUntil, fmtDate, fmtM2, fmtMXN, fmtNum, fmtPct, fmtPeriod } from "@/lib/format";
+import { daysUntil, fmtDate, fmtMXN, fmtPct, fmtPeriod } from "@/lib/format";
 
 export default function DashboardPage() {
   const pc = periodCollection(CURRENT_PERIOD);
-  const cash = monthCashReceived(CURRENT_PERIOD);
+  const prev = periodCollection("2026-09-01");
+  const series = monthlySeries();
   const occ = occupancyStats();
   const unapplied = unappliedPayments().reduce((s, p) => s + p.unapplied, 0);
   const period = fmtPeriod(CURRENT_PERIOD);
-  const metaFin = `${period} · MXN · con IVA · origen: Excel + manual · conciliación demo`;
+  const delta = (a: number, b: number) => (b ? ((a - b) / b) * 100 : 0);
+
+  // Cargos del período por desarrollo (solo unidades Stone).
+  const byDev = developments.map((d, i) => ({
+    id: d.id,
+    name: d.name.replace("[DEMO] ", ""),
+    value: chargesOfPeriod(CURRENT_PERIOD)
+      .filter((c) => units.find((u) => u.id === c.unitId)?.developmentId === d.id)
+      .reduce((s, c) => s + c.total, 0),
+    color: ["var(--navy)", "var(--stone-accent)", "var(--chart-3)"][i] ?? "var(--chart-5)",
+  }));
+  const byDevTotal = byDev.reduce((s, d) => s + d.value, 0) || 1;
+  const nextDate = upcomingDates(TODAY, 1)[0];
+  const topIssue = importDiscrepancies[0];
 
   return (
-    <>
-      <PageHeader
-        title="Dashboard"
-        description="Patrimonio administrado por Stone y situación financiera del período. Las unidades de terceros se excluyen de toda agregación."
-      />
-
-      <SectionTitle hint="Solo unidades administradas por Stone">Patrimonio</SectionTitle>
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Activos y unidades Stone" value={`${stoneUnits().length}`} sub="2 desarrollos · 1 terreno independiente" meta="Inventario demo · excluye 3 unidades de referencia" />
-        <KpiCard label="Superficie legal" value={fmtM2(totalSurface("legal"))} sub={`Rentable registrada: ${fmtM2(totalSurface("rentable"))}`} meta="Suma de escrituras · parcial: 1 unidad por verificar" />
-        <KpiCard label="Ocupación" value={fmtPct(occ.ratio * 100)} sub={`${occ.occupied} de ${occ.known} con estado conocido`} meta={`${occ.unknown} unidad con estado desconocido excluida del cálculo`} tone="accent" />
-        <KpiCard label="Área GIS estimada" value={fmtM2(totalSurface("gis_estimate"))} sub="Calculada desde polígonos" meta="EPSG:4326 · geodésico · no sustituye superficie legal" />
-      </div>
-
-      <SectionTitle hint={metaFin}>Finanzas</SectionTitle>
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Renta contractual programada" value={fmtMXN(scheduledRent(CURRENT_PERIOD))} sub="Contratos activos, condición vigente" meta="No es ingreso: monto pactado según lease_terms" />
-        <KpiCard label="Cargos del período" value={fmtMXN(pc.exigible)} sub={`${pc.count} cargos registrados`} meta="Renta + mantenimiento repercutido · excluye borradores" />
-        <KpiCard label="Cobranza del período" value={fmtPct(pc.ratio * 100)} sub={`${fmtMXN(pc.applied)} aplicado a cargos de ${period.split(" ")[0]}`} meta="Pagos aplicados ÷ exigible del período (métrica por período de cargo)" tone="accent" />
-        <KpiCard label="Cobros recibidos en el mes" value={fmtMXN(cash)} sub={`Incluye ${fmtMXN(unapplied)} sin aplicar (anticipo)`} meta="Métrica por fecha de cobro · puede incluir meses anteriores" />
-        <KpiCard label="Saldo por cobrar total" value={fmtMXN(totalOutstanding())} sub="Todos los períodos abiertos" meta="Exigible − aplicaciones − ajustes" />
-        <KpiCard label="Vencido" value={fmtMXN(overdueTotal(TODAY))} sub="Cargos con saldo y fecha de vencimiento pasada" meta={`Al ${fmtDate(TODAY)} · estado derivado, no persistido`} tone="warn" />
-        <KpiCard label="Gastos operativos del mes" value={fmtMXN(expensesByCategory(CURRENT_PERIOD).reduce((s, e) => s + e.total, 0))} sub="1 gasto con clasificación pendiente" meta="Devengados · pagados y por pagar · no incluye recuperaciones" />
-        <KpiCard label="Discrepancias de importación" value={`${importDiscrepancies.length}`} sub="3 de severidad alta" meta="Del informe de referencia · bloquean conciliación" tone="warn" />
-      </div>
-
-      <div className="mb-6 grid gap-4 lg:grid-cols-3">
-        <Card className="p-4 lg:col-span-2">
-          <SectionTitle hint="MXN con IVA · ago–oct 2026">Cargos vs. cobros por mes</SectionTitle>
-          <ChargesVsCollections data={monthlySeries()} />
-          <p className="mt-2 text-[11px] text-muted-foreground">
-            «Aplicado a esos cargos» y «cobros recibidos en el mes» son métricas distintas (spec §7.5): la
-            segunda puede incluir adeudos de meses anteriores y anticipos.
-          </p>
-        </Card>
-        <Card className="p-4">
-          <SectionTitle hint={`al ${fmtDate(TODAY)}`}>Antigüedad de saldos</SectionTitle>
-          <AgingChart data={agingBuckets(TODAY)} />
-        </Card>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="p-4">
-          <SectionTitle hint={period}>Gastos por categoría</SectionTitle>
-          <ExpensesByCategory data={expensesByCategory(CURRENT_PERIOD)} />
-        </Card>
-        <Card className="p-4">
-          <SectionTitle>Próximos vencimientos</SectionTitle>
-          <ul className="divide-y">
-            {upcomingDates(TODAY).map((d) => {
-              const days = daysUntil(d.date);
-              return (
-                <li key={d.id} className="flex items-start gap-3 py-2.5 text-sm">
-                  <CalendarClock className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate">{d.title}</div>
-                    <div className="text-xs text-muted-foreground">{fmtDate(d.date)} · {d.kind}</div>
-                  </div>
-                  <span className={`tnum shrink-0 text-xs ${days <= 30 ? "font-medium text-warn-foreground dark:text-warn" : "text-muted-foreground"}`}>
-                    {days} d
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-          <Link href="/calendario" className="mt-2 inline-flex items-center gap-1 text-xs text-accent-foreground hover:underline">
-            Ver calendario <ArrowUpRight className="size-3" />
-          </Link>
-        </Card>
-        <Card className="p-4">
-          <SectionTitle hint="No se corrigen automáticamente">Discrepancias de importación</SectionTitle>
-          <ul className="divide-y">
-            {importDiscrepancies.map((d) => (
-              <li key={d.id} className="flex items-start gap-3 py-2.5 text-sm">
-                <AlertTriangle className={`mt-0.5 size-4 shrink-0 ${d.severity === "alta" ? "text-warn-foreground" : "text-muted-foreground"}`} />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="truncate font-medium">{d.title}</span>
-                    {d.amount != null && <span className="tnum shrink-0 text-xs">{fmtMXN(d.amount)}</span>}
-                  </div>
-                  <div className="text-xs text-muted-foreground">{d.detail}</div>
-                </div>
-              </li>
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-condensed text-3xl font-semibold tracking-tight text-navy dark:text-foreground">
+            Buenas noches, Marco
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">Así va el patrimonio de Stone en {period.toLowerCase()}.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex rounded-md border bg-card p-0.5 text-sm">
+            {["Mes", "Trimestre", "Año"].map((o, i) => (
+              <button
+                key={o}
+                type="button"
+                className={`rounded-[5px] px-3 py-1 ${i === 0 ? "bg-navy text-white" : "text-muted-foreground hover:bg-muted"}`}
+                aria-pressed={i === 0}
+              >
+                {o}
+              </button>
             ))}
-          </ul>
+          </div>
+          <Button variant="outline" size="sm"><CalendarDays className="size-4" /> {period}</Button>
+          <Button size="sm"><Download className="size-4" /> Exportar</Button>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Kpi
+          label="Renta contractual"
+          value={fmtMXN(scheduledRent(CURRENT_PERIOD))}
+          info="Monto pactado en contratos activos. No es ingreso."
+          visual={<Sparkline values={series.map((s) => s.cargos)} />}
+          delta={<DeltaChip value={delta(pc.exigible, prev.exigible)} />}
+          foot="vs mes anterior"
+        />
+        <Kpi
+          label="Cobranza del período"
+          value={fmtPct(pc.ratio * 100)}
+          info="Pagos aplicados a cargos del período ÷ exigible. MXN con IVA."
+          visual={<Ring ratio={pc.ratio} />}
+          delta={<DeltaChip value={delta(pc.ratio, prev.ratio)} />}
+          foot={`${fmtMXN(pc.applied)} cobrado de ${fmtMXN(pc.exigible)}`}
+        />
+        <Kpi
+          label="Saldo por cobrar"
+          value={fmtMXN(totalOutstanding())}
+          info="Exigible − aplicaciones − ajustes, todos los períodos."
+          visual={<MiniBars values={agingBuckets(TODAY).map((b) => b.amount)} />}
+          delta={<span className="num rounded-md bg-warn/15 px-1.5 py-0.5 text-[11px] font-semibold text-warn-foreground">{fmtMXN(overdueTotal(TODAY))} vencido</span>}
+          foot={`${fmtMXN(unapplied)} sin aplicar`}
+        />
+        <Kpi
+          label="Ocupación Stone"
+          value={fmtPct(occ.ratio * 100)}
+          info={`${occ.occupied} ocupadas de ${occ.known} con estado conocido; ${occ.unknown} sin validar.`}
+          visual={<UnitDots states={stoneUnits().filter((u) => u.kind !== "terreno").map((u) => u.occupancy)} />}
+          delta={<span className="text-[11px] text-muted-foreground">{stoneUnits().length} unidades · {developments.length} desarrollos</span>}
+        />
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-3">
+        <Card className="gap-0 p-0 xl:col-span-2">
+          <div className="flex items-center justify-between border-b px-5 py-3">
+            <h2 className="text-xs font-medium tracking-wider text-muted-foreground uppercase">Cargos vs. cobrado</h2>
+            <Button variant="ghost" size="icon-sm" aria-label="Más opciones"><MoreHorizontal className="size-4" /></Button>
+          </div>
+          <div className="flex flex-wrap items-end justify-between gap-3 px-5 pt-4">
+            <div>
+              <div className="text-sm text-muted-foreground">Cargos de {period.toLowerCase()}</div>
+              <div className="flex items-center gap-2">
+                <span className="num text-3xl font-semibold">{fmtMXN(pc.exigible)}</span>
+                <DeltaChip value={delta(pc.exigible, prev.exigible)} />
+              </div>
+            </div>
+            <div className="flex items-center gap-4 text-xs">
+              <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-navy" /> Cargos</span>
+              <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-stone-accent" /> Cobrado</span>
+            </div>
+          </div>
+          <div className="px-2 pt-2">
+            <TrendChart data={series} />
+          </div>
+          <div className="grid grid-cols-3 divide-x border-t text-sm">
+            <Stat label="Pendiente del período" value={fmtMXN(pc.pending)} />
+            <Stat label="Cobros recibidos en el mes" value={fmtMXN(series[series.length - 1].cobrosCaja)} />
+            <Stat label="Gastos del mes" value={fmtMXN(series[series.length - 1].gastos)} />
+          </div>
+        </Card>
+
+        <Card className="gap-0 p-0">
+          <div className="flex items-center justify-between border-b px-5 py-3">
+            <h2 className="text-xs font-medium tracking-wider text-muted-foreground uppercase">Cargos por desarrollo</h2>
+            <Button variant="ghost" size="icon-sm" aria-label="Más opciones"><MoreHorizontal className="size-4" /></Button>
+          </div>
+          <div className="space-y-4 px-5 py-4">
+            <div>
+              <div className="text-sm text-muted-foreground">{period}</div>
+              <div className="num text-3xl font-semibold">{fmtMXN(byDevTotal)}</div>
+            </div>
+            <StackedBar parts={byDev} />
+            <ul className="divide-y text-sm">
+              {byDev.map((d) => (
+                <li key={d.id} className="flex items-center gap-3 py-2.5">
+                  <span className="size-2.5 rounded-sm" style={{ background: d.color }} />
+                  <Link href={`/propiedades/${d.id}`} className="flex-1 hover:underline">{d.name}</Link>
+                  <span className="num">{fmtMXN(d.value)}</span>
+                  <span className="num w-10 text-right text-xs text-muted-foreground">{Math.round((d.value / byDevTotal) * 100)} %</span>
+                </li>
+              ))}
+            </ul>
+            <Link href="/rentas" className="flex items-center gap-3 rounded-lg border bg-warn/10 px-3 py-2.5 text-sm hover:bg-warn/15">
+              <AlertTriangle className="size-4 shrink-0 text-warn-foreground" />
+              <span className="flex-1 leading-snug">{topIssue.title}: {fmtMXN(topIssue.amount ?? 0)} por conciliar</span>
+              <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+            </Link>
+            {nextDate && (
+              <Link href="/calendario" className="flex items-center gap-3 rounded-lg border bg-accent px-3 py-2.5 text-sm hover:bg-accent/70">
+                <Sparkles className="size-4 shrink-0 text-accent-foreground" />
+                <span className="flex-1 leading-snug">{nextDate.title.replace("[DEMO] ", "")} · en {daysUntil(nextDate.date)} días</span>
+                <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+              </Link>
+            )}
+          </div>
         </Card>
       </div>
 
-      <p className="mt-6 text-[11px] text-muted-foreground">
-        Definiciones: cobranza del período = pagos aplicados a cargos del período ÷ total exigible de esos cargos. Saldo por cobrar ≠ facturado − cobrado del mes. Los depósitos en garantía no se incluyen en ingreso. Cifras demo: {fmtNum(stoneUnits().length)} unidades sintéticas.
+      <p className="text-[11px] text-muted-foreground">
+        Datos sintéticos [DEMO] · MXN con IVA · al {fmtDate(TODAY)} · excluye unidades de terceros.
       </p>
-    </>
+    </div>
+  );
+}
+
+function Kpi({
+  label,
+  value,
+  info,
+  visual,
+  delta,
+  foot,
+}: {
+  label: string;
+  value: string;
+  info: string;
+  visual: React.ReactNode;
+  delta?: React.ReactNode;
+  foot?: string;
+}) {
+  return (
+    <Card className="gap-0 p-0">
+      <div className="flex items-start justify-between p-4 pb-3">
+        <div>
+          <div className="flex items-center gap-1.5 text-xs font-medium tracking-wider text-muted-foreground uppercase">
+            {label}
+            <span title={info} className="cursor-help text-muted-foreground/70"><Info className="size-3.5" /></span>
+          </div>
+          <div className="num mt-2 text-[30px] leading-none font-semibold">{value}</div>
+        </div>
+        <div className="mt-1 shrink-0">{visual}</div>
+      </div>
+      <div className="flex items-center gap-2 border-t bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
+        {delta}
+        {foot && <span>{foot}</span>}
+      </div>
+    </Card>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="px-5 py-3">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="num mt-0.5 text-lg font-semibold">{value}</div>
+    </div>
   );
 }

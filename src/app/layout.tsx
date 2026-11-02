@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Albert_Sans, Geist_Mono } from "next/font/google";
+import { Archivo, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-// Tipografía elegida por el usuario (2 nov 2026): Albert Sans para UI, títulos y cifras.
-const albert = Albert_Sans({
-  variable: "--font-albert",
+// Tipografía elegida por el usuario (2 nov 2026): Archivo con eje de anchura.
+// Ancho normal para interfaz; condensado (font-stretch 75 %) en títulos y cifras.
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  axes: ["wdth"],
 });
 
 const geistMono = Geist_Mono({
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="es-MX"
-      className={`${albert.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${archivo.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

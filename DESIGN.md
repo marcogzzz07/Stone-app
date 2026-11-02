@@ -27,40 +27,40 @@ colors:
   on-navy: "#ffffff"
 typography:
   display:
-    fontFamily: "Albert Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "30px"
     fontWeight: 600
     lineHeight: 1.1
     letterSpacing: "-0.025em"
   headline:
-    fontFamily: "Albert Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "28px"
     fontWeight: 600
     lineHeight: 1
     letterSpacing: "-0.01em"
     fontFeature: "tnum"
   title:
-    fontFamily: "Albert Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "16px"
     fontWeight: 500
     lineHeight: 1.375
   body:
-    fontFamily: "Albert Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "14px"
     fontWeight: 400
     lineHeight: 1.43
   label:
-    fontFamily: "Albert Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "12px"
     fontWeight: 500
     lineHeight: 1.33
   footnote:
-    fontFamily: "Albert Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "11px"
     fontWeight: 400
     lineHeight: 1.375
   wordmark:
-    fontFamily: "Albert Sans, system-ui, sans-serif"
+    fontFamily: "Archivo, system-ui, sans-serif"
     fontSize: "17px"
     fontWeight: 700
     lineHeight: 1
@@ -185,7 +185,7 @@ components:
 
 **Creative North Star: "El Atlas Patrimonial"**
 
-Stone Inmuebles convierte el informe mensual de la familia en una herramienta. El sistema visual toma la identidad de ese informe (marino, cian, naranja, Albert Sans) y la lleva a pantalla con más precisión: el marino `navy` es estructura (rail lateral, títulos, bordes de polígono), el cian `stone-cyan` es señal de lo que Stone administra (unidades propias, selección, acciones), y el naranja `alert-orange` aparece únicamente cuando hay dinero en alerta (vencidos, discrepancias, cifras por verificar). Todo lo que no es de Stone se dibuja en gris azulado punteado: es contexto, nunca se mezcla con lo operable.
+Stone Inmuebles convierte el informe mensual de la familia en una herramienta. El sistema visual toma la identidad de ese informe (marino, cian, naranja, Archivo) y la lleva a pantalla con más precisión: el marino `navy` es estructura (rail lateral, títulos, bordes de polígono), el cian `stone-cyan` es señal de lo que Stone administra (unidades propias, selección, acciones), y el naranja `alert-orange` aparece únicamente cuando hay dinero en alerta (vencidos, discrepancias, cifras por verificar). Todo lo que no es de Stone se dibuja en gris azulado punteado: es contexto, nunca se mezcla con lo operable.
 
 El tono es sobrio, ejecutivo y cartográfico. La densidad es la de un tablero operativo de escritorio: lienzo gris frío, tarjetas blancas con borde fino, tablas financieras legibles con numerales tabulares. No hay degradados decorativos, ni ilustraciones genéricas, ni sombras flotantes; la profundidad se expresa con tono y borde. La firma visual es el cubo isométrico de Stone descompuesto en facetas: polígonos planos marino/cian que sirven tanto de cabecera de desarrollo como de lenguaje para el mapa.
 
@@ -194,7 +194,7 @@ Rechazos confirmados: el ERP genérico gris con un solo acento; las tarjetas igu
 **Key Characteristics:**
 - Marino `#101752` como estructura; cian `#1593c6` como señal operable; naranja `#d47a1f` solo para dinero en alerta.
 - Terceros siempre en gris `#7d8794` y trazo punteado, fuera de cualquier agregado.
-- Albert Sans en toda la interfaz; peso 700 con numerales tabulares para cifras y títulos.
+- Archivo en toda la interfaz; peso 700 con numerales tabulares para cifras y títulos.
 - Superficies planas: tarjetas blancas con anillo de 1px sobre lienzo `#f5f6f8`, sin sombras en reposo.
 - Cada cifra lleva pie de definición (periodo · moneda · IVA · origen · conciliación) y los estados de dato son explícitos.
 - Facetas isométricas marino/cian como firma, en cabeceras y en el mapa.
@@ -240,11 +240,11 @@ Una paleta de informe financiero: marinos profundos y grises fríos como base, u
 
 ## Typography
 
-**Display Font:** Albert Sans 600–700 (con system-ui, sans-serif)
-**Body Font:** Albert Sans 400–500 (con system-ui, sans-serif)
+**Display Font:** Archivo 600 condensada (font-stretch 75 %) (con system-ui, sans-serif)
+**Body Font:** Archivo 400–500 (con system-ui, sans-serif)
 **Label/Mono Font:** Geist Mono (solo para códigos, atajos `⌘K` y la etiqueta `[DEMO]`)
 
-**Character:** Albert Sans es una geométrica de raíz escandinava, elegante y discreta: una sola familia cubre interfaz, títulos y cifras. La jerarquía se construye con peso (400/500 texto, 600 títulos, 700 cifras) y tamaño, nunca con una segunda familia.
+**Character:** Archivo es una grotesca con eje de anchura: el ancho normal (100 %) lleva la interfaz y el condensado (75 %, clase `.num` y `.font-condensed`) lleva títulos y cifras. Una sola familia, dos voces; la jerarquía se construye con anchura, peso (400/500 texto, 600 títulos y cifras) y tamaño.
 
 ### Hierarchy
 - **Display** (600, 30px escritorio → 34px en lg, line-height 1.1, tracking -0.025em, color `navy`): título de página en `PageHeader`. Uno por pantalla; sin kicker encima.
@@ -256,7 +256,7 @@ Una paleta de informe financiero: marinos profundos y grises fríos como base, u
 - **Wordmark** (700, 17px, mayúsculas, tracking 0.28em, Semi Condensed, blanco): "STONE" en el rail; debajo "inmuebles" en 11px minúsculas con tracking 0.22em al 70%.
 
 ### Named Rules
-**La Regla de la Cifra Tabular.** Toda cantidad de dinero, superficie o conteo que funcione como dato se compone en Albert Sans Bold con `font-variant-numeric: tabular-nums`. Albert Sans regular queda para prosa y etiquetas.
+**La Regla de la Cifra Tabular.** Toda cantidad de dinero, superficie o conteo que funcione como dato se compone en Archivo condensada con `font-variant-numeric: tabular-nums`. Archivo regular queda para prosa y etiquetas.
 
 **La Regla del Pie Obligatorio.** Ninguna cifra se muestra sin su pie de definición en Footnote: periodo · moneda · IVA · origen · grado de conciliación. Una cifra sin pie es un error de implementación, no una decisión de diseño.
 
@@ -339,7 +339,7 @@ Cabecera de desarrollo o propiedad que sustituye a la fotografía hasta que exis
 ## Do's and Don'ts
 
 ### Do:
-- **Do** componer toda cifra en Albert Sans 700 con numerales tabulares y un pie Footnote con periodo · moneda · IVA · origen · conciliación.
+- **Do** componer toda cifra en Archivo 600 condensada (font-stretch 75 %) con numerales tabulares y un pie Footnote con periodo · moneda · IVA · origen · conciliación.
 - **Do** reservar `stone-cyan` para unidades Stone, selección, foco y el icono del ítem activo; que su rareza lo haga legible.
 - **Do** dibujar lo de terceros en `reference-gray` con trazo punteado y relleno ≤20%, y mantenerlo fuera de cualquier agregado.
 - **Do** separar superficies con un anillo de 1px (`border`) sobre el lienzo `canvas`, sin sombra en reposo.

@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import type { Database } from "./database.types";
 
 /**
@@ -7,6 +8,7 @@ import type { Database } from "./database.types";
  * Usa la clave publishable: todo lo que lee pasa por RLS con la sesión del usuario.
  */
 export async function createClient() {
+  await connection(); // sesión por petición: nada de esto se prerenderiza
   const cookieStore = await cookies();
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

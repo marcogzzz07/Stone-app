@@ -27,6 +27,15 @@ archivos de `migrations/` son la copia versionada, en el mismo orden.
 - Montos financieros no se borran: se anulan (`voided_at`) o se ajustan (`charge_adjustments`), con auditoría en `audit_logs`.
 - Storage: buckets `legal` (solo admin), `fiscal`, `technical`, `commercial`, `imports` (admin y operator), todos privados. Rutas `<org_id>/...`.
 
+## Semilla [DEMO]
+
+`seed/demo.sql` carga en la organización `stone` los datos sintéticos del prototipo
+(2 inmuebles, 12 unidades, 4 arrendatarios, 5 contratos con condiciones, 14 cargos,
+10 pagos con aplicaciones y 7 gastos), todos con `source = 'demo'` y nombres `[DEMO]`.
+Sirve para operar y probar la captura antes de la carga histórica. Cargada el 2 de
+noviembre de 2026. `seed/demo_down.sql` la elimina por completo; ejecutarlo antes de
+importar datos reales.
+
 ## Pruebas
 
 `tests/rls_negative.sql` crea usuarios y datos `[DEMO]` dentro de una transacción que se revierte y verifica 36 casos (invariantes, cada rol, sin membresía, anon). Última corrida: 36/36 el 2 de noviembre de 2026.

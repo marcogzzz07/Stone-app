@@ -40,3 +40,8 @@ export const daysUntil = (iso: string, from = "2026-11-01") =>
       new Date(from + "T12:00:00").getTime()) /
       86_400_000,
   );
+
+const amt = new Intl.NumberFormat("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/** Montos en tablas (brand book): dos decimales, sin signo; vacío o cero → "-". */
+export const fmtAmt = (v: number | null | undefined) =>
+  v == null || Math.abs(v) < 0.005 ? "-" : amt.format(v);

@@ -13,6 +13,7 @@ archivos de `migrations/` son la copia versionada, en el mismo orden.
 | `0005_documentos_importacion.sql` | `documents` (+versiones, vínculos), `import_batches`, `import_rows`, `source_records`, `import_discrepancies`, `source_of_truth_rules`, `period_locks`, `critical_dates` |
 | `0006_rls.sql` | Primera versión de RLS y buckets privados (sustituida por 0007, se conserva por historial) |
 | `0007_hardening.sql` | Funciones de autorización en esquema `app` (no expuesto por PostgREST), políticas definitivas, `search_path` fijo, índices de FK |
+| `0009_puntos_inmuebles.sql` | Vista `development_points` (lon/lat de la geometría vigente de cada inmueble) para el mapa |
 | `0008_invitacion_reaceptable.sql` | El trigger de alta también honra invitaciones ya aceptadas (usuario borrado y reinvitado) y repara membresías faltantes |
 
 ## Reglas que hace cumplir la base
@@ -68,6 +69,15 @@ de prueba.
 3. **Plantillas de correo:** no hace falta tocarlas. Supabase solo permite editarlas con SMTP propio; con la plantilla por defecto el enlace llega con la sesión en el fragmento de la URL (`#access_token=…`) y `login/hash-session.tsx` la abre en el navegador. Si algún día se configura SMTP, el enlace puede cambiarse a `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite` para que lo procese el servidor.
 4. **Authentication → Users → Invite user:** invitar a `ma.gonzalez@gs.com.mx` y `p.cabada@gs.com.mx`. Sus invitaciones ya existen en `public.invitations` (admin y operator); al crearse el usuario, el trigger les da la membresía.
 5. Opcional: copiar la **service-role key** a `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` (nunca al repo). Con ella, las invitaciones se envían desde Configuración en la plataforma; sin ella, se registran ahí y el correo se manda desde el dashboard.
+
+## Ubicaciones
+
+El 3 de noviembre de 2026 se cargaron direcciones, claves de predial (`assets`) y un punto
+por inmueble (`geometries`, tipo Point) desde `STONE UBICACIONES.xlsx`. Central de Playa
+tiene el punto exacto del enlace de Google Maps del parque; los demás se geocodificaron
+con OpenStreetMap a nivel calle (precisión 200–500 m registrada en `precision_m`). Sin
+polígonos de predio todavía. También se dio de alta la unidad TE-10 (interior 10 de Torre
+Evalor) y se ligó al contrato que no tenía unidad.
 
 ## Informe mensual
 

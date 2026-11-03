@@ -2,8 +2,12 @@ export function MapLegend() {
   return (
     <div className="flex flex-wrap items-center gap-4 text-xs">
       <span className="flex items-center gap-2">
+        <span className="size-3 rounded-full border-2 border-brand-navy bg-brand-cyan" />
+        Inmueble (punto de dirección)
+      </span>
+      <span className="flex items-center gap-2">
         <span className="h-3 w-5 rounded-sm border-2 border-brand-navy bg-brand-cyan/50" />
-        Unidad Stone (operable)
+        Unidad Stone (polígono)
       </span>
       <span className="flex items-center gap-2">
         <span className="h-3 w-5 rounded-sm border-2 border-dashed border-chart-3 bg-chart-3/20" />
@@ -18,7 +22,7 @@ export function MapLegend() {
         Pendiente de trazo
       </span>
       <span className="ml-auto text-ink-3">
-        Trazos demo · EPSG:4326 · áreas estimadas por polígono, no legales
+        Puntos geocodificados por dirección · EPSG:4326 · sin polígonos legales
       </span>
     </div>
   );

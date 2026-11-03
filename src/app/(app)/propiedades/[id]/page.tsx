@@ -6,7 +6,8 @@ import { FacetCover } from "@/components/patrimonio/facet-cover";
 import { SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
 import { requireMember } from "@/lib/auth/session";
-import { getDevelopment } from "@/lib/data/patrimonio";
+import { getDevelopment, listDevelopmentPoints } from "@/lib/data/patrimonio";
+import { DevelopmentPointMap } from "@/components/mapa/development-point-map";
 import { buildInforme, listReportMonths } from "@/lib/data/informe";
 import { hasRole } from "@/lib/auth/session";
 import { TendenciaChart } from "@/components/charts/report-charts";
@@ -25,6 +26,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
   const trendMtto = informe?.tendencia.mtto.find((t) => t.id === id);
   if (!data) notFound();
   const { dev: d, units: us } = data;
+  const point = (await listDevelopmentPoints()).find((p) => p.id === id) ?? null;
   const stone = us.filter((u) => !u.referenceOnly);
   const refs = us.filter((u) => u.referenceOnly);
   const tone = (d.chartOrder ?? 1) % 2 ? "navy" : "cyan";
@@ -52,7 +54,14 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
-          {!d.hasGeometry && (
+          {point ? (
+            <Card className="overflow-hidden p-0">
+              <div className="border-b px-4 py-2 text-xs text-ink-3">
+                Ubicación por dirección · precisión aproximada ± {point.precisionM ?? "?"} m · {point.source}
+              </div>
+              <DevelopmentPointMap id={d.id} name={d.name} lon={point.lon} lat={point.lat} address={d.address} />
+            </Card>
+          ) : (
             <Card className="grid h-40 place-items-center p-4 text-center text-sm text-ink-3">
               <div>
                 <div className="mx-auto mb-2 size-8 rounded-full border-2 border-dashed border-ink-3 bg-surface-2" />

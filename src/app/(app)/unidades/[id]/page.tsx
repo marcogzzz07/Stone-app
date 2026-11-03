@@ -10,7 +10,8 @@ import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimoni
 import { FacetCover } from "@/components/patrimonio/facet-cover";
 import { StatusPill } from "@/components/forms/status-pill";
 import { hasRole, requireMember } from "@/lib/auth/session";
-import { getUnitDetail } from "@/lib/data/patrimonio";
+import { getUnitDetail, listDevelopmentPoints } from "@/lib/data/patrimonio";
+import { DevelopmentPointMap } from "@/components/mapa/development-point-map";
 import { DOC_KIND, OCCUPANCY_KEY, SENSITIVITY, SURFACE_LABEL, UNIT_KIND } from "@/lib/patrimonio/labels";
 import { CHARGE_STATUS, CONCEPT_LABEL, EXPENSE_CATEGORY, EXPENSE_CLASS, LEASE_STATUS } from "@/lib/rentas/labels";
 import { today as todayFn } from "@/lib/data/now";
@@ -25,11 +26,12 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
   const data = await getUnitDetail(id);
   if (!data || data.unit.referenceOnly) notFound();
   const { unit: u, surfaces, leases, charges, expenses, documents } = data;
+  const point = u.developmentId ? ((await listDevelopmentPoints()).find((p) => p.id === u.developmentId) ?? null) : null;
   const today = await todayFn();
   const rentable = surfaces.find((s) => s.kind === "rentable");
   const activeLease = leases.find((l) => l.status === "active");
   const alerts = [
-    !u.hasGeometry && { text: "Sin ubicación capturada: no aparece en el mapa.", cls: "bg-info-soft text-info" },
+    !point && { text: "Sin ubicación capturada: no aparece en el mapa.", cls: "bg-info-soft text-info" },
     { text: "Datos legales no disponibles en el reporte mensual.", cls: "bg-info-soft text-info" },
     charges.some((c) => c.status === "overdue") && { text: "Cargos vencidos con saldo.", cls: "bg-danger-soft text-danger" },
     activeLease?.endDate && daysUntil(activeLease.endDate, today) <= 60 && { text: `Contrato por vencer: ${fmtDate(activeLease.endDate)}.`, cls: "bg-warning-soft text-warning" },
@@ -100,12 +102,19 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
 
         <TabsContent value="terreno" className="mt-4 grid gap-4 lg:grid-cols-[1fr_380px]">
           <Card className="overflow-hidden p-0">
-            <div className="grid h-[360px] place-items-center text-center text-sm text-ink-3">
-              <div>
-                <div className="mx-auto mb-2 size-8 rounded-full border-2 border-dashed border-ink-3 bg-surface-2" />
-                {u.hasGeometry ? "Polígono registrado; el visor se conecta en la siguiente iteración." : "Pendiente de ubicación. No se dibujan límites ficticios."}
+            {point ? (
+              <>
+                <div className="border-b px-4 py-2 text-xs text-ink-3">Ubicación del inmueble ({point.name}) · ± {point.precisionM ?? "?"} m · la unidad no tiene polígono propio</div>
+                <DevelopmentPointMap id={point.id} name={point.name} lon={point.lon} lat={point.lat} address={point.address} className="h-[360px] w-full" />
+              </>
+            ) : (
+              <div className="grid h-[360px] place-items-center text-center text-sm text-ink-3">
+                <div>
+                  <div className="mx-auto mb-2 size-8 rounded-full border-2 border-dashed border-ink-3 bg-surface-2" />
+                  Pendiente de ubicación. No se dibujan límites ficticios.
+                </div>
               </div>
-            </div>
+            )}
           </Card>
           <div className="space-y-4">
             <Card className="gap-3 p-4">

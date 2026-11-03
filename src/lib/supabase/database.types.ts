@@ -2388,6 +2388,28 @@ export type Database = {
           },
         ]
       }
+      development_points: {
+        Row: {
+          captured_at: string | null
+          development_id: string | null
+          geom_type: string | null
+          lat: number | null
+          lon: number | null
+          method: string | null
+          org_id: string | null
+          precision_m: number | null
+          source: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "geometries_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lease_terms_breakdown: {
         Row: {
           created_at: string | null

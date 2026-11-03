@@ -20,6 +20,8 @@ interface Props {
   className?: string;
   onSelect?: (p: MapFeatureProps | null) => void;
   selectedId?: string | null;
+  /** Ajusta el encuadre a todas las geometrías al cargar. */
+  fitToFeatures?: boolean;
 }
 
 // Base cartográfica libre (teselas OSM, solo para desarrollo/prototipo). El
@@ -48,7 +50,7 @@ if (typeof window !== "undefined") {
   maplibregl.setWorkerUrl("/maplibre-gl-worker.mjs");
 }
 
-export function PatrimonyMap({ features, center, zoom = 15, className, onSelect, selectedId }: Props) {
+export function PatrimonyMap({ features, center, zoom = 15, className, onSelect, selectedId, fitToFeatures = false }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MLMap | null>(null);
 
@@ -122,6 +124,43 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
         paint: { "text-color": "#000649", "text-halo-color": "#fff", "text-halo-width": 1 },
         minzoom: 16,
       });
+
+      // Puntos de inmueble (dirección geocodificada): círculo con etiqueta.
+      map.addLayer({
+        id: "dev-point",
+        type: "circle",
+        source: "patrimonio",
+        filter: ["all", ["==", ["get", "scope"], "desarrollo"], ["==", ["geometry-type"], "Point"]],
+        paint: {
+          "circle-radius": ["case", ["boolean", ["feature-state", "selected"], false], 10, 7],
+          "circle-color": "#00BBF4",
+          "circle-stroke-color": "#000649",
+          "circle-stroke-width": 2,
+        },
+      });
+      map.addLayer({
+        id: "dev-point-label",
+        type: "symbol",
+        source: "patrimonio",
+        filter: ["all", ["==", ["get", "scope"], "desarrollo"], ["==", ["geometry-type"], "Point"]],
+        layout: { "text-field": ["get", "name"], "text-size": 12, "text-font": ["Open Sans Regular", "Noto Sans Regular"], "text-offset": [0, 1.2], "text-anchor": "top" },
+        paint: { "text-color": "#000649", "text-halo-color": "#fff", "text-halo-width": 1.2 },
+      });
+      map.on("click", "dev-point", (e: MapLayerMouseEvent) => {
+        const f = e.features?.[0];
+        if (f) onSelect?.(f.properties as unknown as MapFeatureProps);
+      });
+      map.on("mouseenter", "dev-point", () => (map.getCanvas().style.cursor = "pointer"));
+      map.on("mouseleave", "dev-point", () => (map.getCanvas().style.cursor = ""));
+
+      if (fitToFeatures && features.features.length) {
+        const b = new maplibregl.LngLatBounds();
+        for (const f of features.features) {
+          if (f.geometry.type === "Point") b.extend(f.geometry.coordinates as [number, number]);
+          if (f.geometry.type === "Polygon") for (const c of f.geometry.coordinates[0]) b.extend(c as [number, number]);
+        }
+        map.fitBounds(b, { padding: 60, maxZoom: 15, duration: 0 });
+      }
 
       map.on("click", "unit-fill", (e: MapLayerMouseEvent) => {
         const f = e.features?.[0];

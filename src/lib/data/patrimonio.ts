@@ -311,3 +311,34 @@ export async function countOpenDiscrepancies() {
   const { count } = await supabase.from("import_discrepancies").select("id", { count: "exact", head: true }).eq("status", "open");
   return count ?? 0;
 }
+
+// ---------------------------------------------------------------- puntos para el mapa
+
+export interface DevelopmentPoint {
+  id: string;
+  code: string;
+  name: string;
+  city: string | null;
+  address: string | null;
+  lon: number;
+  lat: number;
+  precisionM: number | null;
+  source: string | null;
+  chartToken: string;
+  unitsStone: number;
+}
+
+export async function listDevelopmentPoints(): Promise<DevelopmentPoint[]> {
+  const supabase = await createClient();
+  const [{ data: pts }, devs] = await Promise.all([
+    supabase.from("development_points").select("development_id, lon, lat, precision_m, source"),
+    listDevelopmentRows(),
+  ]);
+  return (pts ?? [])
+    .map((p) => {
+      const d = devs.find((x) => x.id === p.development_id);
+      if (!d || p.lon == null || p.lat == null) return null;
+      return { id: d.id, code: d.code, name: d.name, city: d.city, address: d.address, lon: Number(p.lon), lat: Number(p.lat), precisionM: p.precision_m == null ? null : Number(p.precision_m), source: p.source, chartToken: d.chartToken, unitsStone: d.unitsStone };
+    })
+    .filter((x): x is DevelopmentPoint => !!x);
+}

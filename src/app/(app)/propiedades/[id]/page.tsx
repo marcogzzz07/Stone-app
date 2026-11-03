@@ -1,37 +1,34 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowUpRight, FileText, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { FacetCover } from "@/components/patrimonio/facet-cover";
 import { SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
-import { developments } from "@/lib/mock/data";
-import { docsOf, getDevelopment, surface, unitsOfDevelopment } from "@/lib/mock/queries";
-import { fmtM2, fmtMXN, fmtDate } from "@/lib/format";
-import { DevelopmentMap } from "./development-map";
+import { requireMember } from "@/lib/auth/session";
+import { getDevelopment } from "@/lib/data/patrimonio";
+import { OCCUPANCY_KEY, UNIT_KIND } from "@/lib/patrimonio/labels";
+import { fmtM2, fmtMXN } from "@/lib/format";
 
 export const instant = false;
 
-export function generateStaticParams() {
-  return developments.map((d) => ({ id: d.id }));
-}
-
 export default async function DevelopmentPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireMember();
   const { id } = await params;
-  const d = getDevelopment(id);
-  if (!d) notFound();
-  const us = unitsOfDevelopment(d.id);
+  const data = await getDevelopment(id);
+  if (!data) notFound();
+  const { dev: d, units: us } = data;
   const stone = us.filter((u) => !u.referenceOnly);
   const refs = us.filter((u) => u.referenceOnly);
-  const docs = docsOf("development", d.id);
+  const tone = (d.chartOrder ?? 1) % 2 ? "navy" : "cyan";
 
   return (
     <>
-      <FacetCover tone={d.coverTone} className="-mx-6 -mt-6 mb-6 h-56 lg:-mx-8">
+      <FacetCover tone={tone} className="-mx-6 -mt-6 mb-6 h-56 lg:-mx-8">
         <div className="absolute bottom-5 left-6 text-white lg:left-8">
           <h1 className="font-display text-[30px] leading-9 font-semibold">{d.name}</h1>
           <div className="mt-1 flex items-center gap-1.5 text-sm opacity-90">
-            <MapPin className="size-3.5" /> {d.address}, {d.city}
+            <MapPin className="size-3.5" /> {d.address ?? "Dirección por capturar"}{d.city ? `, ${d.city}` : ""}
           </div>
         </div>
         <div className="absolute bottom-5 right-6 grid grid-cols-2 gap-3 text-white lg:right-8">
@@ -48,12 +45,14 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
-          <Card className="overflow-hidden p-0">
-            <div className="border-b px-4 py-2 text-xs text-muted-foreground">
-              Croquis / distribución · Stone seleccionable, terceros solo contexto · perímetro {fmtM2(d.geometry.areaM2Est)} estimado
-            </div>
-            <DevelopmentMap devId={d.id} />
-          </Card>
+          {!d.hasGeometry && (
+            <Card className="grid h-40 place-items-center p-4 text-center text-sm text-ink-3">
+              <div>
+                <div className="mx-auto mb-2 size-8 rounded-full border-2 border-dashed border-ink-3 bg-surface-2" />
+                Sin ubicación capturada. No se dibujan croquis ni límites aproximados.
+              </div>
+            </Card>
+          )}
 
           <section>
             <SectionTitle hint="Operables: contratos, cobros, gastos y documentos">Unidades administradas por Stone</SectionTitle>
@@ -62,27 +61,25 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
                 <Link key={u.id} href={`/unidades/${u.id}`} className="group">
                   <Card className="h-full gap-2 p-4 transition-shadow group-hover:shadow-md">
                     <div className="flex items-center justify-between">
-                      <span className="font-mono text-xs text-muted-foreground">{u.code}</span>
-                      <OccupancyDot occupancy={u.occupancy} />
+                      <span className="font-mono text-xs text-ink-3">{u.code}</span>
+                      <OccupancyDot occupancy={OCCUPANCY_KEY[u.occupancy] ?? "desconocida"} />
                     </div>
-                    <div className="font-medium">{u.name.replace("[DEMO] ", "")}</div>
-                    <div className="text-xs capitalize text-muted-foreground">{u.kind}</div>
+                    <div className="font-medium">{u.name}</div>
+                    <div className="text-xs text-ink-3">{UNIT_KIND[u.kind] ?? u.kind}{u.tenantName ? ` · ${u.tenantName}` : ""}</div>
                     <div className="mt-1 flex items-end justify-between text-sm">
                       <div>
-                        <div className="text-[11px] text-muted-foreground">Sup. legal</div>
-                        <div className="tnum">{fmtM2(surface(u, "legal")?.valueM2)}</div>
+                        <div className="text-[11px] text-ink-3">Sup. rentable</div>
+                        <div className="tnum">{fmtM2(u.rentableM2)}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-[11px] text-muted-foreground">Renta de lista</div>
-                        <div className="tnum">{u.listRent != null ? fmtMXN(u.listRent) : "—"}</div>
+                        <div className="text-[11px] text-ink-3">{u.currentRent != null ? "Renta vigente" : "Renta de lista"}</div>
+                        <div className="tnum">{u.currentRent != null ? fmtMXN(u.currentRent) : u.listRent != null ? fmtMXN(u.listRent) : "-"}</div>
                       </div>
                     </div>
-                    {u.geometry.type === "pending" && (
-                      <DataStateBadge state="no_disponible" className="w-fit" />
-                    )}
                   </Card>
                 </Link>
               ))}
+              {stone.length === 0 && <p className="text-sm text-ink-3">Sin unidades Stone registradas.</p>}
             </div>
           </section>
 
@@ -92,11 +89,11 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
               <Card className="p-0">
                 <ul className="divide-y text-sm">
                   {refs.map((u) => (
-                    <li key={u.id} className="flex items-center gap-3 px-4 py-2.5 text-muted-foreground">
+                    <li key={u.id} className="flex items-center gap-3 px-4 py-2.5 text-ink-2">
                       <span className="font-mono text-xs">{u.code}</span>
-                      <span className="flex-1">{u.name}</span>
+                      <span className="flex-1">{u.name}{u.ownerName ? <span className="text-ink-3"> · {u.ownerName}</span> : null}</span>
                       <ScopeBadge referenceOnly />
-                      <span className="tnum text-xs">{fmtM2(surface(u, "gis_estimate")?.valueM2)} aprox.</span>
+                      <span className="tnum text-xs">{fmtM2(u.rentableM2)}</span>
                     </li>
                   ))}
                 </ul>
@@ -109,39 +106,18 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
           <Card className="gap-3 p-4">
             <SectionTitle>Resumen Stone</SectionTitle>
             <dl className="space-y-2 text-sm">
-              <Row k="Superficie legal Stone" v={fmtM2(stone.reduce((s, u) => s + (surface(u, "legal")?.valueM2 ?? 0), 0))} />
-              <Row k="Ocupadas / estado conocido" v={`${stone.filter((u) => u.occupancy === "ocupada").length} / ${stone.filter((u) => u.occupancy !== "desconocida").length}`} />
-              <Row k="Renta de lista agregada" v={fmtMXN(stone.reduce((s, u) => s + (u.listRent ?? 0), 0))} hint="No es ingreso" />
-              <Row k="Total físico del desarrollo" v={`${us.length} unidades`} hint="Reportado aparte" />
+              <Row k="Superficie rentable Stone" v={fmtM2(d.rentableM2 || null)} hint="Del reporte; por verificar contra planos" />
+              <Row k="Ocupadas / con estado" v={`${d.unitsOccupied} / ${stone.filter((u) => u.occupancy !== "unknown").length}`} />
+              <Row k="Renta pactada vigente" v={d.pactadoRent ? fmtMXN(d.pactadoRent) : "-"} hint="Contratos activos · con IVA · no es ingreso" />
+              <Row k="Total físico" v={`${us.length} unidades`} />
             </dl>
-            <p className="text-[11px] text-muted-foreground">{d.ownersNote}</p>
+            {d.description && <p className="text-[11px] text-ink-3">{d.description}</p>}
           </Card>
 
           <Card className="gap-3 p-4">
-            <SectionTitle>Propietarios documentados</SectionTitle>
-            <p className="text-sm text-muted-foreground">
-              Se muestran solo titulares con fuente documental. En el prototipo: Propietaria Alfa e Inversiones Beta (demo). Terceros no se identifican.
-            </p>
-            <DataStateBadge state="por_verificar" className="w-fit" />
-          </Card>
-
-          <Card className="gap-3 p-4">
-            <SectionTitle hint={`${docs.length}`}>Documentos del desarrollo</SectionTitle>
-            <ul className="space-y-2 text-sm">
-              {docs.map((doc) => (
-                <li key={doc.id} className="flex items-start gap-2">
-                  <FileText className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate">{doc.name}</div>
-                    <div className="text-xs text-muted-foreground">v{doc.version} · {fmtDate(doc.updatedAt)} · {doc.sensitivity}</div>
-                  </div>
-                </li>
-              ))}
-              {docs.length === 0 && <li className="text-muted-foreground">Sin documentos cargados.</li>}
-            </ul>
-            <Link href="/documentos" className="inline-flex items-center gap-1 text-xs text-info hover:underline">
-              Ir a documentos <ArrowUpRight className="size-3" />
-            </Link>
+            <SectionTitle>Datos legales</SectionTitle>
+            <p className="text-sm text-ink-2">Escrituras, folio real y clave catastral no vienen en el reporte mensual; se capturan desde los documentos del expediente.</p>
+            <DataStateBadge state="no_disponible" className="w-fit" />
           </Card>
         </aside>
       </div>
@@ -152,10 +128,10 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
 function Row({ k, v, hint }: { k: string; v: string; hint?: string }) {
   return (
     <div className="flex items-baseline justify-between gap-3">
-      <dt className="text-muted-foreground">{k}</dt>
+      <dt className="text-ink-2">{k}</dt>
       <dd className="tnum text-right font-medium">
         {v}
-        {hint && <div className="text-[11px] font-normal text-muted-foreground">{hint}</div>}
+        {hint && <div className="text-[11px] font-normal text-ink-3">{hint}</div>}
       </dd>
     </div>
   );

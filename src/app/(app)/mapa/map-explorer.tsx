@@ -1,27 +1,28 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Layers, Satellite } from "lucide-react";
+import type { FeatureCollection } from "geojson";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PatrimonyMap, type MapFeatureProps } from "@/components/mapa/patrimony-map";
+import { PatrimonyMap } from "@/components/mapa/patrimony-map";
 import { MapLegend } from "@/components/mapa/map-legend";
-import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
-import { allFeatures } from "@/lib/mock/geo";
-import { developments, units } from "@/lib/mock/data";
-import { getDevelopment, surface } from "@/lib/mock/queries";
-import { fmtM2, fmtMXN } from "@/lib/format";
+import { ScopeBadge } from "@/components/patrimonio/data-state-badge";
+import { fmtM2 } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-export function MapExplorer() {
-  const features = useMemo(() => allFeatures(), []);
+export interface MapDevelopment { id: string; name: string; city: string | null; hasGeometry: boolean }
+export interface MapUnit { id: string; code: string; name: string; developmentId: string | null; referenceOnly: boolean; rentableM2: number | null; hasGeometry: boolean }
+
+// Centro provisional (Monterrey) mientras no haya geometrías capturadas.
+const DEFAULT_CENTER: [number, number] = [-100.3161, 25.6866];
+const EMPTY: FeatureCollection = { type: "FeatureCollection", features: [] };
+
+export function MapExplorer({ developments, units }: { developments: MapDevelopment[]; units: MapUnit[] }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "stone" | "pending">("all");
-
-  const list = units.filter((u) =>
-    filter === "all" ? true : filter === "stone" ? !u.referenceOnly : u.geometry.type === "pending",
-  );
+  const list = units.filter((u) => (filter === "all" ? true : filter === "stone" ? !u.referenceOnly : !u.hasGeometry));
   const sel = units.find((u) => u.id === selected);
 
   return (
@@ -29,20 +30,14 @@ export function MapExplorer() {
       <div className="space-y-3">
         <Card className="overflow-hidden p-0">
           <div className="flex items-center gap-2 border-b px-3 py-2 text-xs">
-            <Layers className="size-4 text-muted-foreground" />
-            <span className="font-medium">Capas visibles:</span>            <span>Desarrollos</span>·<span>Unidades Stone</span>·<span>Referencia</span>
+            <Layers className="size-4 text-ink-3" strokeWidth={1.5} />
+            <span className="font-medium">Capas:</span>
+            <span>Inmuebles</span>·<span>Unidades Stone</span>·<span>Referencia</span>
             <Button variant="outline" size="sm" className="ml-auto h-7 gap-1 text-xs" disabled>
               <Satellite className="size-3.5" /> Satélite (proveedor por definir)
             </Button>
           </div>
-          <PatrimonyMap
-            features={features}
-            center={[-100.318, 25.668]}
-            zoom={12.6}
-            className="h-[520px] w-full"
-            selectedId={selected}
-            onSelect={(p: MapFeatureProps | null) => setSelected(p?.id ?? null)}
-          />
+          <PatrimonyMap features={EMPTY} center={DEFAULT_CENTER} zoom={11} className="h-[520px] w-full" selectedId={selected} onSelect={(p) => setSelected(p?.id ?? null)} />
           <div className="border-t px-3 py-2">
             <MapLegend />
           </div>
@@ -53,77 +48,37 @@ export function MapExplorer() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs text-muted-foreground">{sel.code}</span>
+                  <span className="font-mono text-xs text-ink-3">{sel.code}</span>
                   <ScopeBadge referenceOnly={sel.referenceOnly} />
                 </div>
                 <h3 className="mt-1 text-lg font-semibold tracking-tight">{sel.name}</h3>
-                <div className="text-sm text-muted-foreground">
-                  {sel.developmentId ? getDevelopment(sel.developmentId)?.name : "Propiedad independiente"} · {sel.kind}
+                <div className="text-sm text-ink-2">
+                  {developments.find((d) => d.id === sel.developmentId)?.name ?? "Propiedad independiente"} · {fmtM2(sel.rentableM2)} rentables
                 </div>
+                <p className="mt-2 text-xs text-ink-3">{sel.hasGeometry ? "Con polígono verificado." : "Sin polígono: pendiente de capturar la ubicación."}</p>
               </div>
               {!sel.referenceOnly && (
                 <Button asChild size="sm">
-                  <Link href={`/unidades/${sel.id}`}>
-                    Ver expediente <ArrowUpRight className="size-3.5" />
-                  </Link>
+                  <Link href={`/unidades/${sel.id}`}>Ver expediente <ArrowUpRight className="size-3.5" /></Link>
                 </Button>
               )}
             </div>
-            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-              {(["legal", "rentable", "gis_estimate"] as const).map((k) => {
-                const s = surface(sel, k);
-                return (
-                  <div key={k}>
-                    <dt className="text-xs text-muted-foreground">
-                      {k === "legal" ? "Superficie legal" : k === "rentable" ? "Rentable" : "Área GIS estimada"}
-                    </dt>
-                    <dd className="tnum font-medium">{fmtM2(s?.valueM2)}</dd>
-                    {s && <DataStateBadge state={s.state} className="mt-1" />}
-                  </div>
-                );
-              })}
-              <div>
-                <dt className="text-xs text-muted-foreground">Estado</dt>
-                <dd><OccupancyDot occupancy={sel.occupancy} /></dd>
-                {!sel.referenceOnly && sel.listRent != null && (
-                  <dd className="tnum mt-1 text-xs text-muted-foreground">Renta de lista {fmtMXN(sel.listRent)}</dd>
-                )}
-              </div>
-            </dl>
-            {sel.referenceOnly && (
-              <p className="mt-3 rounded-md bg-surface-2 p-2 text-xs text-muted-foreground">
-                Unidad de terceros: solo contexto del desarrollo. Sin contratos, movimientos ni documentos.
-              </p>
-            )}
           </Card>
         )}
       </div>
 
       <Card className="flex max-h-[720px] flex-col p-0">
         <div className="flex items-center gap-1 border-b p-2">
-          {(
-            [
-              ["all", "Todo"],
-              ["stone", "Stone"],
-              ["pending", "Pendiente de trazo"],
-            ] as const
-          ).map(([k, l]) => (
-            <button
-              key={k}
-              onClick={() => setFilter(k)}
-              className={cn(
-                "rounded-md px-2.5 py-1 text-xs",
-                filter === k ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted",
-              )}
-            >
+          {([["all", "Todo"], ["stone", "Stone"], ["pending", "Sin ubicación"]] as const).map(([k, l]) => (
+            <button key={k} onClick={() => setFilter(k)} className={cn("rounded-md px-2.5 py-1 text-xs", filter === k ? "bg-primary text-primary-foreground" : "text-ink-2 hover:bg-surface-2")}>
               {l}
             </button>
           ))}
         </div>
         <ul className="flex-1 divide-y overflow-auto">
           {developments.map((d) => (
-            <li key={d.id} className="bg-muted/40 px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-              {d.name}
+            <li key={d.id} className="bg-surface-2/60 px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-ink-3">
+              {d.name}{d.hasGeometry ? "" : " · sin ubicación"}
               <ul className="mt-1 -mx-3 divide-y normal-case tracking-normal">
                 {list.filter((u) => u.developmentId === d.id).map((u) => (
                   <UnitRow key={u.id} u={u} selected={selected === u.id} onSelect={() => setSelected(u.id)} />
@@ -131,43 +86,30 @@ export function MapExplorer() {
               </ul>
             </li>
           ))}
-          <li className="bg-muted/40 px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            Independientes
-            <ul className="mt-1 -mx-3 divide-y normal-case tracking-normal">
-              {list.filter((u) => !u.developmentId).map((u) => (
-                <UnitRow key={u.id} u={u} selected={selected === u.id} onSelect={() => setSelected(u.id)} />
-              ))}
-            </ul>
-          </li>
+          {list.some((u) => !u.developmentId) && (
+            <li className="bg-surface-2/60 px-3 py-1.5 text-[11px] font-medium uppercase tracking-wider text-ink-3">
+              Independientes
+              <ul className="mt-1 -mx-3 divide-y normal-case tracking-normal">
+                {list.filter((u) => !u.developmentId).map((u) => (
+                  <UnitRow key={u.id} u={u} selected={selected === u.id} onSelect={() => setSelected(u.id)} />
+                ))}
+              </ul>
+            </li>
+          )}
         </ul>
       </Card>
     </div>
   );
 }
 
-function UnitRow({ u, selected, onSelect }: { u: (typeof units)[number]; selected: boolean; onSelect: () => void }) {
+function UnitRow({ u, selected, onSelect }: { u: MapUnit; selected: boolean; onSelect: () => void }) {
   return (
     <li>
-      <button
-        onClick={onSelect}
-        className={cn(
-          "flex w-full items-center gap-3 bg-card px-3 py-2 text-left text-sm hover:bg-info-soft/70",
-          selected && "bg-info-soft",
-        )}
-      >
-        <span
-          className={cn(
-            "size-2.5 shrink-0 rounded-sm",
-            u.geometry.type === "pending"
-              ? "border-2 border-dashed border-muted-foreground bg-muted"
-              : u.referenceOnly
-                ? "border border-dashed border-chart-3 bg-chart-3/20"
-                : "bg-brand-cyan/60 border border-brand-cyan",
-          )}
-        />
-        <span className="font-mono text-xs text-muted-foreground">{u.code}</span>
-        <span className="min-w-0 flex-1 truncate">{u.name.replace("[DEMO] ", "")}</span>
-        <span className="tnum text-xs text-muted-foreground">{fmtM2(surface(u, "legal")?.valueM2 ?? surface(u, "gis_estimate")?.valueM2)}</span>
+      <button onClick={onSelect} className={cn("flex w-full items-center gap-3 bg-card px-3 py-2 text-left text-sm hover:bg-info-soft/70", selected && "bg-info-soft")}>
+        <span className={cn("size-2.5 shrink-0 rounded-sm", !u.hasGeometry ? "border-2 border-dashed border-ink-3 bg-surface-2" : u.referenceOnly ? "border border-dashed border-chart-3 bg-chart-3/20" : "border border-brand-cyan bg-brand-cyan/60")} />
+        <span className="font-mono text-xs text-ink-3">{u.code}</span>
+        <span className="min-w-0 flex-1 truncate">{u.name}</span>
+        <span className="tnum text-xs text-ink-3">{fmtM2(u.rentableM2)}</span>
       </button>
     </li>
   );

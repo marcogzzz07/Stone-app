@@ -20,7 +20,6 @@ import {
   Settings,
   type LucideIcon,
 } from "lucide-react";
-import { importDiscrepancies } from "@/lib/mock/data";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/app/(auth)/login/actions";
 import {
@@ -39,6 +38,8 @@ export interface ShellUser {
   initials: string;
   role: "admin" | "operator" | "viewer";
   roleLabel: string;
+  /** Discrepancias de importación abiertas (badge de Notificaciones). */
+  pending?: number;
 }
 
 interface NavItem {
@@ -194,13 +195,12 @@ export function SidebarFooter({
   user: ShellUser;
 }) {
   const isActive = useActive();
-  const pending = importDiscrepancies.length;
   return (
     <div className="mt-auto border-t border-sidebar-border px-3 pb-3 pt-2">
       <ul className="flex flex-col gap-0.5">
         {BOTTOM.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
-          const count = href === "/notificaciones" ? pending : 0;
+          const count = href === "/notificaciones" ? (user.pending ?? 0) : 0;
           return (
             <li key={href}>
               <Link

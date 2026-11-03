@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Check, X } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -24,9 +25,8 @@ const ROLES = [
 ] as const;
 
 const SOT = [
-  { scope: "[DEMO] Plaza Ejemplo Norte", from: "2026-01", source: "excel", by: "—" },
-  { scope: "[DEMO] Torre Prototipo", from: "2026-10", source: "stone (piloto)", by: "admin demo" },
-  { scope: "[DEMO] Terreno Baldío Sur", from: "2026-01", source: "stone", by: "admin demo" },
+  { scope: "Todos los inmuebles · enero a septiembre 2026", from: "2026-01", source: "excel", by: "Marco (carga histórica, 2 nov 2026)" },
+  { scope: "Todos los inmuebles · octubre 2026 en adelante", from: "2026-10", source: "stone", by: "Marco" },
 ];
 
 function Mark({ v }: { v: boolean | string }) {
@@ -182,7 +182,8 @@ export default async function ConfiguracionPage() {
 
           <Card className="gap-2 p-4">
             <SectionTitle>Importaciones</SectionTitle>
-            <p className="text-sm text-muted-foreground">Wizard XLSX/CSV con archivo inmutable, mapeo, validación, clasificación de filas y aprobación por fila o lote. Se construye en Iteración 2, una vez recibido el Excel original.</p>
+            <p className="text-sm text-muted-foreground">El histórico del reporte mensual ya está cargado. Las diferencias que no cuadraron entre hojas se revisan y se marcan una por una.</p>
+            <Button asChild variant="outline" className="w-fit"><Link href="/configuracion/importaciones">Ver cargas y discrepancias</Link></Button>
           </Card>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { DataState } from "@/lib/mock/types";
+export type DataState = "confirmado" | "por_verificar" | "no_disponible";
 
 // Etiquetas de estado del design system (stone-design-system/components/Badge.md):
 // píldora con punto y texto; success / info / neutro. Ámbar y rojo quedan

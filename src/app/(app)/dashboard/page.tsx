@@ -1,179 +1,219 @@
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, CalendarDays, Download, MoreHorizontal, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowRight, CalendarDays, Sparkles } from "lucide-react";
 import { KpiVisual, StatCell } from "@/components/patrimonio/kpi-visual";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Notice } from "@/components/forms/notice";
 import { DeltaChip, MiniBars, Ring, Sparkline, StackedBar, UnitDots } from "@/components/charts/mini";
 import { TrendChart } from "@/components/charts/trend-chart";
-import { CURRENT_PERIOD, TODAY, developments, importDiscrepancies, units } from "@/lib/mock/data";
-import {
-  agingBuckets,
-  chargesOfPeriod,
-  monthlySeries,
-  occupancyStats,
-  overdueTotal,
-  periodCollection,
-  scheduledRent,
-  stoneUnits,
-  totalOutstanding,
-  unappliedPayments,
-  upcomingDates,
-} from "@/lib/mock/queries";
+import { hasRole, requireMember } from "@/lib/auth/session";
+import { listCharges, listExpenses, listPayments, type ChargeRow } from "@/lib/data/rentas";
+import { listCriticalDates, listDevelopmentRows, listDiscrepancies, listUnitRows } from "@/lib/data/patrimonio";
+import { OCCUPANCY_KEY } from "@/lib/patrimonio/labels";
 import { daysUntil, fmtDate, fmtMXN, fmtPct, fmtPeriod } from "@/lib/format";
+import { todayIso } from "@/lib/rentas/labels";
 
-export default function DashboardPage() {
-  const pc = periodCollection(CURRENT_PERIOD);
-  const prev = periodCollection("2026-09-01");
-  const series = monthlySeries();
-  const occ = occupancyStats();
-  const unapplied = unappliedPayments().reduce((s, p) => s + p.unapplied, 0);
-  const period = fmtPeriod(CURRENT_PERIOD);
+export const instant = false;
+
+function periodMetrics(charges: ChargeRow[], period: string) {
+  const cs = charges.filter((c) => c.period === period && c.status !== "void");
+  const exigible = cs.reduce((s, c) => s + c.netTotal, 0);
+  const applied = cs.reduce((s, c) => s + c.paid, 0);
+  return { exigible, applied, pending: exigible - applied, ratio: exigible ? applied / exigible : 0, count: cs.length };
+}
+
+function greeting(name: string) {
+  const h = new Date().getHours();
+  const g = h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches";
+  const first = name.trim().split(/\s+/)[0] || "";
+  return first ? `${g}, ${first}` : g;
+}
+
+export default async function DashboardPage() {
+  const me = await requireMember();
+  const canOperate = hasRole(me.membership.role, "operator");
+  const today = todayIso();
+
+  const [devs, units, dates, discrepancies, charges, payments, expenses] = await Promise.all([
+    listDevelopmentRows(),
+    listUnitRows(),
+    listCriticalDates(),
+    listDiscrepancies(),
+    canOperate ? listCharges() : Promise.resolve([] as ChargeRow[]),
+    canOperate ? listPayments() : Promise.resolve([]),
+    canOperate ? listExpenses() : Promise.resolve([]),
+  ]);
+
+  const periods = [...new Set(charges.map((c) => c.period))].sort();
+  const currentPeriod = periods[periods.length - 1] ?? `${today.slice(0, 7)}-01`;
+  const prevPeriod = periods[periods.length - 2] ?? null;
+  const pc = periodMetrics(charges, currentPeriod);
+  const prev = prevPeriod ? periodMetrics(charges, prevPeriod) : null;
+  const series = periods.slice(-9).map((p) => {
+    const m = periodMetrics(charges, p);
+    const ym = p.slice(0, 7);
+    return {
+      period: p,
+      cargos: m.exigible,
+      cobrosAplicados: m.applied,
+      cobrosCaja: payments.filter((x) => x.effectiveDate.startsWith(ym)).reduce((s, x) => s + x.amount, 0),
+      gastos: expenses.filter((e) => e.period === p).reduce((s, e) => s + e.total, 0),
+    };
+  });
+  const outstanding = charges.filter((c) => c.status !== "void").reduce((s, c) => s + Math.max(0, c.balance), 0);
+  const overdue = charges.filter((c) => c.status === "overdue").reduce((s, c) => s + c.balance, 0);
+  const unapplied = payments.reduce((s, p) => s + p.unapplied, 0);
+  const pactado = devs.reduce((s, d) => s + d.pactadoRent, 0);
   const delta = (a: number, b: number) => (b ? ((a - b) / b) * 100 : 0);
 
-  // Cargos del período por desarrollo (solo unidades Stone).
-  const byDev = developments.map((d, i) => ({
+  const stone = units.filter((u) => !u.referenceOnly && u.kind !== "terreno");
+  const known = stone.filter((u) => u.occupancy !== "unknown");
+  const occupied = known.filter((u) => u.occupancy === "occupied");
+  const occRatio = known.length ? occupied.length / known.length : 0;
+
+  const byDev = devs.map((d) => ({
     id: d.id,
-    name: d.name.replace("[DEMO] ", ""),
-    value: chargesOfPeriod(CURRENT_PERIOD)
-      .filter((c) => units.find((u) => u.id === c.unitId)?.developmentId === d.id)
-      .reduce((s, c) => s + c.total, 0),
-    color: ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)", "var(--chart-6)", "var(--chart-7)"][i] ?? "var(--chart-3)",
+    name: d.name,
+    value: charges.filter((c) => c.period === currentPeriod && c.status !== "void" && c.developmentName === d.name).reduce((s, c) => s + c.netTotal, 0),
+    color: `var(--${d.chartToken})`,
   }));
-  const byDevTotal = byDev.reduce((s, d) => s + d.value, 0) || 1;
-  const nextDate = upcomingDates(TODAY, 1)[0];
-  const topIssue = importDiscrepancies[0];
+  const byDevSum = byDev.reduce((s, d) => s + d.value, 0);
+  const byDevTotal = byDevSum || 1;
+
+  const nextDate = dates.filter((d) => !d.done && d.dueOn >= today)[0];
+  const openIssues = discrepancies.filter((d) => d.status === "open");
+  const period = fmtPeriod(currentPeriod);
+  const last = series[series.length - 1];
 
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[30px] leading-9 font-semibold text-ink">
-            Buenas noches, Marco
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">Así va el patrimonio de Stone en {period.toLowerCase()}.</p>
+          <h1 className="font-display text-[30px] leading-9 font-semibold text-ink">{greeting(me.fullName)}</h1>
+          <p className="mt-1 text-sm text-ink-2">Así va el patrimonio de Stone con corte a {period.toLowerCase()}.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-md border bg-card p-0.5 text-sm">
-            {["Mes", "Trimestre", "Año"].map((o, i) => (
-              <button
-                key={o}
-                type="button"
-                className={`rounded-[5px] px-3 py-1 ${i === 0 ? "bg-primary text-on-primary" : "text-muted-foreground hover:bg-muted"}`}
-                aria-pressed={i === 0}
-              >
-                {o}
-              </button>
-            ))}
-          </div>
-          <Button variant="outline" size="sm"><CalendarDays className="size-4" /> {period}</Button>
-          <Button size="sm"><Download className="size-4" /> Exportar</Button>
-        </div>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/rentas"><CalendarDays className="size-4" /> {period}</Link>
+        </Button>
       </div>
+
+      {!canOperate && (
+        <Notice tone="info" title="Vista de consulta">Las cifras de cobranza solo se muestran a Administración y al Administrador.</Notice>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiVisual
           label="Renta pactada"
-          value={fmtMXN(scheduledRent(CURRENT_PERIOD))}
-          info="Monto pactado en contratos activos. No es ingreso."
-          visual={<Sparkline values={series.map((s) => s.cargos)} />}
-          delta={<DeltaChip value={delta(pc.exigible, prev.exigible)} />}
-          foot="vs mes anterior"
+          value={fmtMXN(pactado)}
+          info="Suma de la renta mensual con IVA de los contratos activos, según su condición vigente. No es ingreso."
+          visual={series.length > 1 ? <Sparkline values={series.map((s) => s.cargos)} /> : undefined}
+          foot={`${devs.length} inmuebles · ${units.filter((u) => !u.referenceOnly).length} unidades Stone`}
         />
         <KpiVisual
           label="Cobranza del período"
-          value={fmtPct(pc.ratio * 100)}
-          info="Pagos aplicados a cargos del período ÷ exigible. MXN con IVA."
-          visual={<Ring ratio={pc.ratio} />}
-          delta={<DeltaChip value={delta(pc.ratio, prev.ratio)} />}
-          foot={`${fmtMXN(pc.applied)} cobrado de ${fmtMXN(pc.exigible)}`}
+          value={canOperate ? fmtPct(pc.ratio * 100) : "—"}
+          info="Pagos aplicados a cargos del período ÷ facturado del período. MXN con IVA."
+          visual={canOperate ? <Ring ratio={pc.ratio} /> : undefined}
+          delta={prev ? <DeltaChip value={delta(pc.ratio, prev.ratio)} /> : undefined}
+          foot={canOperate ? `${fmtMXN(pc.applied)} cobrado de ${fmtMXN(pc.exigible)}` : undefined}
         />
         <KpiVisual
           label="Saldo por cobrar"
-          value={fmtMXN(totalOutstanding())}
-          info="Exigible − aplicaciones − ajustes, todos los períodos."
-          visual={<MiniBars values={agingBuckets(TODAY).map((b) => b.amount)} />}
-          delta={<span className="num rounded-md bg-danger-soft px-1.5 py-0.5 text-[11px] font-semibold text-danger">{fmtMXN(overdueTotal(TODAY))} vencido</span>}
-          foot={`${fmtMXN(unapplied)} sin aplicar`}
+          value={canOperate ? fmtMXN(outstanding) : "—"}
+          info="Facturado − pagado − ajustes, todos los períodos, al día de hoy."
+          visual={canOperate && series.length ? <MiniBars values={series.map((s) => Math.max(0, s.cargos - s.cobrosAplicados))} /> : undefined}
+          delta={overdue > 0 ? <span className="num rounded-md bg-danger-soft px-1.5 py-0.5 text-[11px] font-semibold text-danger">{fmtMXN(overdue)} vencido</span> : undefined}
+          foot={canOperate ? `${fmtMXN(unapplied)} sin aplicar` : undefined}
         />
         <KpiVisual
           label="Ocupación Stone"
-          value={fmtPct(occ.ratio * 100)}
-          info={`${occ.occupied} ocupadas de ${occ.known} con estado conocido; ${occ.unknown} sin validar.`}
-          visual={<UnitDots states={stoneUnits().filter((u) => u.kind !== "terreno").map((u) => u.occupancy)} />}
-          delta={<span className="text-[11px] text-muted-foreground">{stoneUnits().length} unidades · {developments.length} desarrollos</span>}
+          value={fmtPct(occRatio * 100)}
+          info={`${occupied.length} ocupadas de ${known.length} con estado conocido; ${stone.length - known.length} sin validar. Excluye terrenos y unidades de terceros.`}
+          visual={<UnitDots states={stone.map((u) => OCCUPANCY_KEY[u.occupancy] ?? "desconocida")} />}
+          foot={`${stone.length} unidades operables`}
         />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-3">
         <Card className="gap-0 p-0 xl:col-span-2">
           <div className="flex items-center justify-between border-b px-5 py-3">
-            <h2 className="text-xs font-medium tracking-wider text-muted-foreground uppercase">Cargos vs. cobrado</h2>
-            <Button variant="ghost" size="icon-sm" aria-label="Más opciones"><MoreHorizontal className="size-4" /></Button>
+            <h2 className="text-xs font-medium tracking-wider text-ink-3 uppercase">Facturado vs. cobrado</h2>
+            <span className="text-[11px] text-ink-3">MXN con IVA · por período de cargo</span>
           </div>
-          <div className="flex flex-wrap items-end justify-between gap-3 px-5 pt-4">
-            <div>
-              <div className="text-sm text-muted-foreground">Cargos de {period.toLowerCase()}</div>
-              <div className="flex items-center gap-2">
-                <span className="num text-3xl font-semibold">{fmtMXN(pc.exigible)}</span>
-                <DeltaChip value={delta(pc.exigible, prev.exigible)} />
+          {canOperate && series.length ? (
+            <>
+              <div className="flex flex-wrap items-end justify-between gap-3 px-5 pt-4">
+                <div>
+                  <div className="text-sm text-ink-2">Facturado en {period.toLowerCase()}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="num text-3xl font-semibold">{fmtMXN(pc.exigible)}</span>
+                    {prev && <DeltaChip value={delta(pc.exigible, prev.exigible)} />}
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-xs">
+                  <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-chart-1" /> Facturado</span>
+                  <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-chart-2" /> Cobrado</span>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-4 text-xs">
-              <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-chart-1" /> Cargos</span>
-              <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-chart-2" /> Cobrado</span>
-            </div>
-          </div>
-          <div className="px-2 pt-2">
-            <TrendChart data={series} />
-          </div>
-          <div className="grid grid-cols-3 divide-x border-t text-sm">
-            <StatCell label="Pendiente del período" value={fmtMXN(pc.pending)} />
-            <StatCell label="Cobros recibidos en el mes" value={fmtMXN(series[series.length - 1].cobrosCaja)} />
-            <StatCell label="Gastos del mes" value={fmtMXN(series[series.length - 1].gastos)} />
-          </div>
+              <div className="px-2 pt-2">
+                <TrendChart data={series} />
+              </div>
+              <div className="grid grid-cols-3 divide-x border-t text-sm">
+                <StatCell label="Pendiente del período" value={fmtMXN(pc.pending)} />
+                <StatCell label="Cobros recibidos en el mes" value={fmtMXN(last?.cobrosCaja ?? 0)} />
+                <StatCell label="Gastos del mes" value={fmtMXN(last?.gastos ?? 0)} />
+              </div>
+            </>
+          ) : (
+            <div className="grid h-64 place-items-center text-sm text-ink-3">{canOperate ? "Sin cargos registrados." : "Sin acceso a cobranza con tu rol."}</div>
+          )}
         </Card>
 
         <Card className="gap-0 p-0">
           <div className="flex items-center justify-between border-b px-5 py-3">
-            <h2 className="text-xs font-medium tracking-wider text-muted-foreground uppercase">Cargos por desarrollo</h2>
-            <Button variant="ghost" size="icon-sm" aria-label="Más opciones"><MoreHorizontal className="size-4" /></Button>
+            <h2 className="text-xs font-medium tracking-wider text-ink-3 uppercase">Facturado por inmueble</h2>
           </div>
           <div className="space-y-4 px-5 py-4">
             <div>
-              <div className="text-sm text-muted-foreground">{period}</div>
-              <div className="num text-3xl font-semibold">{fmtMXN(byDevTotal)}</div>
+              <div className="text-sm text-ink-2">{period}</div>
+              <div className="num text-3xl font-semibold">{canOperate ? fmtMXN(byDevSum) : "—"}</div>
             </div>
-            <StackedBar parts={byDev} />
+            {canOperate && <StackedBar parts={byDev} />}
             <ul className="divide-y text-sm">
               {byDev.map((d) => (
                 <li key={d.id} className="flex items-center gap-3 py-2.5">
                   <span className="size-2.5 rounded-sm" style={{ background: d.color }} />
                   <Link href={`/propiedades/${d.id}`} className="flex-1 hover:underline">{d.name}</Link>
-                  <span className="num">{fmtMXN(d.value)}</span>
-                  <span className="num w-10 text-right text-xs text-muted-foreground">{Math.round((d.value / byDevTotal) * 100)} %</span>
+                  {canOperate && (
+                    <>
+                      <span className="num">{fmtMXN(d.value)}</span>
+                      <span className="num w-10 text-right text-xs text-ink-3">{Math.round((d.value / byDevTotal) * 100)} %</span>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>
-            <Link href="/rentas" className="flex items-center gap-3 rounded-lg border bg-warning-soft px-3 py-2.5 text-sm hover:bg-warning-soft/70">
-              <AlertTriangle className="size-4 shrink-0 text-warning" />
-              <span className="flex-1 leading-snug">{topIssue.title}: {fmtMXN(topIssue.amount ?? 0)} por conciliar</span>
-              <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
-            </Link>
+            {openIssues.length > 0 && (
+              <Link href="/configuracion/importaciones" className="flex items-center gap-3 rounded-lg border bg-warning-soft px-3 py-2.5 text-sm hover:bg-warning-soft/70">
+                <AlertTriangle className="size-4 shrink-0 text-warning" />
+                <span className="flex-1 leading-snug">{openIssues.length} discrepancias de importación por revisar</span>
+                <ArrowRight className="size-4 shrink-0 text-ink-3" />
+              </Link>
+            )}
             {nextDate && (
               <Link href="/calendario" className="flex items-center gap-3 rounded-lg border bg-info-soft px-3 py-2.5 text-sm hover:bg-info-soft/70">
                 <Sparkles className="size-4 shrink-0 text-info" />
-                <span className="flex-1 leading-snug">{nextDate.title.replace("[DEMO] ", "")} · en {daysUntil(nextDate.date)} días</span>
-                <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+                <span className="flex-1 leading-snug">{nextDate.title} · en {daysUntil(nextDate.dueOn, today)} días</span>
+                <ArrowRight className="size-4 shrink-0 text-ink-3" />
               </Link>
             )}
           </div>
         </Card>
       </div>
 
-      <p className="text-[11px] text-muted-foreground">
-        Datos sintéticos [DEMO] · MXN con IVA · al {fmtDate(TODAY)} · excluye unidades de terceros.
+      <p className="text-[11px] text-ink-3">
+        Histórico importado del reporte mensual (Excel) con corte a {period.toLowerCase()} · MXN con IVA · al {fmtDate(today)} · excluye unidades de terceros.
       </p>
     </div>
   );
 }
-

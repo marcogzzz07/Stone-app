@@ -69,6 +69,14 @@ de prueba.
 4. **Authentication → Users → Invite user:** invitar a `ma.gonzalez@gs.com.mx` y `p.cabada@gs.com.mx`. Sus invitaciones ya existen en `public.invitations` (admin y operator); al crearse el usuario, el trigger les da la membresía.
 5. Opcional: copiar la **service-role key** a `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` (nunca al repo). Con ella, las invitaciones se envían desde Configuración en la plataforma; sin ella, se registran ahí y el correo se manda desde el dashboard.
 
+## Informe mensual
+
+`/informes` reconstruye el PowerPoint mensual desde la base (`src/lib/data/informe.ts`) y
+`/informes/descargar?mes=YYYY-MM-01` lo genera con `pptxgenjs` (`src/lib/informe/pptx.ts`).
+Definiciones: pactado = condición vigente de contratos activos (los activos con fecha de fin
+pasada siguen contando); cobrado = aplicaciones a cargos del período; pendiente del año =
+facturado − pagado de facturas de renta (el Excel usa pactado × meses − pagado con ajustes).
+
 ## Flujo de acceso en la app
 
 - `src/proxy.ts` refresca la sesión y manda a `/login` a quien no la tenga.

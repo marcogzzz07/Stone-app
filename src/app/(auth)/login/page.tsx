@@ -1,4 +1,5 @@
 import { LoginForm } from "./login-form";
+import { HashSession } from "./hash-session";
 
 export const instant = false;
 
@@ -11,6 +12,7 @@ export default async function LoginPage({
   const next = sp.next && sp.next.startsWith("/") ? sp.next : "/dashboard";
   return (
     <>
+      <HashSession next={next} />
       <h1 className="text-[22px] leading-7">Iniciar sesión</h1>
       <p className="mb-5 mt-1 text-sm text-ink-2">Usa el correo con el que te invitaron.</p>
       <LoginForm next={next} initialError={sp.error} />

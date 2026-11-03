@@ -44,9 +44,7 @@ importar datos reales.
 
 1. **Authentication → Sign In / Providers → Email:** desactivar "Allow new users to sign up". El ingreso es solo por invitación.
 2. **Authentication → URL Configuration:** Site URL `http://localhost:3000` mientras no haya despliegue; agregar `http://localhost:3000/auth/callback` (y después la URL de Vercel) en Redirect URLs.
-3. **Authentication → Emails → Invite user:** cambiar el enlace del template a
-   `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite`
-   (y en *Magic Link* a `...&type=magiclink`). Sin esto, el enlace llega con el token en el fragmento de la URL y el servidor no puede abrir la sesión.
+3. **Plantillas de correo:** no hace falta tocarlas. Supabase solo permite editarlas con SMTP propio; con la plantilla por defecto el enlace llega con la sesión en el fragmento de la URL (`#access_token=…`) y `login/hash-session.tsx` la abre en el navegador. Si algún día se configura SMTP, el enlace puede cambiarse a `{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=invite` para que lo procese el servidor.
 4. **Authentication → Users → Invite user:** invitar a `ma.gonzalez@gs.com.mx` y `p.cabada@gs.com.mx`. Sus invitaciones ya existen en `public.invitations` (admin y operator); al crearse el usuario, el trigger les da la membresía.
 5. Opcional: copiar la **service-role key** a `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` (nunca al repo). Con ella, las invitaciones se envían desde Configuración en la plataforma; sin ella, se registran ahí y el correo se manda desde el dashboard.
 

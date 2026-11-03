@@ -1,0 +1,140 @@
+-- Cargador del histórico: recibe el JSON que genera scripts/import_excel.py
+-- (variable `p`) y lo inserta en la organización `stone`. Se ejecuta dentro de
+-- un bloque `do $$ ... $$` que el script arma; no contiene datos.
+--
+-- Resuelve referencias por claves naturales (código de inmueble, código de
+-- unidad, clave de arrendatario, código de contrato, clave de cargo) con
+-- tablas temporales, así el JSON no necesita uuids.
+declare
+  o uuid;
+  batch uuid;
+  r jsonb; s jsonb; v_i int;
+  v_id uuid; v_charge uuid; v_pay uuid;
+  v_tenant uuid; v_lease uuid; v_unit uuid; v_dev uuid; v_target uuid;
+  v_paid numeric; v_total numeric;
+begin
+  select id into o from public.organizations where slug = 'stone';
+  if o is null then raise exception 'No existe la organización stone'; end if;
+
+  create temp table m_entity (k text primary key, id uuid) on commit drop;
+  create temp table m_dev (k text primary key, id uuid) on commit drop;
+  create temp table m_unit (k text primary key, id uuid) on commit drop;
+  create temp table m_tenant (k text primary key, id uuid) on commit drop;
+  create temp table m_lease (k text primary key, id uuid) on commit drop;
+  create temp table m_charge (k text primary key, id uuid) on commit drop;
+  create temp table m_tenant_i (i int primary key, id uuid) on commit drop;
+  create temp table m_lease_i (i int primary key, id uuid) on commit drop;
+
+  insert into public.import_batches (org_id, file_name, file_sha256, report_period, sheets, status, summary, applied_at)
+  values (o, p->'batch'->>'file_name', p->'batch'->>'sha', (p->'batch'->>'period')::date,
+          array(select jsonb_array_elements_text(p->'batch'->'sheets')), 'applied', p->'batch'->'summary', now())
+  returning id into batch;
+
+  for r in select * from jsonb_array_elements(p->'entities') loop
+    insert into public.legal_entities (org_id, name, kind, is_stone, notes)
+    values (o, r->>1, 'persona_moral', (r->>2)::boolean, 'Importado del Excel (Propiedades Playa)') returning id into v_id;
+    insert into m_entity values (r->>0, v_id);
+  end loop;
+
+  for r in select * from jsonb_array_elements(p->'developments') loop
+    insert into public.developments (org_id, code, name, chart_order, is_shared, description)
+    values (o, r->>0, r->>1, (r->>2)::smallint, (r->>3)::boolean, 'Importado del reporte mensual (Excel)') returning id into v_id;
+    insert into m_dev values (r->>0, v_id);
+  end loop;
+
+  -- unidades: [code, dev, name, kind, reference_only, owner_key, occupancy, list_rent, m2, notes]
+  for r in select * from jsonb_array_elements(p->'units') loop
+    select id into v_dev from m_dev where k = r->>1;
+    insert into public.units (org_id, development_id, code, name, kind, reference_only, managed_by_org_id, owner_entity_id, occupancy, list_rent, notes)
+    values (o, v_dev, r->>0, r->>2, (r->>3)::public.unit_kind, (r->>4)::boolean,
+            case when (r->>4)::boolean then null else o end,
+            (select id from m_entity where k = r->>5),
+            (r->>6)::public.occupancy_status, (r->>7)::numeric, coalesce(r->>9 || ' · ', '') || 'Tipo de unidad inferido del inmueble; verificar.')
+    returning id into v_id;
+    insert into m_unit values (r->>0, v_id);
+    if (r->>8) is not null then
+      insert into public.surfaces (org_id, target_type, target_id, kind, value_m2, source, verification, captured_at)
+      values (o, 'unit', v_id, 'rentable', (r->>8)::numeric, 'excel', 'por_verificar', (p->'batch'->>'period')::date);
+    end if;
+  end loop;
+
+  -- arrendatarios: [key, display, kind, pays_cash, [aliases]]
+  for r, v_i in select value, ordinality - 1 from jsonb_array_elements(p->'tenants') with ordinality loop
+    insert into public.tenants (org_id, display_name, kind, pays_cash, notes)
+    values (o, r->>1, (r->>2)::public.entity_kind, (r->>3)::boolean, 'Importado del reporte mensual (Excel)') returning id into v_id;
+    insert into m_tenant values (r->>0, v_id);
+    insert into m_tenant_i values (v_i, v_id);
+    insert into public.tenant_aliases (org_id, tenant_id, alias)
+    select o, v_id, x from jsonb_array_elements_text(r->4) x on conflict do nothing;
+  end loop;
+
+  -- contratos: [code, tenant_key, dev, status, start, end, m2, notes, [unit_codes], [[from, to, rent, notes]]]
+  for r, v_i in select value, ordinality - 1 from jsonb_array_elements(p->'leases') with ordinality loop
+    select id into v_tenant from m_tenant where k = r->>1;
+    select id into v_dev from m_dev where k = r->>2;
+    insert into public.leases (org_id, code, tenant_id, development_id, status, start_date, end_date, source, verification, notes)
+    values (o, r->>0, v_tenant, v_dev, (r->>3)::public.lease_status, (r->>4)::date, (r->>5)::date, 'excel', 'por_verificar', r->>7)
+    returning id into v_id;
+    insert into m_lease values (r->>0, v_id);
+    insert into m_lease_i values (v_i, v_id);
+    insert into public.lease_units (org_id, lease_id, unit_id, rented_m2)
+    select o, v_id, u.id, (r->>6)::numeric from jsonb_array_elements_text(r->8) x join m_unit u on u.k = x;
+    for s in select * from jsonb_array_elements(r->9) loop
+      insert into public.lease_terms (org_id, lease_id, effective_from, effective_to, rent_total, maintenance_total, tax_treatment, source, notes)
+      values (o, v_id, (s->>0)::date, (s->>1)::date, (s->>2)::numeric, 0, 'iva_incluido', 'excel', s->>3);
+    end loop;
+    if (r->>5) is not null then
+      insert into public.critical_dates (org_id, kind, title, due_on, target_type, target_id)
+      values (o, 'lease_end', 'Vence contrato ' || (select display_name from public.tenants where id = v_tenant) || ' · ' || (select name from public.developments where id = v_dev), (r->>5)::date, 'lease', v_id);
+    end if;
+  end loop;
+
+  -- cargos (+ pago 1:1): [key, folio, tenant_i, lease_i, unit_code, dev, concept r|m, period, invoice_date, total, notes, pay_date, paid, method t|c]
+  for r in select * from jsonb_array_elements(p->'charges') loop
+    select id into v_tenant from m_tenant_i t where t.i = (r->>2)::int;
+    v_lease := null; v_unit := null;
+    if (r->>3) is not null then select id into v_lease from m_lease_i t where t.i = (r->>3)::int; end if;
+    if (r->>4) is not null then select id into v_unit from m_unit where k = r->>4; end if;
+    select id into v_dev from m_dev where k = r->>5;
+    v_total := (r->>9)::numeric;
+    insert into public.charges (org_id, tenant_id, lease_id, unit_id, development_id, concept, period, invoice_folio, invoice_date, due_date, subtotal, tax_amount, source, notes)
+    values (o, v_tenant, v_lease, v_unit, v_dev, case when r->>6 = 'r' then 'rent' else 'maintenance' end::public.charge_concept,
+            (r->>7)::date, r->>1, (r->>8)::date, (r->>7)::date, round(v_total / 1.16, 2), v_total - round(v_total / 1.16, 2), 'excel', r->>10)
+    returning id into v_charge;
+    insert into m_charge values (r->>0, v_charge);
+    insert into public.source_records (org_id, source_key, target_type, target_id, first_batch_id, last_batch_id)
+    values (o, r->>0, 'charge', v_charge, batch, batch);
+    v_paid := (r->>12)::numeric;
+    if v_paid is not null and v_paid > 0 then
+      insert into public.payments (org_id, tenant_id, effective_date, amount, method, source, notes)
+      values (o, v_tenant, (r->>11)::date, v_paid, case when r->>13 = 'c' then 'cash' else 'transfer' end::public.payment_method, 'excel',
+              case when r->>13 = 'c' then 'Efectivo según la matriz mensual; fecha de pago no registrada (se usó el primer día del mes)'
+                   else 'Pago de la factura ' || coalesce(r->>1, 'sin folio') || ' según Facturacion' end) returning id into v_pay;
+      insert into public.payment_allocations (org_id, payment_id, charge_id, amount)
+      values (o, v_pay, v_charge, least(v_paid, v_total));
+    end if;
+  end loop;
+
+  -- gastos: [key, dev, category, vendor, period, total, classification, recoverable, notes, [[tenant_key, pct, factor, amount]]]
+  for r in select * from jsonb_array_elements(p->'expenses') loop
+    select id into v_dev from m_dev where k = r->>1;
+    insert into public.expenses (org_id, development_id, category, vendor, period, subtotal, tax_amount, classification, recoverable, source, notes)
+    values (o, v_dev, (r->>2)::public.expense_category, r->>3, (r->>4)::date, (r->>5)::numeric, 0, (r->>6)::public.expense_classification, (r->>7)::boolean, 'excel', r->>8)
+    returning id into v_id;
+    for s in select * from jsonb_array_elements(r->9) loop
+      insert into public.expense_shares (org_id, expense_id, tenant_id, share_pct, factor, amount, rule_note)
+      values (o, v_id, (select id from m_tenant where k = s->>0), (s->>1)::numeric, (s->>2)::numeric, (s->>3)::numeric, 'Prorrateo del reporte mensual (factor pendiente de explicación)');
+    end loop;
+  end loop;
+
+  -- discrepancias: [kind, severity, sheet, cell, description, expected, actual, target_type, target_key]
+  for r in select * from jsonb_array_elements(p->'discrepancies') loop
+    v_target := null;
+    if r->>7 = 'lease' then select id into v_target from m_lease where k = r->>8;
+    elsif r->>7 = 'charge' then select id into v_target from m_charge where k = r->>8;
+    end if;
+    insert into public.import_discrepancies (org_id, batch_id, kind, severity, sheet, cell_ref, description, expected, actual, target_type, target_id)
+    values (o, batch, r->>0, (r->>1)::public.severity, r->>2, r->>3, r->>4, (r->>5)::numeric, (r->>6)::numeric,
+            case when v_target is null then null else (r->>7)::public.link_target end, v_target);
+  end loop;
+end

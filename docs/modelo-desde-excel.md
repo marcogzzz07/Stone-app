@@ -68,5 +68,11 @@ Modelo aplicado en Supabase como migraciones `supabase/migrations/0001`–`0007`
 llama `lease_terms` (condiciones versionadas, sin traslapes); el prorrateo de
 servicios vive en `expense_shares` con `share_pct` y `factor` explícitos; las
 dos definiciones de pendiente salen de `charge_balances` (facturado − pagado) y
-de `lease_terms` × meses (pactado − pagado), que calcula la app. La base sigue
-sin datos: solo existe la organización `stone`.
+de `lease_terms` × meses (pactado − pagado), que calcula la app.
+
+Histórico cargado el 2 de noviembre de 2026 con `scripts/import_excel.py` (ver
+`supabase/README.md`). Hallazgos nuevos del importador, además de §4: un arrendatario
+paga en efectivo sin factura y solo aparece en las matrices mensuales; `2026 Renta`
+coloca por posición (no por MES) las dos facturas de agosto de Central de Playa, por
+eso `Resumen` las cuenta en septiembre; el ajuste de −2,900 en `Resumen!J11` coincide
+con una renta de Torre Evalor que está en Portafolio pero no en `Ubicacion de rentas`.

@@ -28,14 +28,34 @@ archivos de `migrations/` son la copia versionada, en el mismo orden.
 - Montos financieros no se borran: se anulan (`voided_at`) o se ajustan (`charge_adjustments`), con auditoría en `audit_logs`.
 - Storage: buckets `legal` (solo admin), `fiscal`, `technical`, `commercial`, `imports` (admin y operator), todos privados. Rutas `<org_id>/...`.
 
-## Semilla [DEMO]
+## Histórico real (importador)
 
-`seed/demo.sql` carga en la organización `stone` los datos sintéticos del prototipo
-(2 inmuebles, 12 unidades, 4 arrendatarios, 5 contratos con condiciones, 14 cargos,
-10 pagos con aplicaciones y 7 gastos), todos con `source = 'demo'` y nombres `[DEMO]`.
-Sirve para operar y probar la captura antes de la carga histórica. Cargada el 2 de
-noviembre de 2026. `seed/demo_down.sql` la elimina por completo; ejecutarlo antes de
-importar datos reales.
+El 2 de noviembre de 2026, con autorización de Marco, se cargó el histórico de
+enero a septiembre de 2026 desde `Reporte Stone_Arrendamientos 2026.xlsx` y
+`Stone_Inmuebles_Propiedades.xlsx` (archivos fuera del repositorio). Resultado:
+7 inmuebles, 54 unidades, 28 arrendatarios con alias, 31 contratos con 39
+condiciones de renta, 292 cargos, 272 pagos aplicados, 7 gastos de servicios con
+prorrateo y 64 discrepancias registradas en `import_discrepancies`. Todo con
+`source = 'excel'` y lote en `import_batches`.
+
+Cómo se repite (o se carga un corte nuevo):
+
+1. `scripts/import_excel.py <config.json> <reporte.xlsx> <propiedades.xlsx> <salida.sql>`
+   lee las hojas, recalcula, coteja contra `Resumen` y genera un `do $$ … $$` con el
+   JSON de datos más el cargador `supabase/import/loader.plpgsql`.
+2. El JSON de configuración (`docs/privado/importacion-<corte>.json`, ignorado por git)
+   contiene lo que depende de datos reales: historial de rentas por arrendatario
+   reconstruido de las fórmulas, alias, fechas de inicio conocidas, reglas de prorrateo
+   y hallazgos puntuales.
+3. El SQL generado se ejecuta en el proyecto (SQL editor o MCP). No es idempotente:
+   para recargar, borrar antes lo que tenga `source = 'excel'`.
+
+Reglas del importador: el período es la columna MES (no la fecha de factura); subtotal
+= total ÷ 1.16; un pago por factura aplicado al cargo; cobros en efectivo sin factura
+se toman de las matrices mensuales con fecha = día 1; nada se corrige en silencio.
+
+La semilla `[DEMO]` (`seed/demo.sql` / `seed/demo_down.sql`) queda solo para entornos
+de prueba.
 
 ## Pruebas
 

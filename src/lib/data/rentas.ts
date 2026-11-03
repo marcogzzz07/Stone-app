@@ -203,6 +203,9 @@ export interface LeaseOption {
   startDate: string | null;
   endDate: string | null;
   verification: Enums["verification_status"];
+  signedAt: string | null;
+  notes: string | null;
+  rentedM2: number | null;
   /** Condición vigente hoy (o la última registrada). */
   term: LeaseTermRow | null;
   termsCount: number;
@@ -237,7 +240,7 @@ export async function listLeases(opts: { activeOnly?: boolean } = {}): Promise<L
   const today = new Date().toISOString().slice(0, 10);
   let q = supabase
     .from("leases")
-    .select("id, code, tenant_id, development_id, status, start_date, end_date, verification, tenants(display_name), developments(name), lease_units(unit_id, units(id, code, name))")
+    .select("id, code, tenant_id, development_id, status, start_date, end_date, verification, signed_at, notes, tenants(display_name), developments(name), lease_units(unit_id, rented_m2, units(id, code, name))")
     .order("start_date", { ascending: false });
   if (opts.activeOnly) q = q.eq("status", "active");
   const [{ data: leases }, { data: terms }] = await Promise.all([
@@ -282,6 +285,9 @@ export async function listLeases(opts: { activeOnly?: boolean } = {}): Promise<L
       startDate: l.start_date,
       endDate: l.end_date,
       verification: l.verification,
+      signedAt: l.signed_at,
+      notes: l.notes,
+      rentedM2: (l.lease_units ?? []).reduce((s, lu) => s + n(lu.rented_m2), 0) || null,
       term: current,
       termsCount: ts.length,
     };

@@ -10,6 +10,7 @@ import { getLeaseWithTerms } from "@/lib/data/rentas";
 import { fmtAmt, fmtDate, fmtMXN } from "@/lib/format";
 import { LEASE_STATUS, SOURCE_LABEL } from "@/lib/rentas/labels";
 import { LeaseTermForm } from "./term-form";
+import { LeaseEditor, TermEditor } from "./edit-forms";
 
 export const instant = false;
 
@@ -55,10 +56,13 @@ export default async function CondicionesPage({
             <p>Este contrato no tiene condiciones registradas.</p>
           )}
           <p className="text-[12px] text-ink-3">Cada cambio de renta es una fila nueva; la anterior se cierra el día previo. Así los cargos de meses pasados no cambian.</p>
+          {lease.notes && <p className="whitespace-pre-line text-[12px] text-ink-2">{lease.notes}</p>}
+          {canEdit && <LeaseEditor lease={lease} rentedM2={lease.rentedM2} />}
         </Card>
       }
     >
-      {sp.ok && <Notice tone="success" title="Condición registrada" className="mb-4">Los nuevos cargos se precargarán con esta renta.</Notice>}
+      {sp.ok === "edit" && <Notice tone="success" title="Cambios guardados" className="mb-4">El contrato quedó actualizado; el cambio se registró en la bitácora.</Notice>}
+      {sp.ok === "1" && <Notice tone="success" title="Condición registrada" className="mb-4">Los nuevos cargos se precargarán con esta renta.</Notice>}
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold text-ink">Historial</h2>
@@ -74,6 +78,7 @@ export default async function CondicionesPage({
                 <TableHead className="text-right">Día</TableHead>
                 <TableHead>Incremento</TableHead>
                 <TableHead>Origen</TableHead>
+                {canEdit && <TableHead className="w-0"></TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -87,10 +92,11 @@ export default async function CondicionesPage({
                   <TableCell className="tnum text-right">{t.dueDay ?? "-"}</TableCell>
                   <TableCell className="max-w-[200px] truncate text-xs text-ink-2">{t.increaseRule ?? "-"}</TableCell>
                   <TableCell className="text-xs text-ink-3">{SOURCE_LABEL[t.source] ?? t.source}</TableCell>
+                  {canEdit && <TableCell className="text-right"><TermEditor leaseId={lease.id} term={t} /></TableCell>}
                 </TableRow>
               ))}
               {history.length === 0 && (
-                <TableRow><TableCell colSpan={8} className="py-6 text-center text-ink-3">Sin condiciones registradas.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={canEdit ? 9 : 8} className="py-6 text-center text-ink-3">Sin condiciones registradas.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

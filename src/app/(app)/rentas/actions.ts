@@ -365,3 +365,95 @@ export async function createLeaseTerm(_prev: FormState, fd: FormData): Promise<F
   revalidatePath(`/contratos/${leaseId}/condiciones`);
   redirect(`/contratos/${leaseId}/condiciones?ok=1`);
 }
+
+// ---------------------------------------------------------------- edición de contrato (lápiz)
+
+const LEASE_STATUSES = ["draft", "active", "expired", "terminated", "void"] as const satisfies readonly Enums["lease_status"][];
+const VERIFICATIONS = ["confirmado", "por_verificar", "no_disponible"] as const satisfies readonly Enums["verification_status"][];
+
+/** Corrige los datos generales del contrato. Todo cambio queda en audit_logs. */
+export async function updateLease(_prev: FormState, fd: FormData): Promise<FormState> {
+  await requireRole("operator");
+  const leaseId = str(fd, "lease_id");
+  const status = str(fd, "status");
+  const verification = str(fd, "verification");
+  const startDate = str(fd, "start_date") || null;
+  const endDate = str(fd, "end_date") || null;
+  const signedAt = str(fd, "signed_at") || null;
+  const code = str(fd, "code") || null;
+  const notes = str(fd, "notes") || null;
+  const rentedM2Raw = str(fd, "rented_m2");
+  const rentedM2 = rentedM2Raw === "" ? null : num(fd, "rented_m2");
+
+  if (!isUuid(leaseId)) return { error: "Contrato no válido." };
+  if (!oneOf(status, LEASE_STATUSES)) return { error: "Elige un estado de la lista." };
+  if (!oneOf(verification, VERIFICATIONS)) return { error: "Elige una validación de la lista." };
+  for (const [v, label] of [[startDate, "inicio"], [endDate, "fin"], [signedAt, "firma"]] as const) {
+    if (v && !dateOk(v)) return { error: `La fecha de ${label} no es válida.` };
+  }
+  if (startDate && endDate && endDate < startDate) return { error: "La fecha de fin no puede ser anterior al inicio." };
+  if (rentedM2 != null && (!Number.isFinite(rentedM2) || rentedM2 < 0)) return { error: "Los m² rentados deben ser un número mayor o igual a cero." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("leases")
+    .update({ status, verification, start_date: startDate, end_date: endDate, signed_at: signedAt, code, notes })
+    .eq("id", leaseId);
+  if (error) return { error: dbMessage(error.message) };
+  if (rentedM2 != null) {
+    await supabase.from("lease_units").update({ rented_m2: round2(rentedM2) }).eq("lease_id", leaseId);
+  }
+  revalidatePath("/contratos");
+  revalidatePath(`/contratos/${leaseId}/condiciones`);
+  redirect(`/contratos/${leaseId}/condiciones?ok=edit`);
+}
+
+/** Corrige una condición existente (sin crear una versión nueva). */
+export async function updateLeaseTerm(_prev: FormState, fd: FormData): Promise<FormState> {
+  await requireRole("operator");
+  const termId = str(fd, "term_id");
+  const leaseId = str(fd, "lease_id");
+  const effectiveFrom = str(fd, "effective_from");
+  const effectiveTo = str(fd, "effective_to") || null;
+  const rentTotal = num(fd, "rent_total");
+  const maintenanceRaw = str(fd, "maintenance_total");
+  const maintenance = maintenanceRaw === "" ? 0 : num(fd, "maintenance_total");
+  const taxTreatment = str(fd, "tax_treatment");
+  const dueDayRaw = str(fd, "due_day");
+  const dueDay = dueDayRaw === "" ? null : Number(dueDayRaw);
+  const depositRaw = str(fd, "deposit_amount");
+  const deposit = depositRaw === "" ? null : num(fd, "deposit_amount");
+  const increaseRule = str(fd, "increase_rule") || null;
+  const notes = str(fd, "notes") || null;
+
+  if (!isUuid(termId) || !isUuid(leaseId)) return { error: "Condición no válida." };
+  if (!dateOk(effectiveFrom)) return { error: "Indica desde qué fecha aplica." };
+  if (effectiveTo && !dateOk(effectiveTo)) return { error: "La fecha de fin de la condición no es válida." };
+  if (effectiveTo && effectiveTo < effectiveFrom) return { error: "La condición no puede terminar antes de empezar." };
+  if (!Number.isFinite(rentTotal) || rentTotal < 0) return { error: "La renta mensual debe ser un monto mayor o igual a cero." };
+  if (!Number.isFinite(maintenance) || maintenance < 0) return { error: "El mantenimiento debe ser mayor o igual a cero." };
+  if (!oneOf(taxTreatment, TAX_TREATMENTS)) return { error: "Elige el tratamiento de IVA." };
+  if (dueDay != null && (!Number.isInteger(dueDay) || dueDay < 1 || dueDay > 31)) return { error: "El día de pago va del 1 al 31." };
+  if (deposit != null && (!Number.isFinite(deposit) || deposit < 0)) return { error: "El depósito debe ser mayor o igual a cero." };
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("lease_terms")
+    .update({
+      effective_from: effectiveFrom,
+      effective_to: effectiveTo,
+      rent_total: round2(rentTotal),
+      maintenance_total: round2(maintenance),
+      tax_treatment: taxTreatment,
+      due_day: dueDay,
+      deposit_amount: deposit == null ? null : round2(deposit),
+      increase_rule: increaseRule ? { rule: increaseRule } : null,
+      notes,
+    })
+    .eq("id", termId)
+    .eq("lease_id", leaseId);
+  if (error) return { error: dbMessage(error.message) };
+  revalidatePath("/contratos");
+  revalidatePath(`/contratos/${leaseId}/condiciones`);
+  redirect(`/contratos/${leaseId}/condiciones?ok=edit`);
+}

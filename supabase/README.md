@@ -13,6 +13,7 @@ archivos de `migrations/` son la copia versionada, en el mismo orden.
 | `0005_documentos_importacion.sql` | `documents` (+versiones, vínculos), `import_batches`, `import_rows`, `source_records`, `import_discrepancies`, `source_of_truth_rules`, `period_locks`, `critical_dates` |
 | `0006_rls.sql` | Primera versión de RLS y buckets privados (sustituida por 0007, se conserva por historial) |
 | `0007_hardening.sql` | Funciones de autorización en esquema `app` (no expuesto por PostgREST), políticas definitivas, `search_path` fijo, índices de FK |
+| `0008_invitacion_reaceptable.sql` | El trigger de alta también honra invitaciones ya aceptadas (usuario borrado y reinvitado) y repara membresías faltantes |
 
 ## Reglas que hace cumplir la base
 

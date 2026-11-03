@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PagedTable } from "@/components/forms/paged-rows";
 import { PageHeader } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge } from "@/components/patrimonio/data-state-badge";
 import { Notice } from "@/components/forms/notice";
@@ -33,8 +34,8 @@ export default async function ContratosPage() {
       )}
 
       <Card className="p-0">
-        <Table>
-          <TableHeader>
+        <PagedTable
+              header={<TableHeader>
             <TableRow>
               <TableHead>Arrendatario</TableHead>
               <TableHead>Unidad(es)</TableHead>
@@ -50,9 +51,8 @@ export default async function ContratosPage() {
               <TableHead>Estado</TableHead>
               <TableHead className="w-0"></TableHead>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sorted.map((l) => {
+          </TableHeader>}
+              rows={sorted.map((l) => {
               const t = l.term;
               const days = l.endDate ? daysUntil(l.endDate, today) : null;
               const soon = l.status === "active" && days != null && days <= 60;
@@ -86,11 +86,9 @@ export default async function ContratosPage() {
                 </TableRow>
               );
             })}
-            {sorted.length === 0 && (
-              <TableRow><TableCell colSpan={13} className="py-8 text-center text-ink-3">Sin contratos registrados.</TableCell></TableRow>
-            )}
-          </TableBody>
-        </Table>
+              columns={13}
+              empty="Sin contratos registrados."
+            />
       </Card>
     </>
   );

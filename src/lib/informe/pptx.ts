@@ -225,17 +225,17 @@ export async function buildPptx(r: Informe): Promise<Buffer> {
     const s = pptx.addSlide();
     header(s, "06", `TENDENCIA ENERO A ${mes.toUpperCase()}`, "Rentas y mantenimientos por inmueble, mes a mes");
     const lineOpts = (x: number): PptxGenJS.IChartOpts => ({
-      x, y: 2.1, w: 5.5, h: 3.9, chartColors: C.chart, lineSize: 2, lineDataSymbol: "none",
+      x, y: 2.1, w: 5.5, h: 3.9, chartColors: C.chart, barDir: "col", barGrouping: "stacked",
       catAxisLabelFontFace: F.body, catAxisLabelFontSize: 9, catAxisLabelColor: C.ink2, valAxisLabelFontFace: F.body, valAxisLabelFontSize: 9, valAxisLabelColor: C.ink3,
       valAxisLabelFormatCode: "$#,##0", valGridLine: { color: C.border, size: 0.5 }, catGridLine: { style: "none" }, showLegend: true, legendPos: "b", legendFontFace: F.body, legendFontSize: 9, legendColor: C.ink2,
     });
     card(s, 0.89, 1.89, 5.66, 4.4);
     s.addText("Rentas", { x: 1.12, y: 2.0, w: 5, h: 0.25, fontFace: F.display, fontSize: 13, bold: true, color: C.navy });
-    s.addChart(pptx.ChartType.line, r.tendencia.rentas.map((t) => ({ name: t.name, labels: r.tendencia.months, values: t.values.map((v) => Math.round(v)) })), lineOpts(0.97));
+    s.addChart(pptx.ChartType.bar, r.tendencia.rentas.map((t) => ({ name: t.name, labels: r.tendencia.months, values: t.values.map((v) => Math.round(v)) })), lineOpts(0.97));
     card(s, 6.78, 1.89, 5.66, 4.4);
     s.addText("Mantenimientos", { x: 7.01, y: 2.0, w: 5, h: 0.25, fontFace: F.display, fontSize: 13, bold: true, color: C.navy });
     if (r.tendencia.mtto.length) {
-      s.addChart(pptx.ChartType.line, r.tendencia.mtto.map((t) => ({ name: t.name, labels: r.tendencia.months, values: t.values.map((v) => Math.round(v)) })), { ...lineOpts(6.86), chartColors: r.tendencia.mtto.map((t) => C.chart[Number(t.chart.slice(-1)) - 1] ?? C.chart[0]) });
+      s.addChart(pptx.ChartType.bar, r.tendencia.mtto.map((t) => ({ name: t.name, labels: r.tendencia.months, values: t.values.map((v) => Math.round(v)) })), { ...lineOpts(6.86), chartColors: r.tendencia.mtto.map((t) => C.chart[Number(t.chart.slice(-1)) - 1] ?? C.chart[0]) });
     } else {
       s.addText("Sin cuotas de mantenimiento cobradas en el período.", { x: 7.01, y: 3.5, w: 5.2, h: 0.5, fontFace: F.body, fontSize: 12, color: C.ink3, align: "center" });
     }

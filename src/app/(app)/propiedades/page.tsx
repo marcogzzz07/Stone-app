@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowUpRight, Building2, LandPlot } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { FacetCover } from "@/components/patrimonio/facet-cover";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PagedTable } from "@/components/forms/paged-rows";
 import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
 import { requireMember } from "@/lib/auth/session";
@@ -58,8 +59,8 @@ export default async function PropiedadesPage() {
 
       <SectionTitle hint="Incluye unidades de referencia (terceros, no operables)">Todas las unidades</SectionTitle>
       <Card className="p-0">
-        <Table>
-          <TableHeader>
+        <PagedTable
+              header={<TableHeader>
             <TableRow>
               <TableHead>Código</TableHead>
               <TableHead>Unidad</TableHead>
@@ -73,9 +74,8 @@ export default async function PropiedadesPage() {
               <TableHead>Estado</TableHead>
               <TableHead>Datos</TableHead>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {[...units.filter((u) => u.developmentId), ...independientes].map((u) => (
+          </TableHeader>}
+              rows={[...units.filter((u) => u.developmentId), ...independientes].map((u) => (
               <TableRow key={u.id}>
                 <TableCell className="font-mono text-xs">{u.code}</TableCell>
                 <TableCell>
@@ -99,11 +99,9 @@ export default async function PropiedadesPage() {
                 <TableCell>{u.referenceOnly ? <span className="text-xs text-ink-3">n/a</span> : <DataStateBadge state="por_verificar" />}</TableCell>
               </TableRow>
             ))}
-            {units.length === 0 && (
-              <TableRow><TableCell colSpan={11} className="py-8 text-center text-ink-3">Sin unidades registradas.</TableCell></TableRow>
-            )}
-          </TableBody>
-        </Table>
+              columns={11}
+              empty="Sin unidades registradas."
+            />
       </Card>
     </>
   );

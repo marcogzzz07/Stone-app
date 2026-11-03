@@ -6,7 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
 import { KpiVisual } from "@/components/patrimonio/kpi-visual";
 import { Notice } from "@/components/forms/notice";
-import { NativeSelect } from "@/components/forms/native-select";
+import { MonthSelect } from "@/components/forms/month-select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CobradoPendienteChart, RealVsProyeccionChart, TendenciaChart } from "@/components/charts/report-charts";
 import { hasRole, requireMember } from "@/lib/auth/session";
 import { buildInforme, listReportMonths } from "@/lib/data/informe";
@@ -47,14 +48,7 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
         description="Las mismas secciones del reporte que se entrega cada mes, calculadas desde la base. MXN con IVA."
         actions={
           <>
-            <form method="get" className="flex items-center gap-2">
-              <NativeSelect name="mes" defaultValue={period} aria-label="Mes del informe" className="w-44">
-                {months.map((m) => (
-                  <option key={m} value={m}>{fmtPeriod(m)}</option>
-                ))}
-              </NativeSelect>
-              <Button type="submit" variant="outline" size="sm">Ver</Button>
-            </form>
+            <MonthSelect options={months.map((m) => ({ value: m, label: fmtPeriod(m) }))} value={period} basePath="/informes" />
             <Button asChild>
               <Link href={`/informes/descargar?mes=${period}`} prefetch={false}><Download data-icon="inline-start" /> Descargar PowerPoint</Link>
             </Button>
@@ -62,8 +56,18 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
         }
       />
 
-      {/* 01 Resumen ejecutivo */}
-      <section className="mb-8">
+      <Tabs defaultValue="01">
+        <TabsList variant="line" className="mb-4 w-full justify-start overflow-x-auto">
+          <TabsTrigger value="01">Resumen</TabsTrigger>
+          <TabsTrigger value="02">Rentas por inmueble</TabsTrigger>
+          <TabsTrigger value="03">Cobranza pendiente</TabsTrigger>
+          <TabsTrigger value="04">Mantenimientos y servicios</TabsTrigger>
+          <TabsTrigger value="05">Real vs. proyección</TabsTrigger>
+          <TabsTrigger value="06">Tendencia</TabsTrigger>
+          <TabsTrigger value="07">Playa del Carmen</TabsTrigger>
+        </TabsList>
+        <TabsContent value="01">
+          <section>
         <SectionTitle hint={r.monthLabel}>01 · Resumen ejecutivo</SectionTitle>
         <h2 className="mb-3 font-display text-xl font-semibold text-ink">{r.monthLabel.split(" ")[0]} cerró con {fmtPct(r.resumen.pct * 100)} de cobranza</h2>
         <div className="mb-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -74,16 +78,17 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
         </div>
         <div className="grid gap-3 md:grid-cols-2">
           {r.insights.map((i) => (
-            <Card key={i.title} className={`gap-1 border-l-4 p-4 ${i.tone === "warning" ? "border-l-warning" : "border-l-brand-cyan"}`}>
+            <Card key={i.title} className="gap-1 p-4">
+              <div className={`text-[11px] font-semibold uppercase tracking-wide ${i.tone === "warning" ? "text-warning" : "text-brand-cyan-ink"}`}>{i.tone === "warning" ? "Pendiente" : "Proyección"}</div>
               <div className="text-sm font-semibold text-ink">{i.title}</div>
               <div className="text-sm text-ink-2">{i.body}</div>
             </Card>
           ))}
         </div>
-      </section>
-
-      {/* 02 Rentas por inmueble */}
-      <section className="mb-8">
+          </section>
+        </TabsContent>
+        <TabsContent value="02">
+          <section>
         <SectionTitle hint="Facturación y cobranza del mes">02 · Rentas por inmueble</SectionTitle>
         <Card className="p-0">
           <Table>
@@ -128,10 +133,10 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
             </TableBody>
           </Table>
         </Card>
-      </section>
-
-      {/* 03 Cobranza pendiente */}
-      <section className="mb-8">
+          </section>
+        </TabsContent>
+        <TabsContent value="03">
+          <section>
         <SectionTitle hint="Cobrado contra pendiente por inmueble">03 · Cobranza pendiente</SectionTitle>
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
           <Card className="p-4">
@@ -150,10 +155,10 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
             {r.inmuebles.every((d) => d.pendienteMes <= 0.5 && d.pendienteAnio <= 0.5) && <Card className="p-4 text-sm text-ink-2">Sin pendientes de renta.</Card>}
           </div>
         </div>
-      </section>
-
-      {/* 04 Mantenimientos y servicios */}
-      <section className="mb-8">
+          </section>
+        </TabsContent>
+        <TabsContent value="04">
+          <section>
         <SectionTitle hint="Cuotas de mantenimiento y gasto en servicios">04 · Mantenimientos y servicios</SectionTitle>
         <div className="grid gap-4 xl:grid-cols-2 xl:items-start">
           <Card className="p-0">
@@ -230,10 +235,10 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
             </Table>
           </Card>
         </div>
-      </section>
-
-      {/* 05 Real vs proyección */}
-      <section className="mb-8">
+          </section>
+        </TabsContent>
+        <TabsContent value="05">
+          <section>
         <SectionTitle hint="Miles de pesos · real = cobrado de renta y mantenimiento">05 · Real vs. proyección {r.year}</SectionTitle>
         <h2 className="mb-3 font-display text-xl font-semibold text-ink">
           El acumulado del año va al {r.resumen.proyAcum ? Math.round((r.resumen.realAcum / r.resumen.proyAcum) * 100) : 0}% de lo proyectado
@@ -264,10 +269,10 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
             </Card>
           </div>
         </div>
-      </section>
-
-      {/* 06 Tendencia */}
-      <section className="mb-8">
+          </section>
+        </TabsContent>
+        <TabsContent value="06">
+          <section>
         <SectionTitle hint="Cobrado por inmueble, mes a mes">06 · Tendencia enero a {r.monthLabel.split(" ")[0].toLowerCase()}</SectionTitle>
         <div className="grid gap-4 xl:grid-cols-2">
           <Card className="p-4">
@@ -279,10 +284,10 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
             {r.tendencia.mtto.length ? <TendenciaChart months={r.tendencia.months} series={r.tendencia.mtto} /> : <p className="py-10 text-center text-sm text-ink-3">Sin cuotas de mantenimiento cobradas.</p>}
           </Card>
         </div>
-      </section>
-
-      {/* 07 Playa del Carmen */}
-      <section className="mb-8">
+          </section>
+        </TabsContent>
+        <TabsContent value="07">
+          <section>
         <SectionTitle hint={`${r.playa.length} espacios en inventario, ${r.playa.filter((p) => p.client).length} con cliente registrado`}>07 · Propiedades Playa del Carmen</SectionTitle>
         <Card className="p-0">
           <Table>
@@ -308,7 +313,9 @@ export default async function InformesPage({ searchParams }: { searchParams: Pro
             </TableBody>
           </Table>
         </Card>
-      </section>
+          </section>
+        </TabsContent>
+      </Tabs>
 
       <p className="text-[11px] text-ink-3">Pendiente del año = facturado − pagado de las facturas de renta; el Excel lo calcula como pactado × meses − pagado con ajustes manuales, por eso puede diferir.</p>
     </>

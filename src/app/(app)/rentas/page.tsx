@@ -3,7 +3,8 @@ import { Plus, Receipt, Wallet } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { PagedTable } from "@/components/forms/paged-rows";
 import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
 import { KpiVisual } from "@/components/patrimonio/kpi-visual";
 import { Notice } from "@/components/forms/notice";
@@ -135,8 +136,8 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
 
         <TabsContent value="periodo" className="mt-4">
           <Card className="p-0">
-            <Table>
-              <TableHeader>
+            <PagedTable
+              header={<TableHeader>
                 <TableRow>
                   <TableHead>Período</TableHead>
                   <TableHead>Unidad</TableHead>
@@ -150,9 +151,8 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
                   <TableHead>Origen</TableHead>
                   <TableHead>Estado</TableHead>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {charges.map((c) => {
+              </TableHeader>}
+              rows={charges.map((c) => {
                   const st = CHARGE_STATUS[c.status] ?? CHARGE_STATUS.open;
                   const pendingCls = c.status === "overdue" ? "font-semibold text-danger" : c.balance > 0.005 ? "font-semibold text-warning" : "";
                   return (
@@ -171,11 +171,9 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
                     </TableRow>
                   );
                 })}
-                {charges.length === 0 && (
-                  <TableRow><TableCell colSpan={11} className="py-8 text-center text-ink-3">Sin cargos registrados.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+              columns={11}
+              empty="Sin cargos registrados."
+            />
           </Card>
         </TabsContent>
 
@@ -184,8 +182,8 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
             Cobros recibidos en {fmtPeriod(currentPeriod)}: <span className="tnum font-medium text-ink">{fmtMXN(cashInMonth)}</span>. Métrica de caja; incluye pagos a meses anteriores y anticipos.
           </div>
           <Card className="p-0">
-            <Table>
-              <TableHeader>
+            <PagedTable
+              header={<TableHeader>
                 <TableRow>
                   <TableHead>Fecha de pago</TableHead>
                   <TableHead>Arrendatario</TableHead>
@@ -197,9 +195,8 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
                   <TableHead>Origen</TableHead>
                   <TableHead className="w-0"></TableHead>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {payments.map((p) => (
+              </TableHeader>}
+              rows={payments.map((p) => (
                   <TableRow key={p.id}>
                     <TableCell>{fmtDate(p.effectiveDate)}</TableCell>
                     <TableCell>{p.tenantName}</TableCell>
@@ -218,19 +215,17 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
                     </TableCell>
                   </TableRow>
                 ))}
-                {payments.length === 0 && (
-                  <TableRow><TableCell colSpan={9} className="py-8 text-center text-ink-3">Sin pagos registrados.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+              columns={9}
+              empty="Sin pagos registrados."
+            />
           </Card>
         </TabsContent>
 
         <TabsContent value="aplicaciones" className="mt-4">
           <SectionTitle hint="Un pago → varios cargos · un cargo ← varios pagos">Aplicaciones de pago</SectionTitle>
           <Card className="p-0">
-            <Table>
-              <TableHeader>
+            <PagedTable
+              header={<TableHeader>
                 <TableRow>
                   <TableHead>Fecha de pago</TableHead>
                   <TableHead>Arrendatario</TableHead>
@@ -238,9 +233,8 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
                   <TableHead>Período del cargo</TableHead>
                   <TableHead className="text-right">Monto aplicado</TableHead>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {allocations.map((a) => (
+              </TableHeader>}
+              rows={allocations.map((a) => (
                   <TableRow key={a.id}>
                     <TableCell>{a.paymentDate ? fmtDate(a.paymentDate) : "-"}</TableCell>
                     <TableCell>{a.tenantName}</TableCell>
@@ -249,19 +243,17 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
                     <TableCell className="tnum text-right font-medium">{fmtAmt(a.amount)}</TableCell>
                   </TableRow>
                 ))}
-                {allocations.length === 0 && (
-                  <TableRow><TableCell colSpan={5} className="py-8 text-center text-ink-3">Sin aplicaciones registradas.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+              columns={5}
+              empty="Sin aplicaciones registradas."
+            />
           </Card>
         </TabsContent>
 
         <TabsContent value="gastos" className="mt-4">
           <SectionTitle hint="Prorrateo: porcentaje × factor → importe por parte">Gastos y mantenimientos</SectionTitle>
           <Card className="p-0">
-            <Table>
-              <TableHeader>
+            <PagedTable
+              header={<TableHeader>
                 <TableRow>
                   <TableHead>Mes</TableHead>
                   <TableHead>Inmueble</TableHead>
@@ -273,9 +265,8 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
                   <TableHead>Origen</TableHead>
                   <TableHead>Clasificación</TableHead>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {expenses.map((e) => {
+              </TableHeader>}
+              rows={expenses.map((e) => {
                   const cl = EXPENSE_CLASS[e.classification] ?? EXPENSE_CLASS.pending;
                   return (
                     <TableRow key={e.id}>
@@ -291,11 +282,9 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
                     </TableRow>
                   );
                 })}
-                {expenses.length === 0 && (
-                  <TableRow><TableCell colSpan={9} className="py-8 text-center text-ink-3">Sin gastos registrados.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+              columns={9}
+              empty="Sin gastos registrados."
+            />
           </Card>
         </TabsContent>
       </Tabs>

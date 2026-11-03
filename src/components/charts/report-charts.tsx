@@ -1,6 +1,6 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { fmtMXN, fmtMXNCompact } from "@/lib/format";
 
 // Gráficas del informe mensual (brand book: cobrado en chart-2, pendiente en
@@ -46,21 +46,21 @@ export function RealVsProyeccionChart({ data }: { data: { label: string; proyecc
   );
 }
 
-/** Tendencia mensual por inmueble: una línea por inmueble en su color fijo. */
+/** Tendencia mensual: columnas apiladas por inmueble en su color fijo. */
 export function TendenciaChart({ months, series }: { months: string[]; series: { name: string; chart: string; values: number[] }[] }) {
   const data = months.map((m, i) => Object.fromEntries([["label", m], ...series.map((s) => [s.name, s.values[i]])]));
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <LineChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
+      <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }} barCategoryGap={14}>
         <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
         <XAxis dataKey="label" tick={axis} axisLine={false} tickLine={false} />
         <YAxis tick={axis} tickFormatter={(v) => fmtMXNCompact(v)} axisLine={false} tickLine={false} width={56} />
-        <Tooltip {...tooltip} />
+        <Tooltip {...tooltip} cursor={{ fill: "var(--surface-2)" }} />
         <Legend wrapperStyle={{ fontSize: 11 }} />
-        {series.map((s) => (
-          <Line key={s.name} type="monotone" dataKey={s.name} stroke={`var(--${s.chart})`} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+        {series.map((s, i) => (
+          <Bar key={s.name} dataKey={s.name} stackId="a" fill={`var(--${s.chart})`} radius={i === series.length - 1 ? [3, 3, 0, 0] : [0, 0, 0, 0]} />
         ))}
-      </LineChart>
+      </BarChart>
     </ResponsiveContainer>
   );
 }

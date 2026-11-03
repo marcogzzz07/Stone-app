@@ -7,6 +7,7 @@ import {
   LogOut,
   Building2,
   CalendarDays,
+  FileBarChart,
   FileText,
   FolderLock,
   LayoutDashboard,
@@ -62,6 +63,7 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
       { href: "/contratos", label: "Contratos", icon: FileText },
       { href: "/documentos", label: "Documentos", icon: FolderLock },
       { href: "/calendario", label: "Calendario", icon: CalendarDays },
+      { href: "/informes", label: "Informes", icon: FileBarChart },
     ],
   },
 ];

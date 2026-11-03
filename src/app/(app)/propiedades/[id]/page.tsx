@@ -7,15 +7,22 @@ import { SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
 import { requireMember } from "@/lib/auth/session";
 import { getDevelopment } from "@/lib/data/patrimonio";
+import { buildInforme, listReportMonths } from "@/lib/data/informe";
+import { hasRole } from "@/lib/auth/session";
+import { TendenciaChart } from "@/components/charts/report-charts";
 import { OCCUPANCY_KEY, UNIT_KIND } from "@/lib/patrimonio/labels";
 import { fmtM2, fmtMXN } from "@/lib/format";
 
 export const instant = false;
 
 export default async function DevelopmentPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireMember();
+  const me = await requireMember();
   const { id } = await params;
   const data = await getDevelopment(id);
+  const months = hasRole(me.membership.role, "operator") ? await listReportMonths() : [];
+  const informe = months.length ? await buildInforme(months[months.length - 1]) : null;
+  const trendRentas = informe?.tendencia.rentas.find((t) => t.id === id);
+  const trendMtto = informe?.tendencia.mtto.find((t) => t.id === id);
   if (!data) notFound();
   const { dev: d, units: us } = data;
   const stone = us.filter((u) => !u.referenceOnly);
@@ -51,6 +58,13 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
                 <div className="mx-auto mb-2 size-8 rounded-full border-2 border-dashed border-ink-3 bg-surface-2" />
                 Sin ubicación capturada. No se dibujan croquis ni límites aproximados.
               </div>
+            </Card>
+          )}
+
+          {informe && trendRentas && (
+            <Card className="p-4">
+              <SectionTitle hint={`Cobrado por mes · ${informe.year}`}>Tendencia de rentas y mantenimiento</SectionTitle>
+              <TendenciaChart months={informe.tendencia.months} series={[{ ...trendRentas, name: "Rentas" }, ...(trendMtto ? [{ ...trendMtto, name: "Mantenimiento", chart: "chart-2" }] : [])]} />
             </Card>
           )}
 

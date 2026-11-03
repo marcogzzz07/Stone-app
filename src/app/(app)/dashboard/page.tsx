@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Notice } from "@/components/forms/notice";
 import { DeltaChip, StackedBar } from "@/components/charts/mini";
 import { TrendChart } from "@/components/charts/trend-chart";
+import { RealVsProyeccionChart } from "@/components/charts/report-charts";
+import { buildInforme } from "@/lib/data/informe";
 import { hasRole, requireMember } from "@/lib/auth/session";
 import { listCharges, listExpenses, listPayments, type ChargeRow } from "@/lib/data/rentas";
 import { listCriticalDates, listDevelopmentRows, listDiscrepancies, listUnitRows } from "@/lib/data/patrimonio";
@@ -78,6 +80,7 @@ export default async function DashboardPage() {
   const byDevSum = byDev.reduce((s, d) => s + d.value, 0);
   const byDevTotal = byDevSum || 1;
 
+  const informe = canOperate && periods.length ? await buildInforme(currentPeriod) : null;
   const nextDate = dates.filter((d) => !d.done && d.dueOn >= today)[0];
   const openIssues = discrepancies.filter((d) => d.status === "open");
   const period = fmtPeriod(currentPeriod);
@@ -203,6 +206,28 @@ export default async function DashboardPage() {
           </div>
         </Card>
       </div>
+
+      {informe && (
+        <Card className="gap-0 p-0">
+          <div className="flex items-center justify-between border-b px-5 py-3">
+            <h2 className="text-xs font-medium tracking-wider text-ink-3 uppercase">Real vs. proyección {informe.year}</h2>
+            <Link href={`/informes?mes=${currentPeriod}`} className="text-[12px] text-brand-cyan-ink hover:underline">Ver informe completo</Link>
+          </div>
+          <div className="flex flex-wrap items-end justify-between gap-3 px-5 pt-4">
+            <div>
+              <div className="text-sm text-ink-2">Acumulado del año</div>
+              <div className="num text-3xl font-semibold">{informe.resumen.proyAcum ? Math.round((informe.resumen.realAcum / informe.resumen.proyAcum) * 100) : 0} % de lo proyectado</div>
+            </div>
+            <div className="text-right text-sm text-ink-2">
+              <div>Real {fmtMXN(informe.resumen.realAcum)}</div>
+              <div>Proyección {fmtMXN(informe.resumen.proyAcum)}</div>
+            </div>
+          </div>
+          <div className="px-2 pt-2 pb-3">
+            <RealVsProyeccionChart data={informe.proyeccion} />
+          </div>
+        </Card>
+      )}
 
       <p className="text-[11px] text-ink-3">
         Histórico importado del reporte mensual (Excel) con corte a {period.toLowerCase()} · MXN con IVA · al {fmtDate(today)} · excluye unidades de terceros.

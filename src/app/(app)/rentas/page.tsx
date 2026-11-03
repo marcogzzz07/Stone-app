@@ -8,6 +8,8 @@ import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
 import { KpiVisual } from "@/components/patrimonio/kpi-visual";
 import { Notice } from "@/components/forms/notice";
 import { StatusPill } from "@/components/forms/status-pill";
+import { CobradoPendienteChart } from "@/components/charts/report-charts";
+import { buildInforme } from "@/lib/data/informe";
 import { hasRole, requireMember } from "@/lib/auth/session";
 import { listAllocations, listCharges, listExpenses, listPayments, type ChargeRow } from "@/lib/data/rentas";
 import { CHARGE_STATUS, CONCEPT_LABEL, EXPENSE_CATEGORY, EXPENSE_CLASS, METHOD_LABEL, SOURCE_LABEL, thisMonth } from "@/lib/rentas/labels";
@@ -56,6 +58,7 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
   const unappliedTotal = unapplied.reduce((s, p) => s + p.unapplied, 0);
   const ym = currentPeriod.slice(0, 7);
   const cashInMonth = payments.filter((p) => p.effectiveDate.startsWith(ym)).reduce((s, p) => s + p.amount, 0);
+  const informe = charges.length ? await buildInforme(currentPeriod) : null;
   const ok = sp.ok ? OK_MESSAGES[sp.ok] : null;
   const tab = ["periodo", "cobro", "aplicaciones", "gastos"].includes(sp.tab ?? "") ? sp.tab! : "periodo";
 
@@ -113,6 +116,13 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
             foot={unapplied.length ? `${unapplied.length} pago(s) por aplicar` : "todo aplicado"}
           />
         </div>
+      )}
+
+      {informe && (
+        <Card className="mb-6 p-4">
+          <SectionTitle hint={`${fmtPeriod(currentPeriod)} · renta pactada con IVA`}>Cobrado contra pendiente por inmueble</SectionTitle>
+          <CobradoPendienteChart data={informe.inmuebles.map((d) => ({ name: d.name, cobrado: d.cobrado, pendiente: Math.max(0, d.pendienteMes) }))} />
+        </Card>
       )}
 
       <Tabs defaultValue={tab}>

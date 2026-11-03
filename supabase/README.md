@@ -97,3 +97,13 @@ facturado − pagado de facturas de renta (el Excel usa pactado × meses − pag
 ## Tipos
 
 `src/lib/supabase/database.types.ts` se genera con `generate_typescript_types` (o `supabase gen types`). Regenerar tras cada migración.
+
+## Expediente: subir archivos sin interfaz
+
+Mientras no exista la carga desde la plataforma, `scripts/subir_documento.mjs`
+sube un archivo al bucket privado, lo registra en `documents` y lo liga a un
+inmueble, unidad o contrato. Necesita `SUPABASE_SERVICE_ROLE_KEY` en `.env.local`
+(solo en la máquina local). Las fotos de portada se guardan en `commercial`,
+tipo `foto`, sensibilidad `public_internal`, ligadas al `development`; la más
+reciente es la portada en Propiedades, en la ficha del inmueble y en sus unidades.
+Los archivos se sirven con sesión por `/documentos/<id>/archivo`.

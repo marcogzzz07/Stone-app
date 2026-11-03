@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { FacetCover } from "@/components/patrimonio/facet-cover";
+import { PhotoCover } from "@/components/patrimonio/photo-cover";
 import { SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
 import { requireMember } from "@/lib/auth/session";
@@ -33,7 +33,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
 
   return (
     <>
-      <FacetCover tone={tone} className="-mx-6 -mt-6 mb-6 h-56 lg:-mx-8">
+      <PhotoCover documentId={d.coverDocumentId} alt={d.name} tone={tone} className="-mx-6 -mt-6 mb-6 h-56 lg:-mx-8">
         <div className="absolute bottom-5 left-6 text-white lg:left-8">
           <h1 className="font-display text-[30px] leading-9 font-semibold">{d.name}</h1>
           <div className="mt-1 flex items-center gap-1.5 text-sm opacity-90">
@@ -50,7 +50,7 @@ export default async function DevelopmentPage({ params }: { params: Promise<{ id
             <div className="num text-2xl font-semibold">{stone.length}</div>
           </div>
         </div>
-      </FacetCover>
+      </PhotoCover>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">

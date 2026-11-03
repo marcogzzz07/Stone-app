@@ -32,6 +32,7 @@ export interface DevelopmentRow {
   rentableM2: number;
   pactadoRent: number;
   hasGeometry: boolean;
+  coverDocumentId: string | null;
 }
 
 export interface UnitRow {
@@ -63,6 +64,23 @@ export interface CriticalDateRow {
   notes: string | null;
 }
 
+/** Foto de portada por inmueble: la foto más reciente ligada al development (RLS decide quién la ve). */
+export async function listDevelopmentCovers() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("document_links")
+    .select("target_id, documents!inner(id, kind, created_at)")
+    .eq("target_type", "development")
+    .eq("documents.kind", "foto")
+    .order("created_at", { ascending: false });
+  const map = new Map<string, string>();
+  for (const l of data ?? []) {
+    const doc = l.documents;
+    if (doc && !map.has(l.target_id)) map.set(l.target_id, doc.id);
+  }
+  return map;
+}
+
 async function activeTermsByLease() {
   const supabase = await createClient();
   const today = new Date().toISOString().slice(0, 10);
@@ -78,13 +96,14 @@ async function activeTermsByLease() {
 
 export async function listDevelopmentRows(): Promise<DevelopmentRow[]> {
   const supabase = await createClient();
-  const [{ data: devs }, { data: units }, { data: surfaces }, { data: geoms }, { data: leases }, rentByLease] = await Promise.all([
+  const [{ data: devs }, { data: units }, { data: surfaces }, { data: geoms }, { data: leases }, rentByLease, covers] = await Promise.all([
     supabase.from("developments").select("id, code, name, city, address, description, chart_order, is_shared").order("chart_order"),
     supabase.from("units").select("id, development_id, reference_only, occupancy"),
     supabase.from("surfaces").select("target_id, value_m2").eq("target_type", "unit").eq("kind", "rentable"),
     supabase.from("geometries").select("target_id").eq("target_type", "development").eq("is_current", true),
     supabase.from("leases").select("id, development_id").eq("status", "active"),
     activeTermsByLease(),
+    listDevelopmentCovers(),
   ]);
   const m2 = new Map((surfaces ?? []).map((s) => [s.target_id, n(s.value_m2)]));
   const geo = new Set((geoms ?? []).map((g) => g.target_id));
@@ -107,6 +126,7 @@ export async function listDevelopmentRows(): Promise<DevelopmentRow[]> {
       rentableM2: stone.reduce((s, u) => s + (m2.get(u.id) ?? 0), 0),
       pactadoRent: (leases ?? []).filter((l) => l.development_id === d.id).reduce((s, l) => s + (rentByLease.get(l.id) ?? 0), 0),
       hasGeometry: geo.has(d.id),
+      coverDocumentId: covers.get(d.id) ?? null,
     };
   });
 }

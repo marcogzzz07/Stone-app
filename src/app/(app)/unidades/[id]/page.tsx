@@ -7,10 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SectionTitle } from "@/components/patrimonio/kpi-card";
 import { DataStateBadge, OccupancyDot, ScopeBadge } from "@/components/patrimonio/data-state-badge";
-import { FacetCover } from "@/components/patrimonio/facet-cover";
+import { PhotoCover } from "@/components/patrimonio/photo-cover";
 import { StatusPill } from "@/components/forms/status-pill";
 import { hasRole, requireMember } from "@/lib/auth/session";
-import { getUnitDetail, listDevelopmentPoints } from "@/lib/data/patrimonio";
+import { getUnitDetail, listDevelopmentCovers, listDevelopmentPoints } from "@/lib/data/patrimonio";
 import { DevelopmentPointMap } from "@/components/mapa/development-point-map";
 import { DOC_KIND, OCCUPANCY_KEY, SENSITIVITY, SURFACE_LABEL, UNIT_KIND } from "@/lib/patrimonio/labels";
 import { CHARGE_STATUS, CONCEPT_LABEL, EXPENSE_CATEGORY, EXPENSE_CLASS, LEASE_STATUS } from "@/lib/rentas/labels";
@@ -27,6 +27,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
   if (!data || data.unit.referenceOnly) notFound();
   const { unit: u, surfaces, leases, charges, expenses, documents } = data;
   const point = u.developmentId ? ((await listDevelopmentPoints()).find((p) => p.id === u.developmentId) ?? null) : null;
+  const cover = u.developmentId ? ((await listDevelopmentCovers()).get(u.developmentId) ?? null) : null;
   const today = await todayFn();
   const rentable = surfaces.find((s) => s.kind === "rentable");
   const activeLease = leases.find((l) => l.status === "active");
@@ -43,9 +44,9 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
     <>
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
         <div className="flex gap-4">
-          <FacetCover tone="navy" className="hidden size-24 shrink-0 rounded-lg sm:block">
-            <span className="absolute inset-0 grid place-items-center text-xs text-white/85">Sin foto</span>
-          </FacetCover>
+          <PhotoCover documentId={cover} alt={u.developmentName ?? u.name} tone="navy" className="hidden size-24 shrink-0 rounded-lg sm:block">
+            {!cover && <span className="absolute inset-0 grid place-items-center text-xs text-white/85">Sin foto</span>}
+          </PhotoCover>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs text-ink-3">{u.code}</span>

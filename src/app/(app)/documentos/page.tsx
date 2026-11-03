@@ -1,5 +1,6 @@
 import { FileText, Lock, ShieldAlert } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PageHeader } from "@/components/patrimonio/kpi-card";
@@ -32,7 +33,7 @@ export default async function DocumentosPage() {
       </div>
       {docs.length === 0 && (
         <Notice tone="info" title="Aún no hay documentos cargados" className="mb-4">
-          Los contratos en PDF, escrituras y pólizas se suben a los buckets privados y aquí aparecen ligados a su unidad o contrato. La carga desde la plataforma es el siguiente paso.
+          Los contratos en PDF, escrituras, pólizas y fotos se guardan en los buckets privados y aquí aparecen ligados a su inmueble, unidad o contrato. La carga desde la plataforma es el siguiente paso.
         </Notice>
       )}
       <Card className="p-0">
@@ -57,7 +58,10 @@ export default async function DocumentosPage() {
                   <TableCell><StatusPill label={s.label} cls={s.cls} /></TableCell>
                   <TableCell className="tnum text-right">{d.version ? `v${d.version}` : "-"}</TableCell>
                   <TableCell>{fmtDate(d.updatedAt.slice(0, 10))}</TableCell>
-                  <TableCell className="text-right"><Button variant="ghost" size="sm" disabled>Abrir</Button></TableCell>
+                  <TableCell className="text-right whitespace-nowrap">
+                    <Button variant="ghost" size="sm" asChild><Link href={`/documentos/${d.id}/archivo`} target="_blank" rel="noopener">Abrir</Link></Button>
+                    <Button variant="ghost" size="sm" asChild><a href={`/documentos/${d.id}/archivo?descargar=1`}>Descargar</a></Button>
+                  </TableCell>
                 </TableRow>
               );
             })}

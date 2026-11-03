@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Building2, LandPlot } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { FacetCover } from "@/components/patrimonio/facet-cover";
+import { PhotoCover } from "@/components/patrimonio/photo-cover";
 import { TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PagedTable } from "@/components/forms/paged-rows";
 import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
@@ -27,13 +27,13 @@ export default async function PropiedadesPage() {
         {devs.map((d, i) => (
           <Link key={d.id} href={`/propiedades/${d.id}`} className="group">
             <Card className="overflow-hidden p-0 transition-shadow group-hover:shadow-md">
-              <FacetCover tone={i % 2 ? "cyan" : "navy"} className="h-32">
+              <PhotoCover documentId={d.coverDocumentId} alt={d.name} tone={i % 2 ? "cyan" : "navy"} className="h-32">
                 <Building2 className="absolute bottom-3 right-3 size-8 text-white/40" />
                 <div className="absolute bottom-3 left-4 text-white">
                   <div className="text-xs opacity-80">{d.city ?? "Ubicación por capturar"}</div>
                   <div className="text-lg font-semibold tracking-tight">{d.name}</div>
                 </div>
-              </FacetCover>
+              </PhotoCover>
               <div className="grid grid-cols-3 divide-x p-0 text-sm">
                 <div className="p-3">
                   <div className="text-xs text-ink-3">Unidades Stone</div>

@@ -12,7 +12,8 @@ import { StatusPill } from "@/components/forms/status-pill";
 import { hasRole, requireMember } from "@/lib/auth/session";
 import { getUnitDetail } from "@/lib/data/patrimonio";
 import { DOC_KIND, OCCUPANCY_KEY, SENSITIVITY, SURFACE_LABEL, UNIT_KIND } from "@/lib/patrimonio/labels";
-import { CHARGE_STATUS, CONCEPT_LABEL, EXPENSE_CATEGORY, EXPENSE_CLASS, LEASE_STATUS, todayIso } from "@/lib/rentas/labels";
+import { CHARGE_STATUS, CONCEPT_LABEL, EXPENSE_CATEGORY, EXPENSE_CLASS, LEASE_STATUS } from "@/lib/rentas/labels";
+import { today as todayFn } from "@/lib/data/now";
 import { daysUntil, fmtAmt, fmtDate, fmtM2, fmtMXN, fmtPeriod } from "@/lib/format";
 
 export const instant = false;
@@ -24,7 +25,7 @@ export default async function UnitPage({ params }: { params: Promise<{ id: strin
   const data = await getUnitDetail(id);
   if (!data || data.unit.referenceOnly) notFound();
   const { unit: u, surfaces, leases, charges, expenses, documents } = data;
-  const today = todayIso();
+  const today = await todayFn();
   const rentable = surfaces.find((s) => s.kind === "rentable");
   const activeLease = leases.find((l) => l.status === "active");
   const alerts = [

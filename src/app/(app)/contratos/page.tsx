@@ -9,14 +9,15 @@ import { StatusPill } from "@/components/forms/status-pill";
 import { requireMember } from "@/lib/auth/session";
 import { listLeases } from "@/lib/data/rentas";
 import { daysUntil, fmtDate, fmtMXN } from "@/lib/format";
-import { LEASE_STATUS, todayIso } from "@/lib/rentas/labels";
+import { LEASE_STATUS } from "@/lib/rentas/labels";
+import { today as todayFn } from "@/lib/data/now";
 
 export const instant = false;
 
 export default async function ContratosPage() {
   await requireMember();
   const leases = await listLeases();
-  const today = todayIso();
+  const today = await todayFn();
   const order = (s: string) => (s === "active" ? 0 : s === "draft" ? 1 : 2);
   const sorted = [...leases].sort((a, b) => order(a.status) - order(b.status) || ((a.endDate ?? "9999") < (b.endDate ?? "9999") ? -1 : 1));
   const expiringSoon = sorted.filter((l) => l.status === "active" && l.endDate && daysUntil(l.endDate, today) <= 60);

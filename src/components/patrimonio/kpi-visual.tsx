@@ -11,35 +11,30 @@ export function KpiVisual({
   label,
   value,
   info,
-  visual,
   delta,
   foot,
 }: {
   label: string;
   value: string;
   info: string;
+  /** Se conserva por compatibilidad; las tarjetas ya no llevan gráfica. */
   visual?: React.ReactNode;
   delta?: React.ReactNode;
   foot?: string;
 }) {
   return (
-    <Card className="gap-0 p-0">
-      <div className="flex items-start justify-between gap-3 p-4 pb-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5 text-sm text-ink-2">
-            <span className="truncate">{label}</span>
-            <span title={info} className="cursor-help text-ink-3"><Info className="size-3.5" /></span>
-          </div>
-          <div className="num mt-1.5 text-[28px] leading-8 text-ink">{value}</div>
+    <Card className="h-full gap-0 p-0">
+      <div className="p-4 pb-3">
+        <div className="flex items-center gap-1.5 text-sm text-ink-2">
+          <span className="truncate">{label}</span>
+          <span title={info} className="cursor-help text-ink-3"><Info className="size-3.5" /></span>
         </div>
-        {visual && <div className="mt-1 shrink-0">{visual}</div>}
+        <div className="num mt-1.5 text-[28px] leading-8 text-ink">{value}</div>
       </div>
-      {(delta || foot) && (
-        <div className="flex items-center gap-2 border-t bg-surface-2/60 px-4 py-2 text-[13px] text-ink-3">
-          {delta}
-          {foot && <span className="truncate">{foot}</span>}
-        </div>
-      )}
+      <div className="mt-auto flex min-h-9 items-center gap-2 border-t bg-surface-2/60 px-4 py-2 text-[13px] text-ink-3">
+        {delta}
+        <span className="truncate">{foot ?? "\u00a0"}</span>
+      </div>
     </Card>
   );
 }

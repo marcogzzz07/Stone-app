@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PageHeader, SectionTitle } from "@/components/patrimonio/kpi-card";
 import { KpiVisual } from "@/components/patrimonio/kpi-visual";
-import { MiniBars, Ring } from "@/components/charts/mini";
 import { Notice } from "@/components/forms/notice";
 import { StatusPill } from "@/components/forms/status-pill";
 import { hasRole, requireMember } from "@/lib/auth/session";
@@ -51,7 +50,6 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
   const periods = [...new Set(charges.map((c) => c.period))].sort();
   const currentPeriod = periods.length ? periods[periods.length - 1] : `${thisMonth()}-01`;
   const pc = periodMetrics(charges, currentPeriod);
-  const series = periods.slice(-6).map((p) => periodMetrics(charges, p).exigible);
   const outstanding = charges.filter((c) => c.status !== "void").reduce((s, c) => s + Math.max(0, c.balance), 0);
   const overdue = charges.filter((c) => c.status === "overdue").reduce((s, c) => s + c.balance, 0);
   const unapplied = payments.filter((p) => p.unapplied > 0.005);
@@ -93,14 +91,12 @@ export default async function RentasPage({ searchParams }: { searchParams: Promi
             label="Exigible del período"
             value={fmtMXN(pc.exigible)}
             info={`${fmtPeriod(currentPeriod)} · MXN con IVA · ${pc.count} cargos netos de ajustes`}
-            visual={<MiniBars values={series} />}
             foot={`${pc.count} cargos · ${fmtPeriod(currentPeriod)}`}
           />
           <KpiVisual
             label="Cobranza del período"
             value={fmtPct(pc.ratio * 100)}
             info="Pagos aplicados a cargos del período ÷ exigible del período (métrica A, por período de cargo)."
-            visual={<Ring ratio={pc.ratio} />}
             foot={`${fmtMXN(pc.applied)} aplicado · ${fmtMXN(pc.pending)} pendiente`}
           />
           <KpiVisual

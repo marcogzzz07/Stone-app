@@ -4,14 +4,13 @@ import { KpiVisual, StatCell } from "@/components/patrimonio/kpi-visual";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Notice } from "@/components/forms/notice";
-import { DeltaChip, MiniBars, Ring, Sparkline, StackedBar, UnitDots } from "@/components/charts/mini";
+import { DeltaChip, StackedBar } from "@/components/charts/mini";
 import { TrendChart } from "@/components/charts/trend-chart";
 import { hasRole, requireMember } from "@/lib/auth/session";
 import { listCharges, listExpenses, listPayments, type ChargeRow } from "@/lib/data/rentas";
 import { listCriticalDates, listDevelopmentRows, listDiscrepancies, listUnitRows } from "@/lib/data/patrimonio";
-import { OCCUPANCY_KEY } from "@/lib/patrimonio/labels";
 import { daysUntil, fmtDate, fmtMXN, fmtPct, fmtPeriod } from "@/lib/format";
-import { todayIso } from "@/lib/rentas/labels";
+import { hourNow, today as todayFn } from "@/lib/data/now";
 
 export const instant = false;
 
@@ -22,8 +21,7 @@ function periodMetrics(charges: ChargeRow[], period: string) {
   return { exigible, applied, pending: exigible - applied, ratio: exigible ? applied / exigible : 0, count: cs.length };
 }
 
-function greeting(name: string) {
-  const h = new Date().getHours();
+function greeting(name: string, h: number) {
   const g = h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches";
   const first = name.trim().split(/\s+/)[0] || "";
   return first ? `${g}, ${first}` : g;
@@ -32,7 +30,7 @@ function greeting(name: string) {
 export default async function DashboardPage() {
   const me = await requireMember();
   const canOperate = hasRole(me.membership.role, "operator");
-  const today = todayIso();
+  const [today, hour] = await Promise.all([todayFn(), hourNow()]);
 
   const [devs, units, dates, discrepancies, charges, payments, expenses] = await Promise.all([
     listDevelopmentRows(),
@@ -89,8 +87,7 @@ export default async function DashboardPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[30px] leading-9 font-semibold text-ink">{greeting(me.fullName)}</h1>
-          <p className="mt-1 text-sm text-ink-2">Así va el patrimonio de Stone con corte a {period.toLowerCase()}.</p>
+          <h1 className="font-display text-[30px] leading-9 font-semibold text-ink">{greeting(me.fullName, hour)}</h1>
         </div>
         <Button asChild variant="outline" size="sm">
           <Link href="/rentas"><CalendarDays className="size-4" /> {period}</Link>
@@ -106,14 +103,12 @@ export default async function DashboardPage() {
           label="Renta pactada"
           value={fmtMXN(pactado)}
           info="Suma de la renta mensual con IVA de los contratos activos, según su condición vigente. No es ingreso."
-          visual={series.length > 1 ? <Sparkline values={series.map((s) => s.cargos)} /> : undefined}
           foot={`${devs.length} inmuebles · ${units.filter((u) => !u.referenceOnly).length} unidades Stone`}
         />
         <KpiVisual
           label="Cobranza del período"
           value={canOperate ? fmtPct(pc.ratio * 100) : "—"}
           info="Pagos aplicados a cargos del período ÷ facturado del período. MXN con IVA."
-          visual={canOperate ? <Ring ratio={pc.ratio} /> : undefined}
           delta={prev ? <DeltaChip value={delta(pc.ratio, prev.ratio)} /> : undefined}
           foot={canOperate ? `${fmtMXN(pc.applied)} cobrado de ${fmtMXN(pc.exigible)}` : undefined}
         />
@@ -121,7 +116,6 @@ export default async function DashboardPage() {
           label="Saldo por cobrar"
           value={canOperate ? fmtMXN(outstanding) : "—"}
           info="Facturado − pagado − ajustes, todos los períodos, al día de hoy."
-          visual={canOperate && series.length ? <MiniBars values={series.map((s) => Math.max(0, s.cargos - s.cobrosAplicados))} /> : undefined}
           delta={overdue > 0 ? <span className="num rounded-md bg-danger-soft px-1.5 py-0.5 text-[11px] font-semibold text-danger">{fmtMXN(overdue)} vencido</span> : undefined}
           foot={canOperate ? `${fmtMXN(unapplied)} sin aplicar` : undefined}
         />
@@ -129,12 +123,11 @@ export default async function DashboardPage() {
           label="Ocupación Stone"
           value={fmtPct(occRatio * 100)}
           info={`${occupied.length} ocupadas de ${known.length} con estado conocido; ${stone.length - known.length} sin validar. Excluye terrenos y unidades de terceros.`}
-          visual={<UnitDots states={stone.map((u) => OCCUPANCY_KEY[u.occupancy] ?? "desconocida")} />}
-          foot={`${stone.length} unidades operables`}
+          foot={`${occupied.length} ocupadas de ${stone.length} operables`}
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3">
+      <div className="grid gap-4 xl:grid-cols-3 xl:items-start">
         <Card className="gap-0 p-0 xl:col-span-2">
           <div className="flex items-center justify-between border-b px-5 py-3">
             <h2 className="text-xs font-medium tracking-wider text-ink-3 uppercase">Facturado vs. cobrado</h2>

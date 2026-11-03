@@ -4,11 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Bell,
   LogOut,
   Building2,
   CalendarDays,
-  CircleHelp,
   FileText,
   FolderLock,
   LayoutDashboard,
@@ -70,8 +68,6 @@ export const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
 
 // Bloque inferior del menú: utilidades y cuenta, separadas de la navegación.
 const BOTTOM: NavItem[] = [
-  { href: "/notificaciones", label: "Notificaciones", icon: Bell },
-  { href: "/soporte", label: "Soporte", icon: CircleHelp },
   { href: "/configuracion", label: "Configuración", icon: Settings },
 ];
 

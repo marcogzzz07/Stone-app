@@ -1,7 +1,8 @@
+// Brand book: montos sin decimales en tarjetas y tablas (decisión de Marco, 3 nov 2026).
 const mxn = new Intl.NumberFormat("es-MX", {
   style: "currency",
   currency: "MXN",
-  maximumFractionDigits: 2,
+  maximumFractionDigits: 0,
 });
 
 const mxnCompact = new Intl.NumberFormat("es-MX", {
@@ -11,14 +12,14 @@ const mxnCompact = new Intl.NumberFormat("es-MX", {
   maximumFractionDigits: 1,
 });
 
-const num = new Intl.NumberFormat("es-MX", { maximumFractionDigits: 2 });
+const num = new Intl.NumberFormat("es-MX", { maximumFractionDigits: 0 });
 
 export const fmtMXN = (v: number) => mxn.format(v);
 export const fmtMXNCompact = (v: number) => mxnCompact.format(v);
 export const fmtM2 = (v: number | null | undefined) =>
   v == null ? "—" : `${num.format(v)} m²`;
 export const fmtNum = (v: number) => num.format(v);
-export const fmtPct = (v: number) => `${num.format(Math.round(v * 10) / 10)} %`;
+export const fmtPct = (v: number) => `${num.format(Math.round(v))} %`;
 
 export const fmtDate = (iso: string) =>
   new Intl.DateTimeFormat("es-MX", {
@@ -41,7 +42,7 @@ export const daysUntil = (iso: string, from = "2026-11-01") =>
       86_400_000,
   );
 
-const amt = new Intl.NumberFormat("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-/** Montos en tablas (brand book): dos decimales, sin signo; vacío o cero → "-". */
+const amt = new Intl.NumberFormat("es-MX", { maximumFractionDigits: 0 });
+/** Montos en tablas: sin decimales ni signo; vacío o cero → "-". */
 export const fmtAmt = (v: number | null | undefined) =>
   v == null || Math.abs(v) < 0.005 ? "-" : amt.format(v);

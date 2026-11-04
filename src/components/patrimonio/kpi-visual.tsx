@@ -33,12 +33,10 @@ export function KpiVisual({
             <span className="truncate">{label}</span>
             <span title={info} className="cursor-help text-ink-3"><Info className="size-3.5" /></span>
           </div>
-          <div className="mt-1 flex items-baseline justify-between gap-3">
-            <span className="num text-2xl leading-7 text-ink">{value}</span>
-            <span className="flex min-w-0 items-center gap-1.5 text-xs text-ink-3">
-              {delta}
-              <span className="truncate">{foot}</span>
-            </span>
+          <div className="num mt-1 text-[30px] leading-9 whitespace-nowrap text-ink">{value}</div>
+          <div className="mt-1.5 flex min-h-5 items-center gap-2 text-xs text-ink-3">
+            {delta && <span className="shrink-0 whitespace-nowrap">{delta}</span>}
+            <span className="truncate">{foot ?? "\u00a0"}</span>
           </div>
         </div>
       </Card>

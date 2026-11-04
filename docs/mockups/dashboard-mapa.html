@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard con mapa · propuesta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500;600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+  :root {
+    --brand-navy:#000649; --brand-cyan:#00BBF4; --brand-cyan-ink:#0074A3;
+    --bg:#F5F6F9; --surface:#FDFDFE; --surface-2:#EDF0F5; --border:#DBE0E9;
+    --ink:#0A0F33; --ink-2:#465073; --ink-3:#5F6884;
+    --warning:#955600; --warning-soft:#FBEFD9; --danger:#B8322A; --danger-soft:#FBE5E3; --info:#0074A3; --info-soft:#E0F3FB;
+    --chart-1:#12207F; --chart-2:#00A3D9; --chart-3:#6F7894; --chart-4:#23998A; --chart-5:#7E5BC2; --chart-6:#5577E0; --chart-7:#0F5C6E; --chart-grid:#E3E7EE;
+    --sidebar:#000649; --sidebar-ink:#C9D0EA;
+    --shadow-sm:0 1px 2px rgba(10,15,51,.06);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Source Sans 3","Helvetica Neue",Arial,sans-serif; font-size:14px; }
+  .num { font-variant-numeric:tabular-nums; font-weight:600; }
+  .shell { display:grid; grid-template-columns:280px 1fr; min-height:100vh; }
+  aside { background:var(--sidebar); color:var(--sidebar-ink); padding:20px 16px; }
+  aside .brand { display:flex; align-items:center; gap:12px; color:#fff; font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:17px; margin:4px 8px 28px; }
+  aside .brand i { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#1B2580,#00BBF4); display:block; }
+  aside h6 { margin:14px 12px 8px; font-size:11px; letter-spacing:.12em; text-transform:uppercase; opacity:.7; font-weight:500; }
+  aside a { display:flex; gap:12px; align-items:center; padding:10px 14px; border-radius:8px; color:var(--sidebar-ink); text-decoration:none; font-size:15px; }
+  aside a.active { background:rgba(255,255,255,.08); color:#fff; box-shadow:inset 3px 0 0 var(--brand-cyan); }
+  aside a i { width:16px; height:16px; border:1.5px solid currentColor; border-radius:4px; opacity:.8; }
+  main { padding:0 40px 40px; }
+  .crumb { padding:14px 0; font-size:14px; color:var(--ink-3); border-bottom:1px solid var(--border); margin-bottom:22px; }
+  .crumb b { color:var(--ink); font-weight:500; }
+
+  .head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  h1 { margin:0; font-family:"IBM Plex Sans",sans-serif; font-weight:600; font-size:26px; line-height:32px; }
+  .btn { border:1px solid #7F88A2; background:var(--surface); border-radius:8px; padding:6px 12px; font-size:13px; display:inline-flex; gap:8px; align-items:center; }
+
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-sm); overflow:hidden; display:flex; flex-direction:column; }
+  .card > header { display:flex; align-items:center; justify-content:space-between; padding:11px 20px; border-bottom:1px solid var(--border); }
+  .card > header h2 { margin:0; font-size:12px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-3); }
+  .card > header small { font-size:11px; color:var(--ink-3); }
+  .card > header a { font-size:12px; color:var(--brand-cyan-ink); text-decoration:none; }
+
+  /* KPI compactos: una sola línea de etiqueta y la cifra, el pie a la derecha */
+  .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  .kpi { padding:12px 16px; display:flex; flex-direction:column; gap:4px; }
+  .kpi .label { font-size:13px; color:var(--ink-2); display:flex; gap:6px; align-items:center; }
+  .kpi .label i { width:13px; height:13px; border:1.3px solid var(--ink-3); border-radius:50%; font-size:9px; display:grid; place-items:center; font-style:normal; color:var(--ink-3); }
+  .kpi .row { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+  .kpi .value { font-size:24px; line-height:28px; }
+  .kpi .foot { font-size:12px; color:var(--ink-3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chip { display:inline-block; font-size:11px; font-weight:600; border-radius:6px; padding:1px 6px; }
+  .chip.warn { background:var(--warning-soft); color:var(--warning); }
+  .chip.danger { background:var(--danger-soft); color:var(--danger); }
+
+  .grid { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:16px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 2fr; gap:16px; margin-bottom:16px; }
+
+  .chart-head { display:flex; justify-content:space-between; align-items:flex-end; padding:14px 20px 0; }
+  .chart-head .sub { font-size:14px; color:var(--ink-2); }
+  .chart-head .big { font-size:28px; line-height:34px; display:flex; gap:10px; align-items:center; }
+  .legend { display:flex; gap:16px; font-size:12px; }
+  .legend span::before { content:""; display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; background:var(--chart-1); }
+  .legend span:last-child::before { background:var(--chart-2); }
+  svg.trend { width:100%; height:240px; display:block; padding:8px 8px 0; }
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--border); margin-top:auto; }
+  .stats div { padding:12px 20px; border-left:1px solid var(--border); }
+  .stats div:first-child { border-left:0; }
+  .stats small { display:block; font-size:13px; color:var(--ink-3); }
+  .stats b { font-size:18px; font-weight:600; }
+
+  /* Tarjeta de mapa */
+  .mapcard { position:relative; cursor:pointer; }
+  .mapcard .map { flex:1; min-height:0; position:relative; }
+  .mapcard #map, .mapcard #map2 { position:absolute; inset:0; }
+  .mapcard .maplibregl-ctrl { display:none; }
+  .mapcard footer { display:flex; align-items:center; justify-content:space-between; padding:10px 20px; border-top:1px solid var(--border); background:rgba(237,240,245,.6); font-size:13px; color:var(--ink-3); }
+  .mapcard footer b { color:var(--ink); font-weight:600; }
+  .mapcard .go { position:absolute; right:14px; top:52px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-size:12px; font-weight:500; box-shadow:var(--shadow-sm); display:flex; gap:6px; align-items:center; }
+  .pin { width:14px; height:14px; border-radius:50%; background:var(--brand-navy); border:2.5px solid #fff; box-shadow:0 0 0 2px var(--brand-cyan), 0 2px 6px rgba(10,15,51,.35); }
+  .pin-label { position:absolute; left:12px; top:-4px; white-space:nowrap; font-size:11px; font-weight:600; color:var(--ink); background:rgba(253,253,254,.92); padding:1px 6px; border-radius:5px; border:1px solid var(--border); }
+
+  /* Facturado por inmueble */
+  .byDev { padding:14px 20px; display:flex; flex-direction:column; gap:12px; }
+  .bar { display:flex; gap:3px; height:8px; }
+  .bar i { border-radius:4px; display:block; }
+  .byDev ul { list-style:none; margin:0; padding:0; }
+  .byDev li { display:flex; gap:12px; align-items:center; padding:9px 0; border-top:1px solid var(--border); }
+  .byDev li:first-child { border-top:0; }
+  .byDev li i { width:10px; height:10px; border-radius:2px; }
+  .byDev li span:nth-child(2) { flex:1; }
+  .byDev li small { width:40px; text-align:right; color:var(--ink-3); font-size:12px; }
+  .alert { display:flex; gap:12px; align-items:center; border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:14px; }
+  .alert.warn { background:var(--warning-soft); } .alert.info { background:var(--info-soft); }
+  .alert i { width:14px; height:14px; border-radius:3px; background:currentColor; opacity:.7; }
+  .alert.warn i { color:var(--warning);} .alert.info i { color:var(--info);}
+
+  .note { font-size:11px; color:var(--ink-3); }
+  .variant { margin:56px 0 18px; padding:10px 14px; border-left:3px solid var(--brand-cyan); background:var(--info-soft); font-size:14px; color:var(--ink-2); border-radius:0 8px 8px 0; }
+  .variant b { color:var(--ink); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside>
+    <div class="brand"><i></i> Stone Inmuebles</div>
+    <h6>Patrimonio</h6>
+    <a class="active"><i></i> Dashboard</a>
+    <a><i></i> Mapa patrimonial</a>
+    <a><i></i> Propiedades</a>
+    <h6>Operación</h6>
+    <a><i></i> Rentas y cobranza</a>
+    <a><i></i> Contratos</a>
+    <a><i></i> Documentos</a>
+    <a><i></i> Calendario</a>
+    <a><i></i> Informes</a>
+  </aside>
+  <main>
+    <div class="crumb">Stone &nbsp;›&nbsp; <b>Dashboard</b></div>
+
+    <div class="variant" style="margin-top:0"><b>Propuesta A.</b> Título más cerca de la ruta, KPIs a una línea (de 165 px a 84 px de alto) y el mapa como tarjeta cuadrada junto a la gráfica. “Facturado por inmueble” baja a la segunda fila junto a Real vs. proyección.</div>
+
+    <div class="head">
+      <h1>Buenos días</h1>
+      <span class="btn">▦ Septiembre de 2026</span>
+    </div>
+
+    <div class="kpis">
+      <div class="card kpi">
+        <div class="label">Renta pactada <i>i</i></div>
+        <div class="row"><span class="num value">$786,629</span><span class="foot">7 inmuebles · 47 unidades</span></div>
+      </div>
+      <div class="card kpi">
+        <div class="label">Cobranza del período <i>i</i></div>
+        <div class="row"><span class="num value">95 %</span><span class="foot"><span class="chip warn">↘ -2.0 %</span> $799,487 de $844,671</span></div>
+      </div>
+      <div class="card kpi">
+        <div class="label">Saldo por cobrar <i>i</i></div>
+        <div class="row"><span class="num value">$214,234</span><span class="foot"><span class="chip danger">$214,234 vencido</span> $0 sin aplicar</span></div>
+      </div>
+      <div class="card kpi">
+        <div class="label">Ocupación Stone <i>i</i></div>
+        <div class="row"><span class="num value">64 %</span><span class="foot">28 ocupadas de 44 operables</span></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <header><h2>Facturado vs. cobrado</h2><small>MXN con IVA · por período de cargo</small></header>
+        <div class="chart-head">
+          <div><div class="sub">Facturado en septiembre de 2026</div><div class="num big">$844,671 <span class="chip warn">↘ -15.7 %</span></div></div>
+          <div class="legend"><span>Facturado</span><span>Cobrado</span></div>
+        </div>
+        <svg class="trend" viewBox="0 0 900 240" preserveAspectRatio="none" id="trendA"></svg>
+        <div class="stats">
+          <div><small>Pendiente del período</small><b class="num">$45,184</b></div>
+          <div><small>Cobros recibidos en el mes</small><b class="num">$890,390</b></div>
+          <div><small>Gastos del mes</small><b class="num">$84,168</b></div>
+        </div>
+      </div>
+
+      <div class="card mapcard" title="Abrir mapa patrimonial">
+        <header><h2>Mapa patrimonial</h2><a>Abrir mapa →</a></header>
+        <div class="map"><div id="map"></div></div>
+        <footer><span><b>6 inmuebles</b> en Monterrey</span><span>+ 1 en Playa del Carmen</span></footer>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <header><h2>Facturado por inmueble</h2></header>
+        <div class="byDev">
+          <div><div class="sub" style="font-size:14px;color:var(--ink-2)">Septiembre de 2026</div><div class="num" style="font-size:28px;line-height:34px">$844,671</div></div>
+          <div class="bar"><i style="flex:31;background:var(--chart-1)"></i><i style="flex:16;background:var(--chart-2)"></i><i style="flex:14;background:var(--chart-3)"></i><i style="flex:25;background:var(--chart-4)"></i><i style="flex:9;background:var(--chart-6)"></i><i style="flex:6;background:var(--chart-7)"></i></div>
+          <ul>
+            <li><i style="background:var(--chart-1)"></i><span>Héroes de Lincoln</span><span class="num">$258,168</span><small>31 %</small></li>
+            <li><i style="background:var(--chart-2)"></i><span>Torre San Jerónimo</span><span class="num">$132,008</span><small>16 %</small></li>
+            <li><i style="background:var(--chart-3)"></i><span>Lomas del Valle</span><span class="num">$122,460</span><small>14 %</small></li>
+            <li><i style="background:var(--chart-4)"></i><span>Torre Evalor</span><span class="num">$207,452</span><small>25 %</small></li>
+            <li><i style="background:var(--chart-5)"></i><span>Central de Playa</span><span class="num">$0</span><small>0 %</small></li>
+            <li><i style="background:var(--chart-6)"></i><span>Loma Blanca</span><span class="num">$76,734</span><small>9 %</small></li>
+            <li><i style="background:var(--chart-7)"></i><span>Santa Isabel</span><span class="num">$47,850</span><small>6 %</small></li>
+          </ul>
+          <div class="alert warn"><i></i><span style="flex:1">76 discrepancias de importación por revisar</span>→</div>
+          <div class="alert info"><i></i><span style="flex:1">Vence contrato Oxxo · en 41 días</span>→</div>
+        </div>
+      </div>
+      <div class="card">
+        <header><h2>Real vs. proyección 2026</h2><a>Ver informe completo</a></header>
+        <div class="chart-head">
+          <div><div class="sub">Acumulado del año</div><div class="num big">92 % de lo proyectado</div></div>
+          <div style="text-align:right;font-size:14px;color:var(--ink-2)"><div>Real $7,420,118</div><div>Proyección $8,065,340</div></div>
+        </div>
+        <svg class="trend" viewBox="0 0 900 240" preserveAspectRatio="none" id="trendB" style="flex:1;height:auto;min-height:260px;padding-bottom:12px"></svg>
+      </div>
+    </div>
+
+    <p class="note">Histórico importado del reporte mensual (Excel) con corte a septiembre de 2026 · MXN con IVA · excluye unidades de terceros.</p>
+
+    <div class="variant"><b>Propuesta B.</b> Mismo encabezado y KPIs; abajo una sola fila de tres: gráfica, mapa cuadrado y “Facturado por inmueble”. Más compacto, pero la lista de inmuebles queda apretada a la altura del mapa.</div>
+
+    <div class="head">
+      <h1>Buenos días</h1>
+      <span class="btn">▦ Septiembre de 2026</span>
+    </div>
+    <div class="kpis">
+      <div class="card kpi"><div class="label">Renta pactada <i>i</i></div><div class="row"><span class="num value">$786,629</span><span class="foot">7 inmuebles · 47 unidades</span></div></div>
+      <div class="card kpi"><div class="label">Cobranza del período <i>i</i></div><div class="row"><span class="num value">95 %</span><span class="foot"><span class="chip warn">↘ -2.0 %</span> $799,487 de $844,671</span></div></div>
+      <div class="card kpi"><div class="label">Saldo por cobrar <i>i</i></div><div class="row"><span class="num value">$214,234</span><span class="foot"><span class="chip danger">$214,234 vencido</span> $0 sin aplicar</span></div></div>
+      <div class="card kpi"><div class="label">Ocupación Stone <i>i</i></div><div class="row"><span class="num value">64 %</span><span class="foot">28 ocupadas de 44 operables</span></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:2fr 1fr 1fr">
+      <div class="card">
+        <header><h2>Facturado vs. cobrado</h2><small>MXN con IVA</small></header>
+        <div class="chart-head">
+          <div><div class="sub">Facturado en septiembre de 2026</div><div class="num big">$844,671 <span class="chip warn">↘ -15.7 %</span></div></div>
+          <div class="legend"><span>Facturado</span><span>Cobrado</span></div>
+        </div>
+        <svg class="trend" viewBox="0 0 900 240" preserveAspectRatio="none" id="trendC" style="height:200px"></svg>
+        <div class="stats">
+          <div><small>Pendiente</small><b class="num">$45,184</b></div>
+          <div><small>Cobros del mes</small><b class="num">$890,390</b></div>
+          <div><small>Gastos del mes</small><b class="num">$84,168</b></div>
+        </div>
+      </div>
+      <div class="card mapcard" title="Abrir mapa patrimonial">
+        <header><h2>Mapa patrimonial</h2><a>Abrir →</a></header>
+        <div class="map"><div id="map2"></div></div>
+        <footer><span><b>6</b> en Monterrey</span><span>+ 1 en Playa</span></footer>
+      </div>
+      <div class="card">
+        <header><h2>Facturado por inmueble</h2></header>
+        <div class="byDev" style="gap:8px">
+          <div class="num" style="font-size:24px;line-height:28px">$844,671</div>
+          <div class="bar"><i style="flex:31;background:var(--chart-1)"></i><i style="flex:16;background:var(--chart-2)"></i><i style="flex:14;background:var(--chart-3)"></i><i style="flex:25;background:var(--chart-4)"></i><i style="flex:9;background:var(--chart-6)"></i><i style="flex:6;background:var(--chart-7)"></i></div>
+          <ul style="font-size:13px">
+            <li style="padding:6px 0"><i style="background:var(--chart-1)"></i><span>Héroes de Lincoln</span><span class="num">$258,168</span><small>31 %</small></li>
+            <li style="padding:6px 0"><i style="background:var(--chart-4)"></i><span>Torre Evalor</span><span class="num">$207,452</span><small>25 %</small></li>
+            <li style="padding:6px 0"><i style="background:var(--chart-2)"></i><span>Torre San Jerónimo</span><span class="num">$132,008</span><small>16 %</small></li>
+            <li style="padding:6px 0"><i style="background:var(--chart-3)"></i><span>Lomas del Valle</span><span class="num">$122,460</span><small>14 %</small></li>
+            <li style="padding:6px 0"><i style="background:var(--chart-6)"></i><span>Loma Blanca</span><span class="num">$76,734</span><small>9 %</small></li>
+            <li style="padding:6px 0"><i style="background:var(--chart-7)"></i><span>Santa Isabel</span><span class="num">$47,850</span><small>6 %</small></li>
+            <li style="padding:6px 0"><i style="background:var(--chart-5)"></i><span>Central de Playa</span><span class="num">$0</span><small>0 %</small></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Serie de 9 meses, líneas rectas (sin suavizar), ejes mínimos.
+  function trend(id, a, b, h, w) {
+    const svg = document.getElementById(id); const W = w || 900, H = h || 240, L = 60, R = 16, T = 12, B = 30;
+    const max = 1200000, n = a.length;
+    const x = i => L + (i * (W - L - R)) / (n - 1), y = v => T + (H - T - B) * (1 - v / max);
+    let s = "";
+    [0, 300000, 600000, 900000, 1200000].forEach(v => { s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#E3E7EE"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="#5F6884">${v ? "$" + (v / 1000) + " k" : "$0"}</text>`; });
+    const months = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP"];
+    months.slice(0, n).forEach((m, i) => s += `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#5F6884">${m}</text>`);
+    const path = (arr, c) => `<polyline fill="none" stroke="${c}" stroke-width="2.2" stroke-linejoin="round" points="${arr.map((v, i) => x(i) + "," + y(v)).join(" ")}"/>`;
+    svg.innerHTML = s + path(a, "#12207F") + path(b, "#00A3D9");
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  }
+  const fact = [760000, 740000, 790000, 830000, 760000, 800000, 870000, 1000000, 845000];
+  const cob = [760000, 730000, 790000, 830000, 740000, 760000, 850000, 980000, 800000];
+  trend("trendA", fact, cob); trend("trendC", fact, cob, 200);
+  const tb = document.getElementById("trendB").getBoundingClientRect();
+  trend("trendB", [600000, 1250000, 1900000, 2550000, 3200000, 3900000, 4650000, 5500000, 7420000].map(v => v / 7), [620000, 1300000, 2000000, 2700000, 3450000, 4150000, 4950000, 5800000, 8065000].map(v => v / 7), Math.round(tb.height) - 20, Math.round(tb.width) - 16);
+
+  // Mapa: Monterrey y área metropolitana, teselas OSM desaturadas como en el módulo.
+  const devs = [
+    ["Héroes de Lincoln", -100.5559422, 25.8116975],
+    ["Loma Blanca", -100.3417993, 25.6791775],
+    ["Lomas del Valle", -100.3784335, 25.6519564],
+    ["Santa Isabel", -100.172493, 25.6259351],
+    ["Torre Evalor", -100.3576685, 25.6756268],
+    ["Torre San Jerónimo", -100.362258, 25.6749944],
+  ];
+  const style = { version: 8, sources: { osm: { type: "raster", tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256, attribution: "© OpenStreetMap" } },
+    layers: [{ id: "osm", type: "raster", source: "osm", paint: { "raster-saturation": -0.7, "raster-opacity": 0.85 } }] };
+  function mk(container, labels) {
+    const b = new maplibregl.LngLatBounds(); devs.forEach(d => b.extend([d[1], d[2]]));
+    const map = new maplibregl.Map({ container, style, bounds: b, fitBoundsOptions: { padding: labels ? { top: 40, bottom: 40, left: 40, right: 130 } : 36 }, interactive: false, attributionControl: false });
+    devs.forEach(([name, lon, lat]) => {
+      const el = document.createElement("div"); el.className = "pin";
+      if (labels && name !== "Torre Evalor") { const l = document.createElement("span"); l.className = "pin-label"; l.textContent = name; el.appendChild(l); }
+      new maplibregl.Marker({ element: el }).setLngLat([lon, lat]).addTo(map);
+    });
+    return map;
+  }
+  mk("map", true); mk("map2", false);
+</script>
+</body>
+</html>

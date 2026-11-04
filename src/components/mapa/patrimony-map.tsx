@@ -27,7 +27,7 @@ interface Props {
 // Base cartográfica libre (teselas OSM, solo para desarrollo/prototipo). El
 // proveedor de mapas y satélite con licencia se elige antes de producción
 // (spec §12); aquí solo se muestra el toggle deshabilitado.
-const STYLE: maplibregl.StyleSpecification = {
+export const BASE_STYLE: maplibregl.StyleSpecification = {
   version: 8,
   glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
   sources: {
@@ -58,7 +58,7 @@ export function PatrimonyMap({ features, center, zoom = 15, className, onSelect,
     if (!ref.current || mapRef.current) return;
     const map = new maplibregl.Map({
       container: ref.current,
-      style: STYLE,
+      style: BASE_STYLE,
       center,
       zoom,
       attributionControl: { compact: true },

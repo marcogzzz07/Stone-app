@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, ArrowRight, CalendarDays, Sparkles } from "lucide-react";
+import { MapCard } from "@/components/mapa/map-card";
+import { splitByRegion } from "@/components/mapa/region";
 import { KpiVisual, StatCell } from "@/components/patrimonio/kpi-visual";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,7 +12,7 @@ import { RealVsProyeccionChart } from "@/components/charts/report-charts";
 import { buildInforme } from "@/lib/data/informe";
 import { hasRole, requireMember } from "@/lib/auth/session";
 import { listCharges, listExpenses, listPayments, type ChargeRow } from "@/lib/data/rentas";
-import { listCriticalDates, listDevelopmentRows, listDiscrepancies, listUnitRows } from "@/lib/data/patrimonio";
+import { listCriticalDates, listDevelopmentPoints, listDevelopmentRows, listDiscrepancies, listUnitRows } from "@/lib/data/patrimonio";
 import { daysUntil, fmtDate, fmtMXN, fmtPct, fmtPeriod } from "@/lib/format";
 import { hourNow, today as todayFn } from "@/lib/data/now";
 
@@ -34,9 +36,10 @@ export default async function DashboardPage() {
   const canOperate = hasRole(me.membership.role, "operator");
   const [today, hour] = await Promise.all([todayFn(), hourNow()]);
 
-  const [devs, units, dates, discrepancies, charges, payments, expenses] = await Promise.all([
+  const [devs, units, points, dates, discrepancies, charges, payments, expenses] = await Promise.all([
     listDevelopmentRows(),
     listUnitRows(),
+    listDevelopmentPoints(),
     listCriticalDates(),
     listDiscrepancies(),
     canOperate ? listCharges() : Promise.resolve([] as ChargeRow[]),
@@ -85,12 +88,13 @@ export default async function DashboardPage() {
   const openIssues = discrepancies.filter((d) => d.status === "open");
   const period = fmtPeriod(currentPeriod);
   const last = series[series.length - 1];
+  const region = splitByRegion(points);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-[30px] leading-9 font-semibold text-ink">{greeting(me.fullName, hour)}</h1>
+          <h1 className="font-display text-[26px] leading-8 font-semibold text-ink">{greeting(me.fullName, hour)}</h1>
         </div>
         <Button asChild variant="outline" size="sm">
           <Link href="/rentas"><CalendarDays className="size-4" /> {period}</Link>
@@ -103,12 +107,14 @@ export default async function DashboardPage() {
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiVisual
+          compact
           label="Renta pactada"
           value={fmtMXN(pactado)}
           info="Suma de la renta mensual con IVA de los contratos activos, según su condición vigente. No es ingreso."
           foot={`${devs.length} inmuebles · ${units.filter((u) => !u.referenceOnly).length} unidades Stone`}
         />
         <KpiVisual
+          compact
           label="Cobranza del período"
           value={canOperate ? fmtPct(pc.ratio * 100) : "—"}
           info="Pagos aplicados a cargos del período ÷ facturado del período. MXN con IVA."
@@ -116,6 +122,7 @@ export default async function DashboardPage() {
           foot={canOperate ? `${fmtMXN(pc.applied)} cobrado de ${fmtMXN(pc.exigible)}` : undefined}
         />
         <KpiVisual
+          compact
           label="Saldo por cobrar"
           value={canOperate ? fmtMXN(outstanding) : "—"}
           info="Facturado − pagado − ajustes, todos los períodos, al día de hoy."
@@ -123,6 +130,7 @@ export default async function DashboardPage() {
           foot={canOperate ? `${fmtMXN(unapplied)} sin aplicar` : undefined}
         />
         <KpiVisual
+          compact
           label="Ocupación Stone"
           value={fmtPct(occRatio * 100)}
           info={`${occupied.length} ocupadas de ${known.length} con estado conocido; ${stone.length - known.length} sin validar. Excluye terrenos y unidades de terceros.`}
@@ -130,7 +138,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-3 xl:items-start">
+      <div className="grid gap-4 xl:grid-cols-3">
         <Card className="gap-0 p-0 xl:col-span-2">
           <div className="flex items-center justify-between border-b px-5 py-3">
             <h2 className="text-xs font-medium tracking-wider text-ink-3 uppercase">Facturado vs. cobrado</h2>
@@ -165,6 +173,26 @@ export default async function DashboardPage() {
           )}
         </Card>
 
+        <Link href="/mapa" className="group block min-h-[420px] xl:min-h-0" title="Abrir mapa patrimonial">
+          <Card className="h-full gap-0 overflow-hidden p-0 transition-shadow group-hover:shadow-md">
+            <div className="flex items-center justify-between border-b px-5 py-3">
+              <h2 className="text-xs font-medium tracking-wider text-ink-3 uppercase">Mapa patrimonial</h2>
+              <span className="flex items-center gap-1 text-[12px] text-brand-cyan-ink group-hover:underline">Abrir mapa <ArrowRight className="size-3.5" /></span>
+            </div>
+            {region.focus.length ? (
+              <MapCard points={region.focus} className="min-h-0 flex-1 bg-surface-2" />
+            ) : (
+              <div className="grid flex-1 place-items-center text-sm text-ink-3">Sin inmuebles con ubicación.</div>
+            )}
+            <div className="flex items-center justify-between border-t bg-surface-2/60 px-5 py-2.5 text-[13px] text-ink-3">
+              <span><span className="font-semibold text-ink">{region.focus.length} inmuebles</span>{region.city ? ` en ${region.city}` : ""}</span>
+              {region.others.length > 0 && <span>+ {region.others.length} en {region.others.map((o) => o.city).filter((c, i, a) => c && a.indexOf(c) === i).join(", ")}</span>}
+            </div>
+          </Card>
+        </Link>
+      </div>
+
+      <div className="grid gap-4 xl:grid-cols-3">
         <Card className="gap-0 p-0">
           <div className="flex items-center justify-between border-b px-5 py-3">
             <h2 className="text-xs font-medium tracking-wider text-ink-3 uppercase">Facturado por inmueble</h2>
@@ -205,10 +233,9 @@ export default async function DashboardPage() {
             )}
           </div>
         </Card>
-      </div>
 
-      {informe && (
-        <Card className="gap-0 p-0">
+        {informe && (
+        <Card className="gap-0 p-0 xl:col-span-2">
           <div className="flex items-center justify-between border-b px-5 py-3">
             <h2 className="text-xs font-medium tracking-wider text-ink-3 uppercase">Real vs. proyección {informe.year}</h2>
             <Link href={`/informes?mes=${currentPeriod}`} className="text-[12px] text-brand-cyan-ink hover:underline">Ver informe completo</Link>
@@ -223,11 +250,12 @@ export default async function DashboardPage() {
               <div>Proyección {fmtMXN(informe.resumen.proyAcum)}</div>
             </div>
           </div>
-          <div className="px-2 pt-2 pb-3">
-            <RealVsProyeccionChart data={informe.proyeccion} />
+          <div className="min-h-[260px] flex-1 px-2 pt-2 pb-3">
+            <RealVsProyeccionChart data={informe.proyeccion} fill />
           </div>
         </Card>
-      )}
+        )}
+      </div>
 
       <p className="text-[11px] text-ink-3">
         Histórico importado del reporte mensual (Excel) con corte a {period.toLowerCase()} · MXN con IVA · al {fmtDate(today)} · excluye unidades de terceros.

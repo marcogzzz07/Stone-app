@@ -30,9 +30,9 @@ export function CobradoPendienteChart({ data }: { data: { name: string; cobrado:
 }
 
 /** Real contra proyección por mes (columnas) con línea de proyección. */
-export function RealVsProyeccionChart({ data }: { data: { label: string; proyeccion: number; real: number }[] }) {
+export function RealVsProyeccionChart({ data, fill = false }: { data: { label: string; proyeccion: number; real: number }[]; fill?: boolean }) {
   return (
-    <ResponsiveContainer width="100%" height={260}>
+    <ResponsiveContainer width="100%" height={fill ? "100%" : 260}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 0 }} barCategoryGap={18}>
         <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
         <XAxis dataKey="label" tick={axis} axisLine={false} tickLine={false} />

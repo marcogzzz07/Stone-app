@@ -13,6 +13,7 @@ export function KpiVisual({
   info,
   delta,
   foot,
+  compact,
 }: {
   label: string;
   value: string;
@@ -21,7 +22,28 @@ export function KpiVisual({
   visual?: React.ReactNode;
   delta?: React.ReactNode;
   foot?: string;
+  /** Una sola línea: cifra a la izquierda y pie a la derecha (dashboard). */
+  compact?: boolean;
 }) {
+  if (compact) {
+    return (
+      <Card className="h-full gap-0 p-0">
+        <div className="px-4 py-3">
+          <div className="flex items-center gap-1.5 text-[13px] text-ink-2">
+            <span className="truncate">{label}</span>
+            <span title={info} className="cursor-help text-ink-3"><Info className="size-3.5" /></span>
+          </div>
+          <div className="mt-1 flex items-baseline justify-between gap-3">
+            <span className="num text-2xl leading-7 text-ink">{value}</span>
+            <span className="flex min-w-0 items-center gap-1.5 text-xs text-ink-3">
+              {delta}
+              <span className="truncate">{foot}</span>
+            </span>
+          </div>
+        </div>
+      </Card>
+    );
+  }
   return (
     <Card className="h-full gap-0 p-0">
       <div className="p-4 pb-3">
